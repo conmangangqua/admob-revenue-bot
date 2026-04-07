@@ -1,0 +1,49 @@
+name: 📊 Daily AdMob Revenue Report
+
+on:
+  # Chạy lúc 8:00 AM giờ Việt Nam (UTC+7) = 01:00 UTC
+  schedule:
+    - cron: '0 1 * * *'
+
+  # Cho phép trigger thủ công để test
+  workflow_dispatch:
+    inputs:
+      date_offset:
+        description: 'Offset ngày (0 = hôm qua, 1 = hôm kia, ...)'
+        required: false
+        default: '0'
+
+jobs:
+  revenue-report:
+    name: Fetch & Send Revenue Report
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: 📦 Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: 📊 Run Revenue Report
+        env:
+          ADMOB_CLIENT_ID: ${{ secrets.ADMOB_CLIENT_ID }}
+          ADMOB_CLIENT_SECRET: ${{ secrets.ADMOB_CLIENT_SECRET }}
+          ADMOB_REFRESH_TOKEN: ${{ secrets.ADMOB_REFRESH_TOKEN }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python scripts/main.py
+
+      - name: ✅ Done
+        if: success()
+        run: echo "Revenue report sent to Discord successfully!"
+
+      - name: ❌ On Failure
+        if: failure()
+        run: echo "Revenue report failed. Check logs above."
