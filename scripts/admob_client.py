@@ -26,8 +26,13 @@ def get_access_token(client_id: str, client_secret: str, refresh_token: str) -> 
     ).encode()
 
     req = urllib.request.Request(TOKEN_URL, data=data, method="POST")
-    with urllib.request.urlopen(req) as resp:
-        result = json.loads(resp.read())
+    try:
+        with urllib.request.urlopen(req) as resp:
+            result = json.loads(resp.read())
+    except urllib.error.HTTPError as e:
+        error_body = e.read().decode()
+        print(f"   ❌ Token refresh failed [{e.code}]: {error_body}")
+        raise RuntimeError(f"OAuth token refresh failed: {error_body}")
 
     token = result.get("access_token")
     if not token:
