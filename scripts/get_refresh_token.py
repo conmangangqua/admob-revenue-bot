@@ -15,7 +15,10 @@ import webbrowser
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 REDIRECT_URI = "http://localhost:8080"
-SCOPE = "https://www.googleapis.com/auth/admob.readonly"
+SCOPE = " ".join([
+    "https://www.googleapis.com/auth/firebase.readonly",
+    "https://www.googleapis.com/auth/analytics.readonly",
+])
 
 
 def main():

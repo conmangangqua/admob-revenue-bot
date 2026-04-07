@@ -74,40 +74,33 @@ def send_revenue_report(
         }
     )
 
-    # Separator
+    # Từng app dồn vào 1 field duy nhất (compact)
     if apps_sorted:
-        fields.append(
-            {
-                "name": f"📱 Chi tiết {num_apps} App{'s' if num_apps > 1 else ''}",
-                "value": "─" * 30,
-                "inline": False,
-            }
-        )
+        medals = ["🥇", "🥈", "🥉"]
+        lines = []
+        for i, app in enumerate(apps_sorted[:20]):
+            rank = medals[i] if i < 3 else f"`#{i+1}`"
+            bar = _mini_bar(app["revenue"], total_revenue)
+            ecpm_str = f"${app['ecpm']:.2f}" if app["ecpm"] > 0 else "$0.00"
+            imp_str = f"{app['impressions']:,}" if app["impressions"] else "0"
+            lines.append(
+                f"{rank} **{app['app_name'][:25]}**\n"
+                f"   💵 `{_format_revenue(app['revenue'])}` {bar} · eCPM `{ecpm_str}` · 👁 `{imp_str}`"
+            )
 
-    # Từng app (tối đa 20 app để không bị quá giới hạn Discord)
-    for i, app in enumerate(apps_sorted[:20]):
-        rank_emoji = ["🥇", "🥈", "🥉"][i] if i < 3 else f"`#{i+1}`"
-        revenue_bar = _mini_bar(app["revenue"], total_revenue)
-        fields.append(
-            {
-                "name": f"{rank_emoji} {app['app_name'][:50]}",
-                "value": (
-                    f"💵 `{_format_revenue(app['revenue'])}` {revenue_bar}  "
-                    f"👁 `{app['impressions']:,}`  "
-                    f"eCPM `${app['ecpm']:.2f}`"
-                ),
-                "inline": False,
-            }
-        )
+        fields.append({
+            "name": f"📱 {len([a for a in apps_sorted if a['revenue'] > 0])} Apps có revenue",
+            "value": "\n".join(lines) or "_Không có data_",
+            "inline": False,
+        })
 
     if len(apps_sorted) > 20:
-        fields.append(
-            {
-                "name": "...",
-                "value": f"Và {len(apps_sorted) - 20} app khác",
-                "inline": False,
-            }
-        )
+        fields.append({
+            "name": "...",
+            "value": f"Và {len(apps_sorted) - 20} app khác",
+            "inline": False,
+        })
+
 
     embed = {
         "title": f"💹 AdMob Revenue — {day_name}, {date_str}",
