@@ -1,19 +1,17 @@
 """
-main.py — Entry point của AdMob Revenue Bot (v3 - Firebase Management API)
+main.py — Entry point của AdMob Revenue Bot (v4 - AdMob Native API)
 Chạy hàng ngày qua GitHub Actions.
-Dùng Firebase Management API → list 100% projects → GA4 Data API lấy revenue.
+Dùng AdMob API trực tiếp: list accounts → network report theo ngày.
+Không phụ thuộc GA4 property permissions.
 """
 import os
 import sys
 import traceback
-import urllib.parse
-import urllib.request
-import json
 from datetime import date, timedelta
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from firebase_client import get_all_projects_revenue
+from admob_client import get_access_token, list_accounts, get_network_report
 from discord_client import send_revenue_report, send_error_notification
 
 
@@ -24,23 +22,9 @@ def load_env(key: str) -> str:
     return val
 
 
-def get_access_token(client_id: str, client_secret: str, refresh_token: str) -> str:
-    data = urllib.parse.urlencode({
-        "client_id": client_id,
-        "client_secret": client_secret,
-        "refresh_token": refresh_token,
-        "grant_type": "refresh_token",
-    }).encode()
-    req = urllib.request.Request(
-        "https://oauth2.googleapis.com/token", data=data, method="POST"
-    )
-    with urllib.request.urlopen(req) as r:
-        return json.loads(r.read())["access_token"]
-
-
 def main():
     print("=" * 55)
-    print("  📊 Firebase Revenue Bot — Bắt đầu chạy")
+    print("  📊 AdMob Revenue Bot — Bắt đầu chạy")
     print("=" * 55)
 
     client_id       = load_env("ADMOB_CLIENT_ID")
@@ -57,16 +41,41 @@ def main():
     access_token = get_access_token(client_id, client_secret, refresh_token)
     print("   ✅ Token OK")
 
-    # Lấy revenue của TẤT CẢ Firebase projects
-    print("\n📱 Đang lấy revenue hôm qua (tất cả Firebase projects)...")
-    apps_today = get_all_projects_revenue(access_token, yesterday)
+    # ---------- Lấy danh sách publisher accounts ----------
+    accounts = list_accounts(access_token)
+    if not accounts:
+        raise RuntimeError("Không tìm thấy AdMob publisher account nào!")
 
-    print("\n📊 Đang lấy revenue hôm kia (để so sánh)...")
-    apps_prev  = get_all_projects_revenue(access_token, day_before)
-    prev_total = sum(a["revenue"] for a in apps_prev)
+    # ---------- Lấy revenue hôm qua ----------
+    print(f"\n📱 Đang lấy revenue ngày {yesterday.strftime('%d/%m/%Y')}...")
+    apps_today: list[dict] = []
+    for acc in accounts:
+        pub_id = acc.get("publisherId", acc.get("name", "").split("/")[-1])
+        print(f"   🏢 Account: {pub_id}")
+        rows = get_network_report(access_token, pub_id, yesterday)
+        apps_today.extend(rows)
 
+    # ---------- Lấy revenue hôm kia (để so sánh) ----------
+    print(f"\n📊 Đang lấy revenue ngày {day_before.strftime('%d/%m/%Y')} (so sánh)...")
+    apps_prev: list[dict] = []
+    for acc in accounts:
+        pub_id = acc.get("publisherId", acc.get("name", "").split("/")[-1])
+        rows = get_network_report(access_token, pub_id, day_before)
+        apps_prev.extend(rows)
+
+    # ---------- Tổng kết ----------
     total_today = sum(a["revenue"] for a in apps_today)
+    prev_total  = sum(a["revenue"] for a in apps_prev)
     app_count   = len([a for a in apps_today if a["revenue"] > 0])
+
+    # In chi tiết từng app
+    print()
+    for app in sorted(apps_today, key=lambda x: x["revenue"], reverse=True):
+        print(
+            f"   💰 {app['app_name']}: ${app['revenue']:.2f}"
+            f"  eCPM ${app['ecpm']:.2f}"
+            f"  👁 {app['impressions']:,}"
+        )
 
     print(f"\n{'=' * 55}")
     print(f"  💰 Tổng revenue hôm qua : ${total_today:.2f}")
