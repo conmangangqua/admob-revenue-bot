@@ -74,11 +74,12 @@ def send_revenue_report(
         }
     )
 
-    # Từng app dồn vào 1 field duy nhất (compact)
-    if apps_sorted:
+    # Từng app dồn vào 1 field duy nhất (compact) — chỉ app có revenue > 0
+    apps_with_revenue = [a for a in apps_sorted if a["revenue"] > 0]
+    if apps_with_revenue:
         medals = ["🥇", "🥈", "🥉"]
         lines = []
-        for i, app in enumerate(apps_sorted[:20]):
+        for i, app in enumerate(apps_with_revenue[:20]):
             rank = medals[i] if i < 3 else f"`#{i+1}`"
             bar = _mini_bar(app["revenue"], total_revenue)
             ecpm_str = f"${app['ecpm']:.2f}" if app["ecpm"] > 0 else "$0.00"
@@ -89,15 +90,15 @@ def send_revenue_report(
             )
 
         fields.append({
-            "name": f"📱 {len([a for a in apps_sorted if a['revenue'] > 0])} Apps có revenue",
+            "name": f"📱 {len(apps_with_revenue)} Apps có revenue",
             "value": "\n".join(lines) or "_Không có data_",
             "inline": False,
         })
 
-    if len(apps_sorted) > 20:
+    if len(apps_with_revenue) > 20:
         fields.append({
             "name": "...",
-            "value": f"Và {len(apps_sorted) - 20} app khác",
+            "value": f"Và {len(apps_with_revenue) - 20} app khác",
             "inline": False,
         })
 
