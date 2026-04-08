@@ -102,6 +102,16 @@ def send_revenue_report(
             "inline": False,
         })
 
+    # Warning: app bị chặn quyền GA4
+    blocked = [a for a in apps_data if a.get("no_permission")]
+    if blocked:
+        blocked_names = ", ".join(f"`{a['app_name']}`" for a in blocked)
+        fields.append({
+            "name": f"⚠️ {len(blocked)} Apps không có quyền GA4",
+            "value": blocked_names,
+            "inline": False,
+        })
+
 
     embed = {
         "title": f"💹 AdMob Revenue — {day_name}, {date_str}",

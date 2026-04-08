@@ -40,9 +40,11 @@ def _get(url: str, token: str) -> dict:
 
 
 def _clean_app_name(raw: str) -> str:
-    if " " in raw or any(c.isupper() for c in raw):
-        return raw.strip()
-    name = re.sub(r"-[a-z0-9]{4,6}$", "", raw)
+    # Strip trailing "-App" / "-app" suffix (thừa trong context revenue report)
+    cleaned = re.sub(r'(?i)-app$', '', raw).strip()
+    if " " in cleaned or any(c.isupper() for c in cleaned):
+        return cleaned
+    name = re.sub(r"-[a-z0-9]{4,6}$", "", cleaned)
     return " ".join(w.capitalize() for w in name.replace("-", " ").split())
 
 
@@ -235,34 +237,36 @@ def get_project_revenue(
     project_id: str,
     property_id: str,
     report_date: date,
-) -> tuple[float, float, int]:
+) -> tuple[float, float, int, bool]:
     """
     Lấy revenue cho 1 project/1 ngày.
-    Tự động fallback sang Service Account nếu user token bị 403.
+    Returns: (revenue, ecpm, impressions, has_permission)
     """
     date_str = report_date.strftime("%Y-%m-%d")
 
     # Lần 1: user token
     try:
-        return _run_ga4_report(user_token, property_id, date_str)
+        rev, ecpm, imp = _run_ga4_report(user_token, property_id, date_str)
+        return rev, ecpm, imp, True
     except urllib.error.HTTPError as e:
         if e.code != 403:
             body = e.read().decode()
             print(f"   ⚠️  GA4 lỗi [{e.code}]: {body[:150]}")
-            return 0.0, 0.0, 0
+            return 0.0, 0.0, 0, True  # lỗi khác, không phải quyền
         # 403 → thử SA fallback
 
     print(f"   🔑 403 → SA auto-key fallback [{project_id}]...")
     sa_token = _get_sa_token(user_token, project_id)
     if not sa_token:
-        return 0.0, 0.0, 0
+        return 0.0, 0.0, 0, False  # không có quyền
 
     try:
-        return _run_ga4_report(sa_token, property_id, date_str)
+        rev, ecpm, imp = _run_ga4_report(sa_token, property_id, date_str)
+        return rev, ecpm, imp, True
     except urllib.error.HTTPError as e:
         body = e.read().decode()
         print(f"   ❌ SA fallback cũng thất bại [{e.code}]: {body[:150]}")
-        return 0.0, 0.0, 0
+        return 0.0, 0.0, 0, False  # không có quyền
 
 
 # ────────────────────────── entry point ──────────────────────────
@@ -279,10 +283,11 @@ def get_all_projects_revenue(
         ga4_id = proj["ga4_property_id"]
         pid    = proj["project_id"]
 
-        revenue, ecpm, impressions = get_project_revenue(
+        revenue, ecpm, impressions, has_permission = get_project_revenue(
             access_token, pid, ga4_id, report_date
         )
-        print(f"   💰 {name}: ${revenue:.2f}  eCPM ${ecpm:.2f}  👁 {impressions:,}")
+        status = "💰" if has_permission else "🚫"
+        print(f"   {status} {name}: ${revenue:.2f}  eCPM ${ecpm:.2f}  👁 {impressions:,}")
 
         results.append({
             "app_name": name,
@@ -290,8 +295,12 @@ def get_all_projects_revenue(
             "revenue": revenue,
             "impressions": impressions,
             "ecpm": ecpm,
+            "no_permission": not has_permission,
         })
 
     revenue_projects = [r for r in results if r["revenue"] > 0]
+    blocked_projects = [r for r in results if r["no_permission"]]
     print(f"\n   ✅ {len(revenue_projects)}/{len(results)} projects có revenue")
+    if blocked_projects:
+        print(f"   🚫 {len(blocked_projects)} projects không có quyền GA4: {[r['app_name'] for r in blocked_projects]}")
     return results
