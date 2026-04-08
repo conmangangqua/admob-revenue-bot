@@ -1,87 +1,185 @@
 """
-firebase_client.py  (v3 - Firebase Management API)
+firebase_client.py  (v4 - Auto Service Account Fallback)
 Fetch ad revenue tất cả Firebase project qua:
-  1. Firebase Management API  → list TẤT CẢ project (kể cả dự án chưa link GA4 qua Admin API)
-  2. Firebase Analytics Details API → lấy GA4 property ID của từng project
-  3. GA4 Analytics Data API → query totalAdRevenue per property / per ngày
+  1. Firebase Management API  → list TẤT CẢ project
+  2. Firebase Analytics Details API → lấy GA4 property ID
+  3. GA4 Analytics Data API → query totalAdRevenue (bằng user token)
+  Fallback khi GA4 trả 403:
+  4. IAM API → tìm firebase-adminsdk SA của project → tạo temp key
+  5. Ký JWT bằng RSA private key → đổi lấy GA4 access token (service account)
+  6. Retry GA4 query với SA token
+  7. Xóa temp key (cleanup)
 """
+import base64
 import json
 import re
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from datetime import date
 
-FIREBASE_API  = "https://firebase.googleapis.com/v1beta1"
-GA4_DATA_API  = "https://analyticsdata.googleapis.com/v1beta"
+FIREBASE_API = "https://firebase.googleapis.com/v1beta1"
+GA4_DATA_API = "https://analyticsdata.googleapis.com/v1beta"
+IAM_API      = "https://iam.googleapis.com/v1"
+TOKEN_URL    = "https://oauth2.googleapis.com/token"
+GA4_SCOPE    = "https://www.googleapis.com/auth/analytics.readonly"
 
 
-# ────────────────────────── helpers ──────────────────────────
+# ─────────────────────────── helpers ─────────────────────────────
 
-def _get(url: str, access_token: str) -> dict:
-    req = urllib.request.Request(
-        url, headers={"Authorization": f"Bearer {access_token}"}
-    )
+def _get(url: str, token: str) -> dict:
+    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
     try:
         with urllib.request.urlopen(req) as r:
             return json.loads(r.read())
     except urllib.error.HTTPError as e:
         body = e.read().decode()
-        print(f"   ⚠️  GET error {e.code}: {body[:200]}")
+        print(f"   ⚠️  GET {e.code}: {body[:200]}")
         return {}
 
 
 def _clean_app_name(raw: str) -> str:
-    """
-    Làm đẹp tên app từ displayName hoặc projectId của Firebase.
-    'quicksave-6c590'  → 'Quicksave'
-    'B087 - Gba'       → 'B087 - Gba'  (giữ nguyên nếu đã đẹp)
-    """
-    # Nếu tên đã có chữ hoa hoặc khoảng trắng → giữ nguyên
     if " " in raw or any(c.isupper() for c in raw):
         return raw.strip()
-    # Xóa hash suffix ở cuối: -[a-z0-9]{4,6}
     name = re.sub(r"-[a-z0-9]{4,6}$", "", raw)
     return " ".join(w.capitalize() for w in name.replace("-", " ").split())
 
 
-# ───────────────────── Firebase project list ─────────────────
+# ──────────────── Service Account Auto-Key Fallback ──────────────
+
+def _jwt_exchange(key_json: dict, scope: str) -> str:
+    """
+    Dùng service account JSON để ký JWT và đổi lấy OAuth2 access token.
+    Requires: pip install cryptography
+    """
+    from cryptography.hazmat.primitives import hashes, serialization
+    from cryptography.hazmat.primitives.asymmetric import padding
+
+    now = int(time.time())
+    header  = {"alg": "RS256", "typ": "JWT"}
+    payload = {
+        "iss": key_json["client_email"],
+        "scope": scope,
+        "aud": TOKEN_URL,
+        "iat": now,
+        "exp": now + 3600,
+    }
+
+    def _b64url(data: bytes) -> str:
+        return base64.urlsafe_b64encode(data).rstrip(b"=").decode()
+
+    h = _b64url(json.dumps(header, separators=(",", ":")).encode())
+    p = _b64url(json.dumps(payload, separators=(",", ":")).encode())
+    msg = f"{h}.{p}".encode()
+
+    private_key = serialization.load_pem_private_key(
+        key_json["private_key"].encode(), password=None
+    )
+    sig = private_key.sign(msg, padding.PKCS1v15(), hashes.SHA256())
+    jwt_token = f"{h}.{p}.{_b64url(sig)}"
+
+    data = urllib.parse.urlencode({
+        "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+        "assertion": jwt_token,
+    }).encode()
+    req = urllib.request.Request(TOKEN_URL, data=data, method="POST")
+    with urllib.request.urlopen(req) as r:
+        return json.loads(r.read())["access_token"]
+
+
+def _get_sa_token(user_token: str, project_id: str) -> str | None:
+    """
+    Tự động:
+      1. list service accounts → tìm firebase-adminsdk
+      2. POST /keys → tạo temp private key
+      3. ký JWT → lấy GA4 access token
+      4. DELETE key (cleanup)
+    """
+    try:
+        # 1. Tìm firebase-adminsdk SA
+        data = _get(f"{IAM_API}/projects/{project_id}/serviceAccounts", user_token)
+        accounts = data.get("accounts", [])
+        firebase_sa = next(
+            (sa["email"] for sa in accounts if "firebase-adminsdk" in sa.get("email", "")),
+            None,
+        )
+        if not firebase_sa:
+            print(f"   ⚠️  Không tìm thấy firebase-adminsdk SA cho {project_id}")
+            return None
+
+        # 2. Tạo temp key
+        keys_url = f"{IAM_API}/projects/{project_id}/serviceAccounts/{firebase_sa}/keys"
+        body = json.dumps({"privateKeyType": "TYPE_GOOGLE_CREDENTIALS_FILE"}).encode()
+        req = urllib.request.Request(
+            keys_url,
+            data=body,
+            headers={
+                "Authorization": f"Bearer {user_token}",
+                "Content-Type": "application/json",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req) as r:
+            key_resp = json.loads(r.read())
+
+        key_name = key_resp.get("name", "")
+        key_json  = json.loads(base64.b64decode(key_resp["privateKeyData"]).decode())
+
+        # 3. Ký JWT → lấy token
+        sa_token = _jwt_exchange(key_json, GA4_SCOPE)
+
+        # 4. Xóa temp key (best-effort)
+        if key_name:
+            try:
+                del_req = urllib.request.Request(
+                    f"{IAM_API}/{key_name}",
+                    headers={"Authorization": f"Bearer {user_token}"},
+                    method="DELETE",
+                )
+                urllib.request.urlopen(del_req)
+            except Exception:
+                pass
+
+        return sa_token
+
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()
+        print(f"   ⚠️  SA key creation failed [{e.code}]: {body[:200]}")
+        return None
+    except Exception as ex:
+        print(f"   ⚠️  SA fallback error: {ex}")
+        return None
+
+
+# ───────────────────── Firebase project list ─────────────────────
 
 def list_firebase_projects(access_token: str) -> list[dict]:
-    """
-    Dùng Firebase Management API để lấy TẤT CẢ Firebase projects.
-    Mỗi project trả về {display_name, project_id, ga4_property_id}.
-    Chỉ giữ lại project đã link GA4 (có analyticsDetails).
-    """
-    projects = []
+    """Dùng Firebase Management API lấy TẤT CẢ project đã link GA4."""
+    raw_projects = []
     page_token = None
     page_num = 0
 
-    # Bước 1: list tất cả project
-    raw_projects = []
     while True:
         page_num += 1
         url = f"{FIREBASE_API}/projects?pageSize=100"
         if page_token:
             url += f"&pageToken={page_token}"
         result = _get(url, access_token)
-        batch = result.get("results", [])
-        raw_projects.extend(batch)
+        raw_projects.extend(result.get("results", []))
         page_token = result.get("nextPageToken")
         if not page_token:
             break
 
     print(f"   📦 Tìm thấy {len(raw_projects)} Firebase project(s) (qua {page_num} page)")
 
-    # Bước 2: với mỗi project, lấy GA4 property ID
+    projects = []
     for p in raw_projects:
         pid = p.get("projectId", "")
-        display_raw = p.get("displayName") or pid
-        display_name = _clean_app_name(display_raw)
+        display_name = _clean_app_name(p.get("displayName") or pid)
 
         details = _get(f"{FIREBASE_API}/projects/{pid}/analyticsDetails", access_token)
-        prop = details.get("analyticsProperty", {})
-        ga4_id = prop.get("id", "")          # dạng "properties/522272427"
+        ga4_id = details.get("analyticsProperty", {}).get("id", "")
         ga4_numeric = ga4_id.replace("properties/", "")
 
         if not ga4_numeric:
@@ -98,18 +196,10 @@ def list_firebase_projects(access_token: str) -> list[dict]:
     return projects
 
 
-# ─────────────────────── GA4 revenue query ───────────────────
+# ──────────────────────── GA4 revenue query ──────────────────────
 
-def get_project_revenue(
-    access_token: str, property_id: str, report_date: date
-) -> tuple[float, float, int]:
-    """
-    Query GA4 Data API → totalAdRevenue cho 1 property / 1 ngày.
-    Trả về (revenue_usd, ecpm, impressions).
-    """
+def _run_ga4_report(token: str, property_id: str, date_str: str) -> tuple[float, float, int]:
     url = f"{GA4_DATA_API}/properties/{property_id}:runReport"
-    date_str = report_date.strftime("%Y-%m-%d")
-
     payload = json.dumps({
         "dateRanges": [{"startDate": date_str, "endDate": date_str}],
         "metrics": [
@@ -117,62 +207,86 @@ def get_project_revenue(
             {"name": "publisherAdImpressions"},
         ],
     }).encode()
-
     req = urllib.request.Request(
         url,
         data=payload,
         headers={
-            "Authorization": f"Bearer {access_token}",
+            "Authorization": f"Bearer {token}",
             "Content-Type": "application/json",
         },
         method="POST",
     )
-
-    try:
-        with urllib.request.urlopen(req) as r:
-            result = json.loads(r.read())
-    except urllib.error.HTTPError as e:
-        body = e.read().decode()
-        print(f"   ⚠️  Revenue query failed [{e.code}]: {body[:150]}")
-        return 0.0, 0.0, 0
+    with urllib.request.urlopen(req) as r:
+        result = json.loads(r.read())
 
     rows = result.get("rows", [])
     if not rows:
         return 0.0, 0.0, 0
 
+    vals = rows[0]["metricValues"]
+    revenue     = float(vals[0]["value"])
+    impressions = int(float(vals[1]["value"]))
+    ecpm = (revenue / impressions * 1000) if impressions > 0 else 0.0
+    return revenue, ecpm, impressions
+
+
+def get_project_revenue(
+    user_token: str,
+    project_id: str,
+    property_id: str,
+    report_date: date,
+) -> tuple[float, float, int]:
+    """
+    Lấy revenue cho 1 project/1 ngày.
+    Tự động fallback sang Service Account nếu user token bị 403.
+    """
+    date_str = report_date.strftime("%Y-%m-%d")
+
+    # Lần 1: user token
     try:
-        vals = rows[0]["metricValues"]
-        revenue     = float(vals[0]["value"])
-        impressions = int(float(vals[1]["value"]))
-        ecpm = (revenue / impressions * 1000) if impressions > 0 else 0.0
-        return revenue, ecpm, impressions
-    except (KeyError, IndexError, ValueError):
+        return _run_ga4_report(user_token, property_id, date_str)
+    except urllib.error.HTTPError as e:
+        if e.code != 403:
+            body = e.read().decode()
+            print(f"   ⚠️  GA4 lỗi [{e.code}]: {body[:150]}")
+            return 0.0, 0.0, 0
+        # 403 → thử SA fallback
+
+    print(f"   🔑 403 → SA auto-key fallback [{project_id}]...")
+    sa_token = _get_sa_token(user_token, project_id)
+    if not sa_token:
+        return 0.0, 0.0, 0
+
+    try:
+        return _run_ga4_report(sa_token, property_id, date_str)
+    except urllib.error.HTTPError as e:
+        body = e.read().decode()
+        print(f"   ❌ SA fallback cũng thất bại [{e.code}]: {body[:150]}")
         return 0.0, 0.0, 0
 
 
-# ───────────────────── main entry point ──────────────────────
+# ────────────────────────── entry point ──────────────────────────
 
 def get_all_projects_revenue(
     access_token: str, report_date: date
 ) -> list[dict]:
-    """
-    Lấy revenue của TẤT CẢ Firebase projects đã link GA4 cho 1 ngày.
-    """
+    """Lấy revenue TẤT CẢ Firebase projects đã link GA4 cho 1 ngày."""
     projects = list_firebase_projects(access_token)
-    results = []
+    results  = []
 
     for proj in projects:
-        name = proj["display_name"]
+        name   = proj["display_name"]
         ga4_id = proj["ga4_property_id"]
+        pid    = proj["project_id"]
 
         revenue, ecpm, impressions = get_project_revenue(
-            access_token, ga4_id, report_date
+            access_token, pid, ga4_id, report_date
         )
         print(f"   💰 {name}: ${revenue:.2f}  eCPM ${ecpm:.2f}  👁 {impressions:,}")
 
         results.append({
             "app_name": name,
-            "project_id": proj["project_id"],
+            "project_id": pid,
             "revenue": revenue,
             "impressions": impressions,
             "ecpm": ecpm,
