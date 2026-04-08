@@ -14,7 +14,12 @@ GA4_ADMIN_API = "https://analyticsadmin.googleapis.com/v1beta"
 GA4_DATA_API = "https://analyticsdata.googleapis.com/v1beta"
 
 
-def _get(url: str, access_token: str) -> dict:
+def _get(url: str, access_token: str, params: dict | None = None) -> dict:
+    if params:
+        import urllib.parse
+        query = urllib.parse.urlencode({k: v for k, v in params.items() if v})
+        if query:
+            url = f"{url}?{query}"
     req = urllib.request.Request(
         url, headers={"Authorization": f"Bearer {access_token}"}
     )
@@ -29,21 +34,36 @@ def _get(url: str, access_token: str) -> dict:
 
 def list_ga4_properties(access_token: str) -> list[dict]:
     """
-    Lấy tất cả GA4 properties của tài khoản Google.
+    Lấy TẤT CẢ GA4 properties của tài khoản Google, có xử lý pagination.
     Mỗi Firebase project có linked GA4 property.
     """
-    result = _get(f"{GA4_ADMIN_API}/accountSummaries", access_token)
-    summaries = result.get("accountSummaries", [])
-
     properties = []
-    for account in summaries:
-        for prop in account.get("propertySummaries", []):
-            prop_resource = prop.get("property", "")  # "properties/123456789"
-            prop_id = prop_resource.replace("properties/", "")
-            prop_name = prop.get("displayName", prop_id)
-            properties.append({"property_id": prop_id, "display_name": prop_name})
+    page_token = None
+    page_num = 0
 
-    print(f"   📦 Tìm thấy {len(properties)} GA4 property/Firebase project(s)")
+    while True:
+        page_num += 1
+        params = {"pageSize": 200, "pageToken": page_token}
+        result = _get(f"{GA4_ADMIN_API}/accountSummaries", access_token, params=params)
+
+        summaries = result.get("accountSummaries", [])
+        for account in summaries:
+            acct_name = account.get("displayName", "")
+            for prop in account.get("propertySummaries", []):
+                prop_resource = prop.get("property", "")  # "properties/123456789"
+                prop_id = prop_resource.replace("properties/", "")
+                prop_name = prop.get("displayName", prop_id)
+                properties.append({
+                    "property_id": prop_id,
+                    "display_name": prop_name,
+                    "account_name": acct_name,
+                })
+
+        page_token = result.get("nextPageToken")
+        if not page_token:
+            break  # Hết page
+
+    print(f"   📦 Tìm thấy {len(properties)} GA4 property/Firebase project(s) (qua {page_num} page)")
     return properties
 
 
