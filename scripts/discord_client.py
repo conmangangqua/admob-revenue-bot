@@ -123,7 +123,7 @@ def send_revenue_report(
     req = urllib.request.Request(
         webhook_url,
         data=data,
-        headers={"Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", "User-Agent": "DiscordBot (https://github.com/conmangangqua/admob-revenue-bot, 1.0)"},
         method="POST",
     )
 
@@ -162,7 +162,7 @@ def send_error_notification(webhook_url: str, error_message: str) -> None:
     req = urllib.request.Request(
         webhook_url,
         data=data,
-        headers={"Content-Type": "application/json"},
+        headers={"Content-Type": "application/json", "User-Agent": "DiscordBot (https://github.com/conmangangqua/admob-revenue-bot, 1.0)"},
         method="POST",
     )
     try:
