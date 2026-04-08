@@ -108,14 +108,12 @@ def send_revenue_report(
         "fields": fields,
         "footer": {
             "text": "🤖 AdMob Revenue Bot • Dữ liệu từ Google AdMob API",
-            "icon_url": "https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/firebase_28dp.png",
         },
         "timestamp": f"{report_date.isoformat()}T01:00:00Z",
     }
 
     payload = {
-        "username": "AdMob Revenue Bot 📊",
-        "avatar_url": "https://www.gstatic.com/mobilesdk/160503_mobilesdk/logo/2x/firebase_28dp.png",
+        "username": "AdMob Revenue Bot",
         "embeds": [embed],
     }
 
