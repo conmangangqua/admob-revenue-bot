@@ -1,25 +1,24 @@
 """
-firebase_client.py
-Fetch ad revenue từng Firebase project qua:
-  1. Analytics Admin API → list tất cả GA4 properties (bao gồm Firebase projects)
-  2. GA4 Analytics Data API → query totalAdRevenue per property
-Không cần Firebase Management API!
+firebase_client.py  (v3 - Firebase Management API)
+Fetch ad revenue tất cả Firebase project qua:
+  1. Firebase Management API  → list TẤT CẢ project (kể cả dự án chưa link GA4 qua Admin API)
+  2. Firebase Analytics Details API → lấy GA4 property ID của từng project
+  3. GA4 Analytics Data API → query totalAdRevenue per property / per ngày
 """
 import json
-import urllib.request
+import re
 import urllib.error
+import urllib.parse
+import urllib.request
 from datetime import date
 
-GA4_ADMIN_API = "https://analyticsadmin.googleapis.com/v1beta"
-GA4_DATA_API = "https://analyticsdata.googleapis.com/v1beta"
+FIREBASE_API  = "https://firebase.googleapis.com/v1beta1"
+GA4_DATA_API  = "https://analyticsdata.googleapis.com/v1beta"
 
 
-def _get(url: str, access_token: str, params: dict | None = None) -> dict:
-    if params:
-        import urllib.parse
-        query = urllib.parse.urlencode({k: v for k, v in params.items() if v})
-        if query:
-            url = f"{url}?{query}"
+# ────────────────────────── helpers ──────────────────────────
+
+def _get(url: str, access_token: str) -> dict:
     req = urllib.request.Request(
         url, headers={"Authorization": f"Bearer {access_token}"}
     )
@@ -32,62 +31,96 @@ def _get(url: str, access_token: str, params: dict | None = None) -> dict:
         return {}
 
 
-def list_ga4_properties(access_token: str) -> list[dict]:
+def _clean_app_name(raw: str) -> str:
     """
-    Lấy TẤT CẢ GA4 properties của tài khoản Google, có xử lý pagination.
-    Mỗi Firebase project có linked GA4 property.
+    Làm đẹp tên app từ displayName hoặc projectId của Firebase.
+    'quicksave-6c590'  → 'Quicksave'
+    'B087 - Gba'       → 'B087 - Gba'  (giữ nguyên nếu đã đẹp)
     """
-    properties = []
+    # Nếu tên đã có chữ hoa hoặc khoảng trắng → giữ nguyên
+    if " " in raw or any(c.isupper() for c in raw):
+        return raw.strip()
+    # Xóa hash suffix ở cuối: -[a-z0-9]{4,6}
+    name = re.sub(r"-[a-z0-9]{4,6}$", "", raw)
+    return " ".join(w.capitalize() for w in name.replace("-", " ").split())
+
+
+# ───────────────────── Firebase project list ─────────────────
+
+def list_firebase_projects(access_token: str) -> list[dict]:
+    """
+    Dùng Firebase Management API để lấy TẤT CẢ Firebase projects.
+    Mỗi project trả về {display_name, project_id, ga4_property_id}.
+    Chỉ giữ lại project đã link GA4 (có analyticsDetails).
+    """
+    projects = []
     page_token = None
     page_num = 0
 
+    # Bước 1: list tất cả project
+    raw_projects = []
     while True:
         page_num += 1
-        params = {"pageSize": 200, "pageToken": page_token}
-        result = _get(f"{GA4_ADMIN_API}/accountSummaries", access_token, params=params)
-
-        summaries = result.get("accountSummaries", [])
-        for account in summaries:
-            acct_name = account.get("displayName", "")
-            for prop in account.get("propertySummaries", []):
-                prop_resource = prop.get("property", "")  # "properties/123456789"
-                prop_id = prop_resource.replace("properties/", "")
-                prop_name = prop.get("displayName", prop_id)
-                properties.append({
-                    "property_id": prop_id,
-                    "display_name": prop_name,
-                    "account_name": acct_name,
-                })
-
+        url = f"{FIREBASE_API}/projects?pageSize=100"
+        if page_token:
+            url += f"&pageToken={page_token}"
+        result = _get(url, access_token)
+        batch = result.get("results", [])
+        raw_projects.extend(batch)
         page_token = result.get("nextPageToken")
         if not page_token:
-            break  # Hết page
+            break
 
-    print(f"   📦 Tìm thấy {len(properties)} GA4 property/Firebase project(s) (qua {page_num} page)")
-    return properties
+    print(f"   📦 Tìm thấy {len(raw_projects)} Firebase project(s) (qua {page_num} page)")
 
+    # Bước 2: với mỗi project, lấy GA4 property ID
+    for p in raw_projects:
+        pid = p.get("projectId", "")
+        display_raw = p.get("displayName") or pid
+        display_name = _clean_app_name(display_raw)
+
+        details = _get(f"{FIREBASE_API}/projects/{pid}/analyticsDetails", access_token)
+        prop = details.get("analyticsProperty", {})
+        ga4_id = prop.get("id", "")          # dạng "properties/522272427"
+        ga4_numeric = ga4_id.replace("properties/", "")
+
+        if not ga4_numeric:
+            print(f"   ⏭  {display_name}: chưa link GA4 → bỏ qua")
+            continue
+
+        projects.append({
+            "display_name": display_name,
+            "project_id": pid,
+            "ga4_property_id": ga4_numeric,
+        })
+
+    print(f"   ✅ {len(projects)}/{len(raw_projects)} project đã link GA4")
+    return projects
+
+
+# ─────────────────────── GA4 revenue query ───────────────────
 
 def get_project_revenue(
     access_token: str, property_id: str, report_date: date
-) -> float:
+) -> tuple[float, float, int]:
     """
-    Query GA4 Data API lấy totalAdRevenue cho 1 property trong 1 ngày.
+    Query GA4 Data API → totalAdRevenue cho 1 property / 1 ngày.
+    Trả về (revenue_usd, ecpm, impressions).
     """
     url = f"{GA4_DATA_API}/properties/{property_id}:runReport"
     date_str = report_date.strftime("%Y-%m-%d")
 
-    payload = {
+    payload = json.dumps({
         "dateRanges": [{"startDate": date_str, "endDate": date_str}],
         "metrics": [
             {"name": "totalAdRevenue"},
             {"name": "publisherAdImpressions"},
         ],
-    }
+    }).encode()
 
-    data = json.dumps(payload).encode()
     req = urllib.request.Request(
         url,
-        data=data,
+        data=payload,
         headers={
             "Authorization": f"Bearer {access_token}",
             "Content-Type": "application/json",
@@ -117,44 +150,29 @@ def get_project_revenue(
         return 0.0, 0.0, 0
 
 
-import re
-
-
-def _clean_app_name(raw: str) -> str:
-    """
-    Làm đẹp tên app từ Firebase project ID.
-    "quicksave-6c590" → "Quicksave"
-    "video-downloader-1-c34aa" → "Video Downloader 1"
-    "lunaai-bb200" → "Lunaai"
-    """
-    # Xóa hash suffix ở cuối: -[a-z0-9]{4,6}
-    name = re.sub(r'-[a-z0-9]{4,6}$', '', raw)
-    # Capitalize từng từ
-    return ' '.join(w.capitalize() for w in name.replace('-', ' ').split())
-
+# ───────────────────── main entry point ──────────────────────
 
 def get_all_projects_revenue(
     access_token: str, report_date: date
 ) -> list[dict]:
     """
-    Lấy revenue của tất cả GA4 properties (Firebase projects) cho 1 ngày.
+    Lấy revenue của TẤT CẢ Firebase projects đã link GA4 cho 1 ngày.
     """
-    properties = list_ga4_properties(access_token)
+    projects = list_firebase_projects(access_token)
     results = []
 
-    for prop in properties:
-        prop_id = prop["property_id"]
-        raw_name = prop["display_name"]
-        display_name = _clean_app_name(raw_name)
+    for proj in projects:
+        name = proj["display_name"]
+        ga4_id = proj["ga4_property_id"]
 
         revenue, ecpm, impressions = get_project_revenue(
-            access_token, prop_id, report_date
+            access_token, ga4_id, report_date
         )
-        print(f"   💰 {display_name}: ${revenue:.2f}  eCPM ${ecpm:.2f}  👁 {impressions:,}")
+        print(f"   💰 {name}: ${revenue:.2f}  eCPM ${ecpm:.2f}  👁 {impressions:,}")
 
         results.append({
-            "app_name": display_name,
-            "project_id": prop_id,
+            "app_name": name,
+            "project_id": proj["project_id"],
             "revenue": revenue,
             "impressions": impressions,
             "ecpm": ecpm,

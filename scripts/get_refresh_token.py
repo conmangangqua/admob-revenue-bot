@@ -16,8 +16,10 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 REDIRECT_URI = "http://localhost:8080"
 SCOPE = " ".join([
-    "https://www.googleapis.com/auth/firebase.readonly",
-    "https://www.googleapis.com/auth/analytics.readonly",
+    "https://www.googleapis.com/auth/admob.readonly",       # AdMob API
+    "https://www.googleapis.com/auth/firebase.readonly",    # Firebase readonly
+    "https://www.googleapis.com/auth/analytics.readonly",   # GA4 Analytics
+    "https://www.googleapis.com/auth/cloud-platform",       # Firebase Management API – để list tất cả projects
 ])
 
 

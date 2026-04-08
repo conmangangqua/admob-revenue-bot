@@ -1,16 +1,19 @@
 """
-main.py — Entry point của AdMob Revenue Bot
-Chạy hàng ngày lúc 8:00 AM giờ Việt Nam qua GitHub Actions.
-Dùng AdMob API trực tiếp → thấy 100% app, không phụ thuộc GA4.
+main.py — Entry point của AdMob Revenue Bot (v3 - Firebase Management API)
+Chạy hàng ngày qua GitHub Actions.
+Dùng Firebase Management API → list 100% projects → GA4 Data API lấy revenue.
 """
 import os
 import sys
 import traceback
+import urllib.parse
+import urllib.request
+import json
 from datetime import date, timedelta
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from admob_client import get_access_token, list_accounts, get_network_report
+from firebase_client import get_all_projects_revenue
 from discord_client import send_revenue_report, send_error_notification
 
 
@@ -21,36 +24,28 @@ def load_env(key: str) -> str:
     return val
 
 
-def fetch_all_apps_revenue(access_token: str, report_date: date) -> list[dict]:
-    """
-    Lấy revenue tất cả app từ AdMob API trực tiếp.
-    Không qua GA4 → không bỏ sót app nào.
-    """
-    accounts = list_accounts(access_token)
-    all_apps = []
-
-    for account in accounts:
-        publisher_id = account.get("publisherId", "")
-        if not publisher_id:
-            continue
-        print(f"   🏦 Account: {publisher_id}")
-        apps = get_network_report(access_token, publisher_id, report_date)
-        all_apps.extend(apps)
-
-    # Lọc app có revenue > 0 để log, nhưng vẫn giữ tất cả
-    revenue_count = sum(1 for a in all_apps if a["revenue"] > 0)
-    print(f"\n   ✅ {revenue_count}/{len(all_apps)} apps có revenue")
-    return all_apps
+def get_access_token(client_id: str, client_secret: str, refresh_token: str) -> str:
+    data = urllib.parse.urlencode({
+        "client_id": client_id,
+        "client_secret": client_secret,
+        "refresh_token": refresh_token,
+        "grant_type": "refresh_token",
+    }).encode()
+    req = urllib.request.Request(
+        "https://oauth2.googleapis.com/token", data=data, method="POST"
+    )
+    with urllib.request.urlopen(req) as r:
+        return json.loads(r.read())["access_token"]
 
 
 def main():
     print("=" * 55)
-    print("  📊 AdMob Revenue Bot — Bắt đầu chạy")
+    print("  📊 Firebase Revenue Bot — Bắt đầu chạy")
     print("=" * 55)
 
-    client_id     = load_env("ADMOB_CLIENT_ID")
-    client_secret = load_env("ADMOB_CLIENT_SECRET")
-    refresh_token = load_env("ADMOB_REFRESH_TOKEN")
+    client_id       = load_env("ADMOB_CLIENT_ID")
+    client_secret   = load_env("ADMOB_CLIENT_SECRET")
+    refresh_token   = load_env("ADMOB_REFRESH_TOKEN")
     discord_webhook = load_env("DISCORD_WEBHOOK_URL")
 
     yesterday  = date.today() - timedelta(days=1)
@@ -62,20 +57,21 @@ def main():
     access_token = get_access_token(client_id, client_secret, refresh_token)
     print("   ✅ Token OK")
 
-    # Fetch revenue hôm qua từ AdMob API
-    print("\n📱 Đang lấy revenue từ AdMob (tất cả app)...")
-    apps_today = fetch_all_apps_revenue(access_token, yesterday)
+    # Lấy revenue của TẤT CẢ Firebase projects
+    print("\n📱 Đang lấy revenue hôm qua (tất cả Firebase projects)...")
+    apps_today = get_all_projects_revenue(access_token, yesterday)
 
-    # Fetch revenue hôm kia để so sánh
     print("\n📊 Đang lấy revenue hôm kia (để so sánh)...")
-    apps_prev  = fetch_all_apps_revenue(access_token, day_before)
+    apps_prev  = get_all_projects_revenue(access_token, day_before)
     prev_total = sum(a["revenue"] for a in apps_prev)
 
     total_today = sum(a["revenue"] for a in apps_today)
+    app_count   = len([a for a in apps_today if a["revenue"] > 0])
+
     print(f"\n{'=' * 55}")
     print(f"  💰 Tổng revenue hôm qua : ${total_today:.2f}")
     print(f"  📊 Tổng revenue hôm kia  : ${prev_total:.2f}")
-    print(f"  📱 Số app (AdMob)        : {len(apps_today)}")
+    print(f"  📱 Số app có revenue     : {app_count}")
     print(f"{'=' * 55}\n")
 
     print("📨 Đang gửi báo cáo lên Discord...")
