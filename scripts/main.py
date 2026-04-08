@@ -65,6 +65,10 @@ def main():
     apps_prev  = get_all_projects_revenue(access_token, day_before)
     prev_total = sum(a["revenue"] for a in apps_prev)
 
+    apps_prev_dict = {a["app_name"]: a["revenue"] for a in apps_prev}
+    for app in apps_today:
+        app["prev_revenue"] = apps_prev_dict.get(app["app_name"], 0.0)
+
     total_today = sum(a["revenue"] for a in apps_today)
     app_count   = len([a for a in apps_today if a["revenue"] > 0])
 

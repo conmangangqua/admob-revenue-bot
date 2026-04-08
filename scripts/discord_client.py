@@ -81,12 +81,22 @@ def send_revenue_report(
         lines = []
         for i, app in enumerate(apps_with_revenue[:20]):
             rank = medals[i] if i < 3 else f"`#{i+1}`"
-            bar = _mini_bar(app["revenue"], total_revenue)
+            
+            prev_rev = app.get("prev_revenue", 0.0)
+            if prev_rev > 0:
+                change_pct = ((app["revenue"] - prev_rev) / prev_rev) * 100
+                if change_pct >= 0:
+                    change_str = f"💚 `+{change_pct:.1f}%`"
+                else:
+                    change_str = f"🔻 `{change_pct:.1f}%`"
+            else:
+                change_str = "🆕"
+                
             ecpm_str = f"${app['ecpm']:.2f}" if app["ecpm"] > 0 else "$0.00"
             imp_str = f"{app['impressions']:,}" if app["impressions"] else "0"
             lines.append(
                 f"{rank} **{app['app_name'][:25]}**\n"
-                f"   💵 `{_format_revenue(app['revenue'])}` {bar} · eCPM `{ecpm_str}` · 👁 `{imp_str}`"
+                f"   💵 `{_format_revenue(app['revenue'])}` {change_str} · eCPM `{ecpm_str}` · 👁 `{imp_str}`"
             )
 
         fields.append({
