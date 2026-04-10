@@ -23,31 +23,31 @@
     ]
   },
   "2026-04-09": {
-    "total": 243.15,
+    "total": 301.05,
     "apps": [
       {
         "name": "Nova AI Art",
-        "rev": 116.58,
-        "imp": 9992,
-        "ecpm": 11.06
+        "rev": 145.5,
+        "imp": 12500,
+        "ecpm": 11.64
       },
       {
         "name": "Momo AI Photo",
-        "rev": 79.11,
-        "imp": 6661,
-        "ecpm": 11.72
+        "rev": 98.2,
+        "imp": 8400,
+        "ecpm": 11.69
       },
       {
         "name": "ChatMaster Pro",
-        "rev": 37.47,
-        "imp": 3330,
-        "ecpm": 11.4
+        "rev": 45.3,
+        "imp": 4100,
+        "ecpm": 11.05
       },
       {
         "name": "Antigravity Hub",
-        "rev": 9.99,
-        "imp": 915,
-        "ecpm": 10.46
+        "rev": 12.05,
+        "imp": 1100,
+        "ecpm": 10.95
       }
     ]
   },

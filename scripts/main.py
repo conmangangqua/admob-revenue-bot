@@ -17,10 +17,26 @@ from firebase_client import get_all_projects_revenue
 from discord_client import send_revenue_report, send_error_notification
 
 
+def _load_secrets_env():
+    """Tự động nạp biến môi trường từ secrets.env theo chuẩn Antigravity."""
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    env_path = os.path.join(base_dir, "secrets.env")
+    if os.path.exists(env_path):
+        with open(env_path, "r") as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith("#") and "=" in line:
+                    key, val = line.split("=", 1)
+                    os.environ[key.strip()] = val.strip()
+
+_load_secrets_env()
+
 def load_env(key: str, required: bool = True) -> str:
     val = os.environ.get(key, "").strip()
     if not val and required:
-        print(f"   ⚠️ Thiếu biến môi trường: {key} (Sẽ dùng dữ liệu mẫu cho Web Dashboard)")
+        # Giảm mức độ cảnh báo nếu là chạy local không có secret
+        if os.environ.get("GITHUB_ACTIONS") == "true":
+            print(f"   ⚠️ Thiếu biến môi trường: {key}")
         return ""
     return val
 
