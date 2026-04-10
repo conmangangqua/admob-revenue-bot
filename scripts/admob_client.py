@@ -7,7 +7,7 @@ import json
 import urllib.parse
 import urllib.request
 from datetime import date
-from typing import Optional
+from typing import Optional, List
 
 
 TOKEN_URL = "https://oauth2.googleapis.com/token"
@@ -40,7 +40,7 @@ def get_access_token(client_id: str, client_secret: str, refresh_token: str) -> 
     return token
 
 
-def list_accounts(access_token: str) -> list[dict]:
+def list_accounts(access_token: str) -> List[dict]:
     """Liệt kê tất cả AdMob publisher accounts của tài khoản Google."""
     req = urllib.request.Request(
         f"{ADMOB_BASE}/accounts",
@@ -58,7 +58,7 @@ def get_network_report(
     access_token: str,
     publisher_id: str,
     report_date: date,
-) -> list[dict]:
+) -> List[dict]:
     """
     Lấy network report cho 1 publisher account theo ngày.
     Trả về list dict: {app_name, app_id, revenue, impressions, ecpm}

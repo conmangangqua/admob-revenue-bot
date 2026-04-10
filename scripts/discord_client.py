@@ -7,7 +7,7 @@ import json
 import urllib.request
 import urllib.error
 from datetime import date
-from typing import Optional
+from typing import Optional, List
 
 
 def _format_revenue(amount: float) -> str:
@@ -23,7 +23,7 @@ def _day_name_vn(d: date) -> str:
 
 def send_revenue_report(
     webhook_url: str,
-    apps_data: list[dict],
+    apps_data: List[dict],
     report_date: date,
     prev_total: Optional[float] = None,
 ) -> bool:

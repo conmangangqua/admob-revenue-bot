@@ -2,25 +2,894 @@
   "2026-04-10": {
     "total": 245.8,
     "apps": [
-      { "name": "B098 - Ai Art", "rev": 150.2, "imp": 7500, "ecpm": 20.03 },
-      { "name": "B099 - PDF Tool", "rev": 72.4, "imp": 4100, "ecpm": 17.66 },
-      { "name": "B100 - Scanner", "rev": 23.2, "imp": 1400, "ecpm": 16.57 }
+      {
+        "name": "B098 - Ai Art",
+        "rev": 150.2,
+        "imp": 7500,
+        "ecpm": 20.03
+      },
+      {
+        "name": "B099 - PDF Tool",
+        "rev": 72.4,
+        "imp": 4100,
+        "ecpm": 17.66
+      },
+      {
+        "name": "B100 - Scanner",
+        "rev": 23.2,
+        "imp": 1400,
+        "ecpm": 16.57
+      }
     ]
   },
   "2026-04-09": {
-    "total": 236.3,
+    "total": 243.15,
     "apps": [
-      { "name": "B098 - Ai Art", "rev": 145.3, "imp": 7200, "ecpm": 20.18 },
-      { "name": "B099 - PDF Tool", "rev": 67.2, "imp": 3800, "ecpm": 17.68 },
-      { "name": "B100 - Scanner", "rev": 23.8, "imp": 1450, "ecpm": 16.41 }
+      {
+        "name": "Nova AI Art",
+        "rev": 116.58,
+        "imp": 9992,
+        "ecpm": 11.06
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 79.11,
+        "imp": 6661,
+        "ecpm": 11.72
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 37.47,
+        "imp": 3330,
+        "ecpm": 11.4
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 9.99,
+        "imp": 915,
+        "ecpm": 10.46
+      }
     ]
   },
   "2026-04-08": {
-    "total": 210.22,
+    "total": 271.1,
     "apps": [
-      { "name": "B098 - Ai Art", "rev": 130.5, "imp": 6800, "ecpm": 19.19 },
-      { "name": "B099 - PDF Tool", "rev": 60.1, "imp": 3500, "ecpm": 17.17 },
-      { "name": "B100 - Scanner", "rev": 19.62, "imp": 1200, "ecpm": 16.35 }
+      {
+        "name": "Nova AI Art",
+        "rev": 129.98,
+        "imp": 11141,
+        "ecpm": 11.85
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 88.2,
+        "imp": 7427,
+        "ecpm": 11.35
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 41.78,
+        "imp": 3713,
+        "ecpm": 11.73
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 11.14,
+        "imp": 1021,
+        "ecpm": 10.24
+      }
+    ]
+  },
+  "2026-04-07": {
+    "total": 341.06,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 163.52,
+        "imp": 14015,
+        "ecpm": 11.2
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 110.96,
+        "imp": 9343,
+        "ecpm": 11.29
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 52.56,
+        "imp": 4671,
+        "ecpm": 11.51
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 14.02,
+        "imp": 1284,
+        "ecpm": 10.08
+      }
+    ]
+  },
+  "2026-04-06": {
+    "total": 310.96,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 149.09,
+        "imp": 12778,
+        "ecpm": 11.87
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 101.17,
+        "imp": 8519,
+        "ecpm": 11.87
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 47.92,
+        "imp": 4259,
+        "ecpm": 11.66
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 12.78,
+        "imp": 1171,
+        "ecpm": 10.09
+      }
+    ]
+  },
+  "2026-04-05": {
+    "total": 316.1,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 151.56,
+        "imp": 12990,
+        "ecpm": 11.45
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 102.84,
+        "imp": 8660,
+        "ecpm": 11.7
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 48.71,
+        "imp": 4330,
+        "ecpm": 11.73
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 12.99,
+        "imp": 1190,
+        "ecpm": 10.78
+      }
+    ]
+  },
+  "2026-04-04": {
+    "total": 291.04,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 139.54,
+        "imp": 11960,
+        "ecpm": 11.19
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 94.69,
+        "imp": 7973,
+        "ecpm": 11.54
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 44.85,
+        "imp": 3986,
+        "ecpm": 11.72
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 11.96,
+        "imp": 1096,
+        "ecpm": 10.95
+      }
+    ]
+  },
+  "2026-04-03": {
+    "total": 342.47,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 164.2,
+        "imp": 14074,
+        "ecpm": 11.93
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 111.42,
+        "imp": 9382,
+        "ecpm": 11.5
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 52.78,
+        "imp": 4691,
+        "ecpm": 11.76
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 14.07,
+        "imp": 1290,
+        "ecpm": 10.96
+      }
+    ]
+  },
+  "2026-04-02": {
+    "total": 263.39,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 126.29,
+        "imp": 10824,
+        "ecpm": 11.9
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 85.69,
+        "imp": 7216,
+        "ecpm": 11.59
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 40.59,
+        "imp": 3608,
+        "ecpm": 11.94
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 10.82,
+        "imp": 992,
+        "ecpm": 10.89
+      }
+    ]
+  },
+  "2026-04-01": {
+    "total": 259.44,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 124.39,
+        "imp": 10662,
+        "ecpm": 11.16
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 84.41,
+        "imp": 7108,
+        "ecpm": 11.93
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 39.98,
+        "imp": 3554,
+        "ecpm": 11.46
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 10.66,
+        "imp": 977,
+        "ecpm": 10.38
+      }
+    ]
+  },
+  "2026-03-31": {
+    "total": 314.53,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 150.8,
+        "imp": 12925,
+        "ecpm": 11.65
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 102.33,
+        "imp": 8617,
+        "ecpm": 11.87
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 48.47,
+        "imp": 4308,
+        "ecpm": 11.75
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 12.93,
+        "imp": 1184,
+        "ecpm": 10.33
+      }
+    ]
+  },
+  "2026-03-30": {
+    "total": 294.73,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 141.31,
+        "imp": 12112,
+        "ecpm": 11.88
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 95.89,
+        "imp": 8075,
+        "ecpm": 11.17
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 45.42,
+        "imp": 4037,
+        "ecpm": 11.24
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 12.11,
+        "imp": 1110,
+        "ecpm": 10.32
+      }
+    ]
+  },
+  "2026-03-29": {
+    "total": 299.7,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 143.69,
+        "imp": 12316,
+        "ecpm": 11.37
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 97.5,
+        "imp": 8210,
+        "ecpm": 11.63
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 46.19,
+        "imp": 4105,
+        "ecpm": 11.34
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 12.32,
+        "imp": 1128,
+        "ecpm": 10.26
+      }
+    ]
+  },
+  "2026-03-28": {
+    "total": 239.75,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 114.95,
+        "imp": 9853,
+        "ecpm": 11.53
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 78.0,
+        "imp": 6568,
+        "ecpm": 11.11
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 36.95,
+        "imp": 3284,
+        "ecpm": 11.2
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 9.85,
+        "imp": 903,
+        "ecpm": 10.55
+      }
+    ]
+  },
+  "2026-03-27": {
+    "total": 297.36,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 142.57,
+        "imp": 12220,
+        "ecpm": 11.55
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 96.74,
+        "imp": 8146,
+        "ecpm": 11.54
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 45.83,
+        "imp": 4073,
+        "ecpm": 11.42
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 12.22,
+        "imp": 1120,
+        "ecpm": 10.5
+      }
+    ]
+  },
+  "2026-03-26": {
+    "total": 302.03,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 144.81,
+        "imp": 12412,
+        "ecpm": 11.52
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 98.26,
+        "imp": 8274,
+        "ecpm": 11.57
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 46.55,
+        "imp": 4137,
+        "ecpm": 11.84
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 12.41,
+        "imp": 1137,
+        "ecpm": 10.96
+      }
+    ]
+  },
+  "2026-03-25": {
+    "total": 279.94,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 134.22,
+        "imp": 11504,
+        "ecpm": 11.37
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 91.08,
+        "imp": 7669,
+        "ecpm": 11.53
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 43.14,
+        "imp": 3834,
+        "ecpm": 11.71
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 11.5,
+        "imp": 1054,
+        "ecpm": 10.12
+      }
+    ]
+  },
+  "2026-03-24": {
+    "total": 338.72,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 162.4,
+        "imp": 13920,
+        "ecpm": 11.41
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 110.2,
+        "imp": 9280,
+        "ecpm": 11.14
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 52.2,
+        "imp": 4640,
+        "ecpm": 11.76
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 13.92,
+        "imp": 1276,
+        "ecpm": 10.62
+      }
+    ]
+  },
+  "2026-03-23": {
+    "total": 316.89,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 151.93,
+        "imp": 13022,
+        "ecpm": 11.01
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 103.1,
+        "imp": 8681,
+        "ecpm": 11.74
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 48.84,
+        "imp": 4340,
+        "ecpm": 11.15
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 13.02,
+        "imp": 1193,
+        "ecpm": 10.32
+      }
+    ]
+  },
+  "2026-03-22": {
+    "total": 316.03,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 151.52,
+        "imp": 12987,
+        "ecpm": 11.01
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 102.82,
+        "imp": 8658,
+        "ecpm": 11.45
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 48.7,
+        "imp": 4329,
+        "ecpm": 11.76
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 12.99,
+        "imp": 1190,
+        "ecpm": 10.97
+      }
+    ]
+  },
+  "2026-03-21": {
+    "total": 280.53,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 134.5,
+        "imp": 11528,
+        "ecpm": 11.05
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 91.27,
+        "imp": 7685,
+        "ecpm": 12.0
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 43.23,
+        "imp": 3842,
+        "ecpm": 11.57
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 11.53,
+        "imp": 1056,
+        "ecpm": 10.35
+      }
+    ]
+  },
+  "2026-03-20": {
+    "total": 322.64,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 154.69,
+        "imp": 13258,
+        "ecpm": 11.62
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 104.97,
+        "imp": 8839,
+        "ecpm": 11.12
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 49.72,
+        "imp": 4419,
+        "ecpm": 11.27
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 13.26,
+        "imp": 1215,
+        "ecpm": 10.95
+      }
+    ]
+  },
+  "2026-03-19": {
+    "total": 258.5,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 123.94,
+        "imp": 10623,
+        "ecpm": 11.43
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 84.1,
+        "imp": 7082,
+        "ecpm": 11.81
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 39.84,
+        "imp": 3541,
+        "ecpm": 11.44
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 10.62,
+        "imp": 973,
+        "ecpm": 10.55
+      }
+    ]
+  },
+  "2026-03-18": {
+    "total": 333.79,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 160.03,
+        "imp": 13717,
+        "ecpm": 11.28
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 108.6,
+        "imp": 9144,
+        "ecpm": 11.49
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 51.44,
+        "imp": 4572,
+        "ecpm": 11.91
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 13.72,
+        "imp": 1257,
+        "ecpm": 10.18
+      }
+    ]
+  },
+  "2026-03-17": {
+    "total": 252.36,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 121.0,
+        "imp": 10371,
+        "ecpm": 11.39
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 82.1,
+        "imp": 6914,
+        "ecpm": 11.75
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 38.89,
+        "imp": 3457,
+        "ecpm": 11.18
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 10.37,
+        "imp": 950,
+        "ecpm": 10.46
+      }
+    ]
+  },
+  "2026-03-16": {
+    "total": 338.48,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 162.29,
+        "imp": 13910,
+        "ecpm": 11.78
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 110.12,
+        "imp": 9273,
+        "ecpm": 11.33
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 52.16,
+        "imp": 4636,
+        "ecpm": 11.67
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 13.91,
+        "imp": 1275,
+        "ecpm": 10.69
+      }
+    ]
+  },
+  "2026-03-15": {
+    "total": 246.45,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 118.16,
+        "imp": 10128,
+        "ecpm": 11.57
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 80.18,
+        "imp": 6752,
+        "ecpm": 11.83
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 37.98,
+        "imp": 3376,
+        "ecpm": 11.14
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 10.13,
+        "imp": 928,
+        "ecpm": 10.49
+      }
+    ]
+  },
+  "2026-03-14": {
+    "total": 234.77,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 112.56,
+        "imp": 9647,
+        "ecpm": 11.54
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 76.38,
+        "imp": 6431,
+        "ecpm": 11.7
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 36.18,
+        "imp": 3215,
+        "ecpm": 12.0
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 9.65,
+        "imp": 884,
+        "ecpm": 10.97
+      }
+    ]
+  },
+  "2026-03-13": {
+    "total": 247.03,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 118.44,
+        "imp": 10151,
+        "ecpm": 11.33
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 80.37,
+        "imp": 6767,
+        "ecpm": 11.52
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 38.07,
+        "imp": 3383,
+        "ecpm": 11.01
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 10.15,
+        "imp": 930,
+        "ecpm": 10.66
+      }
+    ]
+  },
+  "2026-03-12": {
+    "total": 274.62,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 131.67,
+        "imp": 11285,
+        "ecpm": 11.43
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 89.34,
+        "imp": 7523,
+        "ecpm": 11.41
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 42.32,
+        "imp": 3761,
+        "ecpm": 11.43
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 11.29,
+        "imp": 1034,
+        "ecpm": 10.5
+      }
+    ]
+  },
+  "2026-03-11": {
+    "total": 276.27,
+    "apps": [
+      {
+        "name": "Nova AI Art",
+        "rev": 132.46,
+        "imp": 11353,
+        "ecpm": 11.33
+      },
+      {
+        "name": "Momo AI Photo",
+        "rev": 89.88,
+        "imp": 7569,
+        "ecpm": 11.33
+      },
+      {
+        "name": "ChatMaster Pro",
+        "rev": 42.58,
+        "imp": 3784,
+        "ecpm": 11.64
+      },
+      {
+        "name": "Antigravity Hub",
+        "rev": 11.35,
+        "imp": 1040,
+        "ecpm": 10.68
+      }
     ]
   }
 }

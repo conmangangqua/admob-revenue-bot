@@ -16,8 +16,8 @@ import re
 import time
 import urllib.error
 import urllib.parse
-import urllib.request
 from datetime import date
+from typing import Optional, List, Tuple
 
 FIREBASE_API = "https://firebase.googleapis.com/v1beta1"
 GA4_DATA_API = "https://analyticsdata.googleapis.com/v1beta"
@@ -90,7 +90,7 @@ def _jwt_exchange(key_json: dict, scope: str) -> str:
         return json.loads(r.read())["access_token"]
 
 
-def _get_sa_token(user_token: str, project_id: str) -> str | None:
+def _get_sa_token(user_token: str, project_id: str) -> Optional[str]:
     """
     Tự động:
       1. list service accounts → tìm firebase-adminsdk
@@ -156,7 +156,7 @@ def _get_sa_token(user_token: str, project_id: str) -> str | None:
 
 # ───────────────────── Firebase project list ─────────────────────
 
-def list_firebase_projects(access_token: str) -> list[dict]:
+def list_firebase_projects(access_token: str) -> List[dict]:
     """Dùng Firebase Management API lấy TẤT CẢ project đã link GA4."""
     raw_projects = []
     page_token = None
@@ -200,7 +200,7 @@ def list_firebase_projects(access_token: str) -> list[dict]:
 
 # ──────────────────────── GA4 revenue query ──────────────────────
 
-def _run_ga4_report(token: str, property_id: str, date_str: str) -> tuple[float, float, int]:
+def _run_ga4_report(token: str, property_id: str, date_str: str) -> Tuple[float, float, int]:
     url = f"{GA4_DATA_API}/properties/{property_id}:runReport"
     payload = json.dumps({
         "dateRanges": [{"startDate": date_str, "endDate": date_str}],
@@ -237,7 +237,7 @@ def get_project_revenue(
     project_id: str,
     property_id: str,
     report_date: date,
-) -> tuple[float, float, int, bool]:
+) -> Tuple[float, float, int, bool]:
     """
     Lấy revenue cho 1 project/1 ngày.
     Returns: (revenue, ecpm, impressions, has_permission)
@@ -273,7 +273,7 @@ def get_project_revenue(
 
 def get_all_projects_revenue(
     access_token: str, report_date: date
-) -> list[dict]:
+) -> List[dict]:
     """Lấy revenue TẤT CẢ Firebase projects đã link GA4 cho 1 ngày."""
     projects = list_firebase_projects(access_token)
     results  = []
