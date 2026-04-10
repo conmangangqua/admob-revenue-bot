@@ -408,15 +408,17 @@
 
     function formatVnd(usdValue) {
         const vnd = usdValue * currentVndRate;
-        if(vnd >= 1000000) {
-            return `~${(vnd / 1000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tr đ`;
+        if(vnd >= 1000000000) {
+            return `${(vnd / 1000000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tỷ đ`;
         }
-        return `~${Math.round(vnd).toLocaleString('vi-VN')} đ`;
+        if(vnd >= 1000000) {
+            return `${(vnd / 1000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tr đ`;
+        }
+        return `${Math.round(vnd).toLocaleString('vi-VN')} đ`;
     }
 
     function formatVndRaw(usdValue) {
-        const vnd = usdValue * currentVndRate;
-        return `~${Math.round(vnd).toLocaleString('vi-VN')} đ`;
+        return formatVnd(usdValue);
     }
 
     function getAppRev(dataObj, appFilter) {
