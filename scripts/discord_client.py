@@ -123,12 +123,19 @@ def send_revenue_report(
         })
 
 
+    fields.append({
+        "name": "🔗 Dashboard",
+        "value": "👉 [Xem biểu đồ chi tiết trên Web App](https://admob-revenue-bot.vercel.app/)",
+        "inline": False,
+    })
+
     embed = {
-        "title": f"💹 AdMob Revenue — {day_name}, {date_str}",
+        "title": f"💹 Firebase Revenue — {day_name}, {date_str}",
+        "url": "https://admob-revenue-bot.vercel.app/",
         "color": color,
         "fields": fields,
         "footer": {
-            "text": "🤖 AdMob Revenue Bot • Dữ liệu từ Google AdMob API",
+            "text": "🤖 Doanh thu GA4 • Click tiêu đề để xem Web Dashboard",
         },
         "timestamp": f"{report_date.isoformat()}T01:00:00Z",
     }
