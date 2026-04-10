@@ -143,9 +143,11 @@
         .stat-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
         .stat-icon { font-size: 1.25rem; }
         .stat-label { color: var(--color-text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-        .stat-value { font-size: 2.2rem; font-weight: 800; color: var(--color-text); line-height: 1.2; letter-spacing: -0.03em; display: flex; align-items: baseline; gap: 0.5rem; flex-wrap: wrap; }
-        .stat-value .vnd { color: var(--color-text-muted); font-size: 1.1rem; font-weight: 600; letter-spacing: 0; }
-        .stat-card.hero .stat-value .vnd { color: rgba(255,255,255,0.9); font-size: 1.25rem; }
+        .stat-value { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.5rem; }
+        .stat-value .usd { font-size: 2.2rem; font-weight: 800; color: var(--color-text); line-height: 1; letter-spacing: -0.04em; }
+        .stat-value .vnd { color: #94A3B8; font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; display: flex; align-items: center; gap: 0.3rem; }
+        .stat-card.hero .stat-value .usd { color: #FFFFFF; font-size: 2.5rem; }
+        .stat-card.hero .stat-value .vnd { color: rgba(255,255,255,0.85); font-size: 1.15rem; }
 
         .trend-wrap { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; }
         .trend-badge { font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 6px; }
@@ -485,7 +487,7 @@
         // 1. Hero Card & Fun Features
         if (appSel !== 'all') lblHero += ` (${appSel})`;
         document.getElementById('lblHeroRev').innerText = lblHero;
-        document.getElementById('valHeroRev').innerHTML = `<span>$${curTotal.toFixed(2)}</span><span class="vnd">(${formatVndRaw(curTotal)})</span>`;
+        document.getElementById('valHeroRev').innerHTML = `<div class="usd">$${curTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVndRaw(curTotal)}</div>`;
 
         // The Converter Box
         if (curTotal > 0) {
@@ -515,7 +517,7 @@
 
         // 2. Avg Daily
         let avg = curDates.length > 0 ? (curTotal / curDates.length) : 0;
-        document.getElementById('valAvgRev').innerHTML = `<span>$${avg.toFixed(2)}</span><span class="vnd">(${formatVnd(avg)})</span>`;
+        document.getElementById('valAvgRev').innerHTML = `<div class="usd">$${avg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVnd(avg)}</div>`;
         document.getElementById('descAvgRev').innerText = `/ ${curDates.length} ngày`;
 
         // 3. MTD
@@ -525,10 +527,10 @@
         const appArr = Object.entries(appAgg).sort((a,b) => b[1] - a[1]);
         if (appArr.length > 0 && appSel === 'all') {
             document.getElementById('valTopApp').innerText = appArr[0][0];
-            document.getElementById('valTopAppRev').innerHTML = `$${appArr[0][1].toFixed(2)} <span style="font-weight: 500;">(${formatVnd(appArr[0][1])})</span>`;
+            document.getElementById('valTopAppRev').innerHTML = `<div class="usd" style="font-size: 1.5rem;">$${appArr[0][1].toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVnd(appArr[0][1])}</div>`;
         } else if (appSel !== 'all') {
             document.getElementById('valTopApp').innerText = appSel;
-            document.getElementById('valTopAppRev').innerHTML = `$${curTotal.toFixed(2)} <span style="font-weight: 500;">(${formatVnd(curTotal)})</span>`;
+            document.getElementById('valTopAppRev').innerHTML = `<div class="usd" style="font-size: 1.5rem;">$${curTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVnd(curTotal)}</div>`;
         } else {
             document.getElementById('valTopApp').innerText = '--';
             document.getElementById('valTopAppRev').innerText = '--';
@@ -558,7 +560,7 @@
         }
         
         document.getElementById('lblMonth').innerText = `Tháng ${latestInfo[1]} (MTD)`;
-        document.getElementById('valMonthRev').innerHTML = `<span>$${monthIterRev.toFixed(0)}</span><span class="vnd">(${formatVnd(monthIterRev)})</span>`;
+        document.getElementById('valMonthRev').innerHTML = `<div class="usd">$${monthIterRev.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</div><div class="vnd">≈ ${formatVnd(monthIterRev)}</div>`;
         
         const daysElapsed = parseInt(latestInfo[2], 10);
         if (daysElapsed > 0) {
