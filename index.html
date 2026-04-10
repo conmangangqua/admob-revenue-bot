@@ -392,6 +392,16 @@
                 appSelect.appendChild(opt);
             });
 
+            // Tự động nhận diện Buổi Sáng thì mặc định Hôm Qua, Chiều/Tối mặc định Hôm Nay
+            const hr = new Date().getHours();
+            const timeFilterElem = document.getElementById('timeFilter');
+            // Check in case UI overrides this, but default DOM value is currently "7days"
+            if (hr < 12) {
+                timeFilterElem.value = 'yesterday';
+            } else {
+                timeFilterElem.value = 'today';
+            }
+
             applyFilter();
         } catch (e) {
             console.error('Failed to load data', e);
@@ -506,8 +516,15 @@
         });
 
         // 1. Hero Card & Fun Features
+        if (curDates.length > 0) {
+            let startD = formatVNDate(curDates[curDates.length - 1]);
+            let endD = formatVNDate(curDates[0]);
+            let rangeStr = startD === endD ? startD : `${startD} đến ${endD}`;
+            lblHero += ` <span style="font-size: 0.65em; font-weight: 500; background: rgba(0,0,0,0.15); padding: 3px 8px; border-radius: 6px; margin-left: auto;">${rangeStr}</span>`;
+        }
         if (appSel !== 'all') lblHero += ` (${appSel})`;
-        document.getElementById('lblHeroRev').innerText = lblHero;
+        
+        document.getElementById('lblHeroRev').innerHTML = lblHero;
         document.getElementById('valHeroRev').innerHTML = `<div class="usd">$${curTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVndRaw(curTotal)}</div>`;
 
         // The Converter Box
