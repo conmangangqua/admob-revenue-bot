@@ -252,11 +252,12 @@
     <div class="summary-grid">
         <!-- Add onclick to Hero Card for Easter Egg -->
         <div class="stat-card hero" id="heroCard" onclick="triggerEasterEgg()">
-            <div class="stat-header">
+            <div class="stat-header" style="margin-bottom: 0.25rem;">
                 <span class="stat-icon">💰</span>
                 <span class="stat-label" id="lblHeroRev">Tổng Doanh thu</span>
                 <span style="font-size: 0.6rem; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; margin-left: auto;">Tap here 💸</span>
             </div>
+            <div id="heroDateRange" style="font-size: 1.15rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 0.5rem; letter-spacing: 0.5px;">--</div>
             <div class="stat-value" id="valHeroRev">$0.00</div>
             <div class="trend-wrap">
                 <span class="trend-badge" id="trendHeroBadge">--</span>
@@ -520,11 +521,15 @@
             let startD = formatVNDate(curDates[curDates.length - 1]);
             let endD = formatVNDate(curDates[0]);
             let rangeStr = startD === endD ? startD : `${startD} đến ${endD}`;
-            lblHero += ` <span style="font-size: 0.65em; font-weight: 500; background: rgba(0,0,0,0.15); padding: 3px 8px; border-radius: 6px; margin-left: auto;">${rangeStr}</span>`;
+            document.getElementById('heroDateRange').innerText = rangeStr;
+            document.getElementById('heroDateRange').style.display = 'block';
+        } else {
+            document.getElementById('heroDateRange').style.display = 'none';
         }
+        
         if (appSel !== 'all') lblHero += ` (${appSel})`;
         
-        document.getElementById('lblHeroRev').innerHTML = lblHero;
+        document.getElementById('lblHeroRev').innerText = lblHero;
         document.getElementById('valHeroRev').innerHTML = `<div class="usd">$${curTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVndRaw(curTotal)}</div>`;
 
         // The Converter Box
