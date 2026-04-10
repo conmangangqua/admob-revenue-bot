@@ -6,6 +6,7 @@
     <title>📱 AdMob Revenue Intelligence</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
@@ -302,6 +303,8 @@
     let currentVndRate = 25400; // Tỷ giá dự phòng
     let clickCount = 0;
     
+    Chart.register(ChartDataLabels);
+    
     let lineChartObj = null;
     let pieChartObj = null;
 
@@ -411,10 +414,10 @@
     function formatVnd(usdValue) {
         const vnd = usdValue * currentVndRate;
         if(vnd >= 1000000000) {
-            return `${(vnd / 1000000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tỷ đ`;
+            return `${(vnd / 1000000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tỷ`;
         }
         if(vnd >= 1000000) {
-            return `${(vnd / 1000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tr đ`;
+            return `${(vnd / 1000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tr`;
         }
         return `${Math.round(vnd).toLocaleString('vi-VN')} đ`;
     }
@@ -601,6 +604,7 @@
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
+                layout: { padding: { top: 25, left: 10, right: 15 } },
                 onClick: (e, elements) => {
                     if (elements.length > 0) {
                         const dateStr = orderedDates[elements[0].index];
@@ -608,6 +612,13 @@
                     }
                 },
                 plugins: { 
+                    datalabels: {
+                        align: 'top',
+                        anchor: 'end',
+                        color: '#3B82F6',
+                        font: { family: "'Inter', sans-serif", weight: 700, size: 10.5 },
+                        formatter: function(value) { return '$' + Math.round(value); }
+                    },
                     legend: { display: false },
                     tooltip: { 
                         displayColors: false, backgroundColor: '#0F172A', titleFont: { family: "'Inter', sans-serif" }, bodyFont: { family: "'Inter', sans-serif", size: 14 }, padding: 12, cornerRadius: 8,
@@ -634,6 +645,7 @@
             options: {
                 responsive: true, maintainAspectRatio: false, cutout: '70%',
                 plugins: {
+                    datalabels: { display: false },
                     legend: { display: false },
                     tooltip: { backgroundColor: '#0F172A', callbacks: { label: c => ` ${c.label}: $${c.parsed.toFixed(2)} (${formatVnd(c.parsed)})` } }
                 }
