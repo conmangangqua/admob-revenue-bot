@@ -157,6 +157,19 @@
         .trend-badge.neutral { background: #F1F5F9; color: #64748b; }
         .trend-text { font-size: 0.75rem; color: var(--color-text-muted); font-weight: 500; }
 
+        .top-app-rev-box {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(147, 51, 234, 0.08) 100%);
+            border-left: 4px solid var(--color-accent);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+        }
+        .top-app-rev-box .usd { font-size: 1.4rem; font-weight: 800; color: var(--color-accent); line-height: 1; letter-spacing: -0.02em; }
+        .top-app-rev-box .vnd { font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted); }
+
         /* Charts */
         .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; align-items: stretch; }
         @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
@@ -279,10 +292,8 @@
                 <span class="stat-icon">🏆</span>
                 <span class="stat-label">Top Thần Tài</span>
             </div>
-            <div class="stat-value" id="valTopApp" style="font-size: 1.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-top: 0.5rem;">--</div>
-            <div class="trend-wrap">
-                <span class="trend-badge neutral" id="valTopAppRev">--</span>
-            </div>
+            <div class="stat-value" id="valTopApp" style="font-size: 1.3rem; font-weight: 800; color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-top: 0.25rem; margin-bottom: 0.25rem;">--</div>
+            <div class="top-app-rev-box" id="valTopAppRev">--</div>
         </div>
     </div>
 
@@ -537,10 +548,10 @@
         const appArr = Object.entries(appAgg).sort((a,b) => b[1] - a[1]);
         if (appArr.length > 0 && appSel === 'all') {
             document.getElementById('valTopApp').innerText = appArr[0][0];
-            document.getElementById('valTopAppRev').innerHTML = `<div class="usd" style="font-size: 1.5rem;">$${appArr[0][1].toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVnd(appArr[0][1])}</div>`;
+            document.getElementById('valTopAppRev').innerHTML = `<div class="usd">$${appArr[0][1].toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVnd(appArr[0][1])}</div>`;
         } else if (appSel !== 'all') {
             document.getElementById('valTopApp').innerText = appSel;
-            document.getElementById('valTopAppRev').innerHTML = `<div class="usd" style="font-size: 1.5rem;">$${curTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVnd(curTotal)}</div>`;
+            document.getElementById('valTopAppRev').innerHTML = `<div class="usd">$${curTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVnd(curTotal)}</div>`;
         } else {
             document.getElementById('valTopApp').innerText = '--';
             document.getElementById('valTopAppRev').innerText = '--';
