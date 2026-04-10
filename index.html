@@ -107,6 +107,7 @@
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
+            align-items: start;
         }
 
         .stat-card {
@@ -157,14 +158,14 @@
         .trend-text { font-size: 0.75rem; color: var(--color-text-muted); font-weight: 500; }
 
         /* Charts */
-        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; align-items: stretch; }
         @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
 
-        .card { background: var(--color-card); padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); }
-        .card-title { font-size: 1.1rem; font-weight: 700; color: var(--color-text); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
+        .card { background: var(--color-card); padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); display: flex; flex-direction: column; }
+        .card-title { font-size: 1.1rem; font-weight: 700; color: var(--color-text); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
 
         /* App List */
-        .app-list { display: flex; flex-direction: column; gap: 0.75rem; max-height: 280px; overflow-y: auto; padding-right: 0.5rem; }
+        .app-list { display: flex; flex-direction: column; gap: 0.75rem; flex: 1; overflow-y: auto; padding-right: 0.5rem; min-height: 250px; }
         .app-item {
             display: flex; justify-content: space-between; align-items: center;
             padding: 0.75rem 1rem; border-radius: var(--radius-md); background: var(--color-bg);
@@ -283,14 +284,14 @@
     <div class="dashboard-grid">
         <div class="card">
             <div class="card-title">📊 Xu hướng Biến động <span style="font-size: 0.8rem; font-weight: 500; color: var(--color-text-muted); background: var(--color-bg); padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: auto;">Chạm vào biểu đồ để xem chi tiết</span></div>
-            <div style="height: 300px; width: 100%;">
+            <div style="flex: 1; min-height: 400px; width: 100%; position: relative;">
                 <canvas id="revenueLineChart"></canvas>
             </div>
         </div>
 
         <div class="card">
             <div class="card-title">📱 Cơ cấu Dòng tiền</div>
-            <div style="height: 150px; margin-bottom: 1.5rem; display: flex; justify-content: center;">
+            <div style="flex: 0 0 200px; margin-bottom: 1.5rem; display: flex; justify-content: center; position: relative;">
                 <canvas id="appPieChart"></canvas>
             </div>
             <div class="app-list" id="appListUI"></div>
