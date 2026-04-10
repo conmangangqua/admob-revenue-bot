@@ -1,9 +1,6 @@
 name: 📊 Daily AdMob Revenue Report
 
 on:
-  push:
-    branches: [ main ]
-
   # Chạy lúc 8:00 AM giờ Việt Nam (UTC+7) = 01:00 UTC
   schedule:
     - cron: '0 1 * * *'
