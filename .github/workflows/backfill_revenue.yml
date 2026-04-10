@@ -1,0 +1,57 @@
+name: Backfill AdMob Data
+
+on:
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Số ngày muốn lấy dữ liệu trong quá khứ (ví dụ: 30)'
+        required: true
+        default: '30'
+
+jobs:
+  backfill:
+    runs-on: ubuntu-latest
+    # Thêm permissions để push code
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          # Thêm các thư viện nếu có (hiện tại script dùng urllib nên ko cần pip install nhiều)
+
+      - name: Run Backfill Script
+        env:
+          ADMOB_CLIENT_ID: ${{ secrets.ADMOB_CLIENT_ID }}
+          ADMOB_CLIENT_SECRET: ${{ secrets.ADMOB_CLIENT_SECRET }}
+          ADMOB_REFRESH_TOKEN: ${{ secrets.ADMOB_REFRESH_TOKEN }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          SKIP_NOTIFY: "true"
+        run: |
+          DAYS=${{ github.event.inputs.days }}
+          echo "🚀 Bắt đầu Backfill $DAYS ngày dữ liệu..."
+          # Chạy từ ngày cũ nhất đến ngày mới nhất để file JSON được append đúng thứ tự
+          for i in $(seq $DAYS -1 1)
+          do
+            echo "--------------------------------------------------------"
+            echo "📅 Đang kéo dữ liệu offset=$i..."
+            export DATE_OFFSET=$i
+            python3 scripts/main.py
+          done
+
+      - name: Commit and Push changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add data/revenue_history.json
+          git commit -m "chore: backfill historical revenue data [skip ci]" || echo "No changes to commit"
+          git push

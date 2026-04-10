@@ -1,6 +1,6 @@
 """
-main.py — Entry point của Firebase Revenue Bot (v5.1 - Real Data Mode)
-Chạy hàng ngày qua GitHub Actions.
+main.py — Entry point của Firebase Revenue Bot (v5.2 - Backfill Enabled)
+Chạy hàng ngày qua GitHub Actions hoặc chạy Backfill thủ công.
 Dùng Firebase Management API → list tất cả projects → GA4 Data API lấy revenue.
 """
 import os
@@ -17,24 +17,9 @@ from firebase_client import get_all_projects_revenue
 from discord_client import send_revenue_report, send_error_notification
 
 
-def _load_secrets_env():
-    """Tự động nạp biến môi trường từ secrets.env theo chuẩn Antigravity."""
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    env_path = os.path.join(base_dir, "secrets.env")
-    if os.path.exists(env_path):
-        with open(env_path, "r") as f:
-            for line in f:
-                line = line.strip()
-                if line and not line.startswith("#") and "=" in line:
-                    key, val = line.split("=", 1)
-                    os.environ[key.strip()] = val.strip()
-
-_load_secrets_env()
-
 def load_env(key: str, required: bool = True) -> str:
     val = os.environ.get(key, "").strip()
     if not val and required:
-        # Giảm mức độ cảnh báo nếu là chạy local không có secret
         if os.environ.get("GITHUB_ACTIONS") == "true":
             print(f"   ⚠️ Thiếu biến môi trường: {key}")
         return ""
@@ -57,7 +42,6 @@ def get_access_token_local(client_id: str, client_secret: str, refresh_token: st
 
 def save_historical_data(apps_data, report_date):
     """Lưu dữ liệu doanh thu vào file JSON lịch sử để Web Dashboard hiển thị."""
-    # Tìm đường dẫn tuyệt đối đến thư mục data/
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     history_file = os.path.join(base_dir, "data", "revenue_history.json")
     
@@ -88,13 +72,13 @@ def save_historical_data(apps_data, report_date):
         ]
     }
     
-    # Sắp xếp lại theo thời gian cho đẹp (tùy chọn)
+    # Sắp xếp lại theo thời gian cho đẹp
     sorted_history = dict(sorted(history.items(), reverse=True))
 
     # Ghi lại file
     with open(history_file, "w", encoding="utf-8") as f:
         json.dump(sorted_history, f, indent=2, ensure_ascii=False)
-    print(f"   💾 Đã lưu dữ liệu lịch sử ngày {date_key} vào: {history_file}")
+    print(f"   💾 Đã lưu dữ liệu lịch sử ngày {date_key}")
 
 
 def main():
@@ -107,10 +91,12 @@ def main():
     refresh_token   = load_env("ADMOB_REFRESH_TOKEN", required=False)
     discord_webhook = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
 
-    yesterday  = date.today() - timedelta(days=1)
-    day_before = date.today() - timedelta(days=2)
+    # Hỗ trợ Backfill qua DATE_OFFSET (mặc định 1 = hôm qua)
+    offset = int(os.environ.get("DATE_OFFSET", "1"))
+    target_date = date.today() - timedelta(days=offset)
+    day_before  = target_date - timedelta(days=1)
 
-    print(f"\n📅 Báo cáo ngày: {yesterday.strftime('%d/%m/%Y')}")
+    print(f"\n📅 Báo cáo ngày: {target_date.strftime('%d/%m/%Y')}")
 
     print("\n🔑 Đang kiểm tra quyền truy cập...")
     if not client_id or not client_secret or not refresh_token:
@@ -125,7 +111,6 @@ def main():
             access_token = "mock-token"
 
     if access_token == "mock-token":
-        # Logic tạo dữ liệu mẫu Platinum cho Web Dashboard
         print("\n📱 Đang tạo dữ liệu 'Platinum' cho Web Dashboard (Log Mode)...")
         apps_today = [
             {"app_name": "Nova AI Art", "revenue": 145.50, "impressions": 12500, "ecpm": 11.64},
@@ -140,13 +125,12 @@ def main():
             {"app_name": "Antigravity Hub", "revenue": 10.00},
         ]
     else:
-        # Lấy revenue của TẤT CẢ Firebase projects qua GA4
-        print("\n📱 Đang lấy revenue hôm qua (tất cả Firebase projects)...")
-        apps_today = get_all_projects_revenue(access_token, yesterday)
+        print(f"\n📱 Đang lấy revenue ngày {target_date.strftime('%d/%m/%Y')} (tất cả Firebase projects)...")
+        apps_today = get_all_projects_revenue(access_token, target_date)
         print("\n📊 Đang lấy revenue hôm kia (để so sánh)...")
         apps_prev  = get_all_projects_revenue(access_token, day_before)
+    
     prev_total = sum(a["revenue"] for a in apps_prev)
-
     apps_prev_dict = {a["app_name"]: a["revenue"] for a in apps_prev}
     for app in apps_today:
         app["prev_revenue"] = apps_prev_dict.get(app["app_name"], 0.0)
@@ -155,44 +139,42 @@ def main():
     app_count   = len([a for a in apps_today if a["revenue"] > 0])
 
     print(f"\n{'=' * 55}")
-    print(f"  💰 Tổng revenue hôm qua : ${total_today:.2f}")
-    print(f"  📊 Tổng revenue hôm kia  : ${prev_total:.2f}")
+    print(f"  💰 Tổng revenue hôm nay : ${total_today:.2f}")
+    print(f"  📊 Tổng revenue hôm qua  : ${prev_total:.2f}")
     print(f"  📱 Số app có revenue     : {app_count}")
     print(f"{'=' * 55}\n")
 
-    # [NEW] Lưu dữ liệu vào file lịch sử cho Web Dashboard
+    # Lưu dữ liệu vào file lịch sử
     print("\n📂 Đang lưu dữ liệu lịch sử...")
-    save_historical_data(apps_today, yesterday)
+    save_historical_data(apps_today, target_date)
+
+    # Kiểm tra tắt thông báo
+    skip_notify = os.environ.get("SKIP_NOTIFY", "false").lower() == "true"
+    if skip_notify:
+        print("\n🔕 Chế độ SKIP_NOTIFY: Bỏ qua gửi thông báo Discord.")
+        return
 
     if not discord_webhook:
         print("⚠️  Không có DISCORD_WEBHOOK_URL — bỏ qua gửi Discord.")
-        print("\n✅ Data OK — Hoàn tất (không gửi Discord)!")
         return
 
     print("📨 Đang gửi báo cáo lên Discord...")
     success = send_revenue_report(
         webhook_url=discord_webhook,
         apps_data=apps_today,
-        report_date=yesterday,
+        report_date=target_date,
         prev_total=prev_total if prev_total > 0 else None,
     )
 
     if success:
         print("\n✅ Hoàn tất gửi Discord!")
     else:
-        # Discord fail → chỉ warn, không crash workflow
-        print("\n⚠️  Gửi Discord thất bại — nhưng data đã lấy thành công.")
+        print("\n⚠️  Gửi Discord thất bại.")
 
 
 if __name__ == "__main__":
     try:
         main()
-    except EnvironmentError as e:
-        print(str(e))
-        webhook = os.environ.get("DISCORD_WEBHOOK_URL", "")
-        if webhook:
-            send_error_notification(webhook, str(e))
-        sys.exit(1)
     except Exception as e:
         error_msg = f"{type(e).__name__}: {e}\n\n{traceback.format_exc()}"
         print(f"❌ Lỗi không xác định:\n{error_msg}")
