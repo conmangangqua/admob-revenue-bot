@@ -165,7 +165,7 @@
         .card-title { font-size: 1.1rem; font-weight: 700; color: var(--color-text); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
 
         /* App List */
-        .app-list { display: flex; flex-direction: column; gap: 0.75rem; flex: 1 1 0; min-height: 0; overflow-y: auto; padding-right: 0.5rem; }
+        .app-list { display: flex; flex-direction: column; gap: 0.75rem; overflow-y: auto; padding-right: 0.5rem; max-height: 280px; }
         .app-item {
             display: flex; justify-content: space-between; align-items: center;
             padding: 0.75rem 1rem; border-radius: var(--radius-md); background: var(--color-bg);
@@ -284,7 +284,7 @@
     <div class="dashboard-grid">
         <div class="card">
             <div class="card-title">📊 Xu hướng Biến động <span style="font-size: 0.8rem; font-weight: 500; color: var(--color-text-muted); background: var(--color-bg); padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: auto;">Chạm vào biểu đồ để xem chi tiết</span></div>
-            <div style="flex: 1; min-height: 400px; width: 100%; position: relative;">
+            <div style="flex: 1; min-height: 350px; width: 100%; position: relative;">
                 <canvas id="revenueLineChart"></canvas>
             </div>
         </div>
