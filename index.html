@@ -288,7 +288,7 @@
 
     async function init() {
         try {
-            const resp = await fetch('data/revenue_history.json');
+            const resp = await fetch('/api/revenue');
             historyData = await resp.json();
             
             const dates = Object.keys(historyData).sort();

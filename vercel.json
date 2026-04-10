@@ -1,0 +1,18 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/revenue.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/revenue",
+      "dest": "/api/revenue.py",
+      "headers": {
+        "Cache-Control": "s-maxage=60, stale-while-revalidate=120"
+      }
+    }
+  ]
+}
