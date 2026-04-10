@@ -3,114 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 AdMob High-End Dashboard</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <title>📊 AdMob Revenue Intelligence</title>
+    <!-- Use Fira Sans for Body and Fira Code for Numbers -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --glass-bg: rgba(30, 41, 59, 0.7);
-            --primary-blue: #38bdf8;
-            --success-green: #4ade80;
-            --danger-red: #f87171;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --accent-purple: #a855f7;
+            /* Data-Dense Platinum Light Palette */
+            --color-primary: #1E40AF;
+            --color-on-primary: #FFFFFF;
+            --color-secondary: #3B82F6;
+            --color-accent: #D97706;
+            --color-background: #F8FAFC;
+            --color-surface: #FFFFFF;
+            --color-foreground: #0F172A;
+            --color-muted: #F1F5F9;
+            --color-border: #E2E8F0;
+            --color-success: #16A34A;
+            --color-destructive: #DC2626;
+            
+            --font-ui: 'Fira Sans', sans-serif;
+            --font-data: 'Fira Code', monospace;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-color);
-            background-image: 
-                radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.08) 0%, transparent 25%),
-                radial-gradient(circle at 100% 100%, rgba(168, 85, 247, 0.08) 0%, transparent 25%);
-            color: var(--text-main);
+            font-family: var(--font-ui);
+            background-color: var(--color-background);
+            color: var(--color-foreground);
             min-height: 100vh;
             padding: 2rem;
-            line-height: 1.6;
+            line-height: 1.5;
         }
 
+        .data-text { font-family: var(--font-data); }
         .container { max-width: 1400px; margin: 0 auto; }
 
         header {
             display: flex;
             justify-content: space-between;
-            align-items: center;
+            align-items: flex-end;
             margin-bottom: 2rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 2px solid var(--color-border);
         }
 
-        h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.025em; background: linear-gradient(to right, #38bdf8, #a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        h1 { 
+            font-size: 1.6rem; 
+            font-weight: 700; 
+            letter-spacing: -0.025em; 
+            color: var(--color-primary);
+        }
+
+        .status-badge {
+            font-family: var(--font-data);
+            font-size: 0.75rem; 
+            color: var(--color-on-primary); 
+            background: var(--color-success);
+            padding: 0.25rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 600;
+        }
 
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
+            gap: 1.25rem;
+            margin-bottom: 1.5rem;
         }
 
         .stat-card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 1.5rem;
-            border-radius: 1.25rem;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            padding: 1.25rem;
+            border-radius: 6px; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+            position: relative;
         }
-        .stat-card:hover { transform: translateY(-5px); border-color: rgba(56, 189, 248, 0.4); }
+        
+        .stat-card:hover {
+            border-color: var(--color-secondary);
+            box-shadow: 0 4px 6px -1px rgba(30, 64, 175, 0.1);
+        }
 
-        .stat-label { color: var(--text-muted); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
-        .stat-value { font-size: 2rem; font-weight: 700; margin: 0.25rem 0; color: var(--primary-blue); }
+        .stat-label { 
+            color: #64748b; 
+            font-size: 0.75rem; 
+            font-weight: 600; 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em; 
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value { 
+            font-family: var(--font-data);
+            font-size: 1.8rem; 
+            font-weight: 700; 
+            color: var(--color-primary); 
+        }
 
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
             margin-bottom: 1.5rem;
         }
 
         .card {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.1);
-            padding: 1.5rem;
-            border-radius: 1.25rem;
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            padding: 1.25rem;
+            border-radius: 6px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
         }
 
-        .card-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; }
+        .card-title { 
+            font-size: 1rem; 
+            font-weight: 600; 
+            margin-bottom: 1.25rem; 
+            color: var(--color-primary);
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 0.75rem;
+        }
 
         /* Calendar */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.5rem; }
-        .day-label { color: var(--text-muted); font-size: 0.7rem; font-weight: 800; padding-bottom: 0.5rem; text-align: center; }
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.35rem; }
+        .day-label { color: #64748b; font-size: 0.7rem; font-weight: 700; padding-bottom: 0.5rem; text-align: center; }
         .day {
             aspect-ratio: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            border-radius: 0.75rem; background: rgba(255,255,255,0.02); font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
+            border-radius: 4px; background: var(--color-muted); font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
+            border: 1px solid transparent;
         }
-        .day:hover { background: rgba(255,255,255,0.08); transform: scale(1.05); }
-        .day.has-data { border: 1px solid rgba(56, 189, 248, 0.2); }
-        .day.today { background: rgba(56, 189, 248, 0.1); outline: 2px solid var(--primary-blue); outline-offset: 2px; }
-        .day-rev { font-size: 0.65rem; color: var(--success-green); font-weight: 700; margin-top: 2px; }
+        
+        .day.has-data { 
+            background: var(--color-surface); 
+            border: 1px solid var(--color-border);
+        }
+        .day.has-data:hover { 
+            background: #EFF6FF; 
+            border-color: var(--color-secondary); 
+        }
+        .day.today { 
+            border: 2px solid var(--color-accent); 
+        }
+        
+        .day-date { font-weight: 600; color: #64748b; }
+        .day.has-data .day-date { color: var(--color-foreground); }
+        .day-rev { 
+            font-family: var(--font-data);
+            font-size: 0.7rem; 
+            color: var(--color-success); 
+            font-weight: 600; 
+            margin-top: 2px; 
+        }
 
         /* App List Table */
-        .app-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
-        .app-table th { text-align: left; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; padding: 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .app-table td { padding: 0.75rem 0.5rem; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.03); }
-        .app-tag { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; }
+        .table-container { overflow-x: auto; max-height: 250px; overflow-y: auto; }
+        .app-table { width: 100%; border-collapse: collapse; }
+        .app-table th { 
+            text-align: left; 
+            font-size: 0.7rem; 
+            color: #64748b; 
+            text-transform: uppercase; 
+            padding: 0.6rem 0.5rem; 
+            border-bottom: 2px solid var(--color-border); 
+            position: sticky;
+            top: 0;
+            background: var(--color-surface);
+        }
+        .app-table td { 
+            padding: 0.6rem 0.5rem; 
+            font-size: 0.85rem; 
+            border-bottom: 1px solid var(--color-border); 
+        }
+        .app-table tr:hover td { background-color: #F8FAFC; }
+        .app-tag { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 8px; }
 
         .full-width-card { margin-top: 1.5rem; }
 
         /* Modal */
         #detailPanel {
             position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90%; max-width: 450px; background: #1e293b; border-radius: 1.5rem; padding: 2rem;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6); z-index: 1000; display: none;
-            border: 1px solid rgba(255,255,255,0.2);
+            width: 90%; max-width: 500px; background: var(--color-surface); border-radius: 6px; padding: 1.5rem;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25); z-index: 1000; display: none;
+            border: 1px solid var(--color-border);
         }
-        .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 999; display: none; }
+        .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); z-index: 999; display: none; }
         
-        .btn-close { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; float: right; margin-top: -0.5rem; }
+        .btn-close { background: none; border: none; color: #64748b; font-size: 1.5rem; font-weight: bold; cursor: pointer; float: right; margin-top: -0.5rem; }
+        .btn-close:hover { color: var(--color-destructive); }
 
         @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
@@ -118,69 +200,79 @@
 <body>
 
 <div class="overlay" id="overlay" onclick="closeDetail()"></div>
-<div id="detailPanel" class="stat-card">
+<div id="detailPanel">
     <button class="btn-close" onclick="closeDetail()">×</button>
-    <h3 id="detailDate" style="margin-bottom: 1.5rem; color: var(--primary-blue);">Chi Tiết Ngày</h3>
-    <div id="detailList"></div>
+    <h3 id="detailDate" style="font-family: var(--font-data); margin-bottom: 1rem; color: var(--color-primary); border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem;">Daily Breakdown</h3>
+    <div id="detailList" style="max-height: 400px; overflow-y: auto;"></div>
 </div>
 
 <div class="container">
     <header>
-        <h1>📊 AdMob Revenue Intelligence</h1>
-        <div id="lastUpdated" style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">STATUS: LIVE</div>
+        <div>
+            <h1>AdMob Revenue Dashboard</h1>
+            <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">Data-Dense Enterprise View</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <div id="lastUpdated" class="data-text" style="font-size: 0.75rem; color: #64748b;">LAST SYNC: --</div>
+            <div class="status-badge">LIVE</div>
+        </div>
     </header>
 
     <div class="summary-grid">
         <div class="stat-card">
-            <div class="stat-label">Doanh thu 7 ngày qua</div>
+            <div class="stat-label">7-Day Yield</div>
             <div class="stat-value" id="weekRev">$0.00</div>
-            <div id="weekTrend" style="font-size: 0.75rem;">--</div>
+            <div id="weekTrend" style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">Rolling sum</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">Doanh thu tháng này</div>
+            <div class="stat-label">MTD Yield</div>
             <div class="stat-value" id="monthRev">$0.00</div>
-            <div id="monthProjected" style="font-size: 0.75rem; color: var(--text-muted);">Dự kiến: $--</div>
+            <div id="monthProjected" class="data-text" style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">Projected: $--</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">Top App trong tuần</div>
-            <div class="stat-value" id="topApp" style="font-size: 1.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.8rem;">--</div>
-            <div id="topAppRev" style="font-size: 0.75rem; color: var(--success-green);">--</div>
+            <div class="stat-label">Top Performer (7D)</div>
+            <div class="stat-value data-text" id="topApp" style="font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.4rem; color: var(--color-foreground);">--</div>
+            <div id="topAppRev" class="data-text" style="font-size: 0.85rem; color: var(--color-success); font-weight: 600; margin-top: 4px;">--</div>
         </div>
         <div class="stat-card">
-            <div class="stat-label">Số lượng App hoạt động</div>
+            <div class="stat-label">Active Deployments</div>
             <div class="stat-value" id="activeAppsCount">0</div>
-            <div style="font-size: 0.75rem; color: var(--text-muted);">Đang ghi nhận chuyển đổi</div>
+            <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">Apps generating impressions</div>
         </div>
     </div>
 
     <div class="dashboard-grid">
         <!-- Calendar View -->
         <div class="card">
-            <div class="card-title">📅 Lịch Doanh Thu</div>
+            <div class="card-title">Daily Operations Matrix</div>
             <div class="calendar-grid" id="calendarGrid">
-                <div class="day-label">T2</div><div class="day-label">T3</div><div class="day-label">T4</div>
-                <div class="day-label">T5</div><div class="day-label">T6</div><div class="day-label">T7</div>
-                <div class="day-label">CN</div>
+                <div class="day-label">MON</div><div class="day-label">TUE</div><div class="day-label">WED</div>
+                <div class="day-label">THU</div><div class="day-label">FRI</div><div class="day-label">SAT</div>
+                <div class="day-label">SUN</div>
             </div>
         </div>
 
         <!-- App Performance -->
         <div class="card">
-            <div class="card-title">📱 Hiệu Suất Từng App (7 Ngày Qua)</div>
-            <div style="height: 180px; margin-bottom: 1.5rem;">
-                <canvas id="appPieChart"></canvas>
+            <div class="card-title">Application Yield Distribution</div>
+            <div style="display: flex; gap: 1.25rem; align-items: center;">
+                <div style="width: 130px; height: 130px; flex-shrink: 0;">
+                    <canvas id="appPieChart"></canvas>
+                </div>
+                <div class="table-container" style="flex-grow: 1;">
+                    <table class="app-table">
+                        <thead><tr><th>Application</th><th style="text-align: right;">Yield (7D)</th></tr></thead>
+                        <tbody id="appRankBody"></tbody>
+                    </table>
+                </div>
             </div>
-            <table class="app-table">
-                <thead><tr><th>Tên App</th><th style="text-align: right;">Doanh Thu</th></tr></thead>
-                <tbody id="appRankBody"></tbody>
-            </table>
         </div>
     </div>
 
     <!-- Main Chart -->
     <div class="card full-width-card">
-        <div class="card-title">📈 Xu Hướng Doanh Thu Toàn Hệ Thống (7 Ngày Gần Nhất)</div>
-        <div style="height: 300px;">
+        <div class="card-title">Network Yield Trend (7D)</div>
+        <div style="height: 280px; width: 100%;">
             <canvas id="revenueLineChart"></canvas>
         </div>
     </div>
@@ -188,7 +280,11 @@
 
 <script>
     let historyData = {};
-    const COLORS = ['#38bdf8', '#a855f7', '#4ade80', '#fbbf24', '#f87171', '#818cf8', '#2dd4bf'];
+    Chart.defaults.font.family = "'Fira Code', monospace";
+    Chart.defaults.color = '#64748b';
+    
+    // Enterprise color palette generated by AI engine
+    const COLORS = ['#1E40AF', '#3B82F6', '#60A5FA', '#93C5FD', '#16A34A', '#4ADE80', '#D97706', '#FBBF24', '#8B5CF6'];
 
     async function init() {
         try {
@@ -197,13 +293,13 @@
             
             const dates = Object.keys(historyData).sort();
             if (dates.length > 0) {
-                document.getElementById('lastUpdated').innerText = `LẦN CUỐI CẬP NHẬT: ${formatVN(dates[dates.length-1])}`;
+                document.getElementById('lastUpdated').innerText = `LAST SYNC: ${formatVN(dates[dates.length-1])}`;
             }
 
             processData();
             renderCalendar();
         } catch (e) {
-            console.error(e);
+            console.error('Failed to load data', e);
         }
     }
 
@@ -238,14 +334,14 @@
         document.getElementById('monthRev').innerText = `$${monthTotal.toFixed(2)}`;
         if (monthDays > 0) {
             const proj = (monthTotal / monthDays) * new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-            document.getElementById('monthProjected').innerText = `Dự kiến: $${proj.toFixed(2)}`;
+            document.getElementById('monthProjected').innerText = `Projected: $${proj.toFixed(2)}`;
         }
 
         // 3. App Rankings & Charts
         const appList = Object.entries(appSummary).sort((a,b) => b[1] - a[1]);
         if (appList.length > 0) {
             document.getElementById('topApp').innerText = appList[0][0];
-            document.getElementById('topAppRev').innerText = `$${appList[0][1].toFixed(2)} (7 ngày)`;
+            document.getElementById('topAppRev').innerText = `$${appList[0][1].toFixed(2)} (7D)`;
             document.getElementById('activeAppsCount').innerText = appList.length;
         }
 
@@ -258,8 +354,8 @@
         const body = document.getElementById('appRankBody');
         body.innerHTML = appList.map((app, i) => `
             <tr>
-                <td><span class="app-tag" style="background: ${COLORS[i % COLORS.length]}"></span>${app[0]}</td>
-                <td style="text-align: right; font-weight: 700; color: var(--success-green);">$${app[1].toFixed(2)}</td>
+                <td><span class="app-tag" style="background: ${COLORS[i % COLORS.length]}"></span><span style="font-weight: 500;">${app[0]}</span></td>
+                <td class="data-text" style="text-align: right; font-weight: 600; color: #0F172A;">$${app[1].toFixed(2)}</td>
             </tr>
         `).join('');
     }
@@ -273,14 +369,15 @@
                 datasets: [{
                     data: appList.map(a => a[1]),
                     backgroundColor: COLORS,
-                    borderWidth: 0,
-                    hoverOffset: 10
+                    borderWidth: 2,
+                    borderColor: '#FFFFFF',
+                    hoverOffset: 6
                 }]
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                cutout: '70%'
+                plugins: { legend: { display: false }, tooltip: { bodyFont: { family: "'Fira Code', monospace" } } },
+                cutout: '65%'
             }
         });
     }
@@ -292,24 +389,46 @@
             data: {
                 labels: dates.map(d => d.split('-')[2] + '/' + d.split('-')[1]),
                 datasets: [{
-                    label: 'Revenue',
+                    label: 'Yield',
                     data: dates.map(d => historyData[d].total),
-                    borderColor: '#38bdf8',
-                    backgroundColor: 'rgba(56, 189, 248, 0.1)',
-                    borderWidth: 4,
-                    tension: 0.4,
+                    borderColor: '#1E40AF',
+                    backgroundColor: 'rgba(30, 64, 175, 0.08)',
+                    borderWidth: 3,
+                    tension: 0.3,
                     fill: true,
-                    pointRadius: 6,
-                    pointHoverRadius: 8
+                    pointBackgroundColor: '#FFFFFF',
+                    pointBorderColor: '#1E40AF',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
                 }]
             },
             options: {
                 responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0F172A',
+                        titleFont: { family: "'Fira Code', monospace" },
+                        bodyFont: { family: "'Fira Code', monospace" },
+                        padding: 12,
+                        cornerRadius: 4
+                    }
+                },
                 scales: {
-                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
-                }
+                    y: { 
+                        grid: { color: '#E2E8F0', drawBorder: false }, 
+                        ticks: { color: '#64748b', callback: function(value) { return '$' + value; } } 
+                    },
+                    x: { 
+                        grid: { display: false }, 
+                        ticks: { color: '#64748b' } 
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index',
+                },
             }
         });
     }
@@ -330,7 +449,7 @@
             const el = document.createElement('div');
             el.className = 'day';
             if (d === now.getDate()) el.classList.add('today');
-            el.innerHTML = `<span>${d}</span>`;
+            el.innerHTML = `<span class="day-date">${d}</span>`;
             if (historyData[dStr]) {
                 el.classList.add('has-data');
                 el.innerHTML += `<span class="day-rev">$${historyData[dStr].total.toFixed(2)}</span>`;
@@ -342,11 +461,11 @@
 
     function showDetail(dateStr) {
         const data = historyData[dateStr];
-        document.getElementById('detailDate').innerText = `📊 Chi Tiết: ${formatVN(dateStr)}`;
+        document.getElementById('detailDate').innerText = `Date: ${formatVN(dateStr)}`;
         document.getElementById('detailList').innerHTML = data.apps.map(app => `
-            <div style="display:flex; justify-content:space-between; padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                <span style="font-weight:600;">${app.name}</span>
-                <span style="color:var(--success-green); font-weight:700;">$${app.rev.toFixed(2)}</span>
+            <div style="display:flex; justify-content:space-between; padding: 0.8rem 0; border-bottom: 1px solid var(--color-border);">
+                <span style="font-weight:500; color: #0F172A;">${app.name}</span>
+                <span class="data-text" style="color:var(--color-primary); font-weight:600;">$${app.rev.toFixed(2)}</span>
             </div>
         `).join('');
         document.getElementById('overlay').style.display = 'block';
