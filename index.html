@@ -426,22 +426,23 @@
         const latestInfo = sortedDates[0].split('-');
         const currentMonthPrefix = `${latestInfo[0]}-${latestInfo[1]}`;
         
-        let monthIterRev = 0, daysInMonthSoFar = 0;
+        let monthIterRev = 0;
         
         for (let d of sortedDates) {
             if (d.startsWith(currentMonthPrefix)) {
                 monthIterRev += getAppRev(historyData[d], appSel);
-                daysInMonthSoFar++;
             }
         }
         
         document.getElementById('lblMonth').innerText = `Tháng ${latestInfo[1]} (MTD)`;
-        document.getElementById('valMonthRev').innerText = `$${monthIterRev.toFixed(0)}`;
+        document.getElementById('valMonthRev').innerText = `$${monthIterRev.toFixed(2)}`;
         
-        if (daysInMonthSoFar > 0) {
+        const daysElapsed = parseInt(latestInfo[2], 10);
+        if (daysElapsed > 0) {
             const tempDate = new Date(latestInfo[0], latestInfo[1], 0);
-            const projected = (monthIterRev / daysInMonthSoFar) * tempDate.getDate();
-            document.getElementById('valMonthProj').innerText = `Dự phóng: $${projected.toFixed(0)}`;
+            const daysInMonth = tempDate.getDate();
+            const projected = (monthIterRev / daysElapsed) * daysInMonth;
+            document.getElementById('valMonthProj').innerText = `Dự kiến: $${projected.toFixed(0)}`;
         }
     }
 
@@ -485,7 +486,7 @@
                 },
                 plugins: { 
                     legend: { display: false },
-                    tooltip: { backgroundColor: '#0F172A', titleFont: { family: "'Inter', sans-serif" }, bodyFont: { family: "'Inter', sans-serif", size: 14 }, padding: 12, cornerRadius: 8 }
+                    tooltip: { displayColors: false, backgroundColor: '#0F172A', titleFont: { family: "'Inter', sans-serif" }, bodyFont: { family: "'Inter', sans-serif", size: 14 }, padding: 12, cornerRadius: 8 }
                 },
                 scales: {
                     y: { grid: { color: '#F1F5F9' }, border: { display: false }, ticks: { callback: v => '$'+v } },
