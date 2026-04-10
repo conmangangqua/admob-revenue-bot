@@ -1,5 +1,5 @@
 """
-main.py — Entry point của Firebase Revenue Bot (v5 - GA4 via Firebase)
+main.py — Entry point của Firebase Revenue Bot (v5.1 - Real Data Mode)
 Chạy hàng ngày qua GitHub Actions.
 Dùng Firebase Management API → list tất cả projects → GA4 Data API lấy revenue.
 """
