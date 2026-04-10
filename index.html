@@ -287,12 +287,17 @@
                 document.getElementById('lastUpdated').innerText = `🔄 Cập nhật: ${formatVNDate(sortedDates[0])}`;
             }
             
-            // Lấy danh sách App
+            // Tính tổng all-time để sort cho select
+            let allTimeAppRev = {};
             for(let d in historyData) {
-                historyData[d].apps.forEach(a => allApps.add(a.name));
+                historyData[d].apps.forEach(a => {
+                    allApps.add(a.name);
+                    allTimeAppRev[a.name] = (allTimeAppRev[a.name] || 0) + a.rev;
+                });
             }
+            
             const appSelect = document.getElementById('appFilter');
-            [...allApps].sort().forEach(app => {
+            [...allApps].sort((a,b) => allTimeAppRev[b] - allTimeAppRev[a]).forEach(app => {
                 const opt = document.createElement('option');
                 opt.value = app; opt.text = app;
                 appSelect.appendChild(opt);
@@ -509,7 +514,10 @@
 
     function showDetail(dateStr, appSel) {
         document.getElementById('detailDate').innerText = `Báo cáo Ngày ${formatVNDate(dateStr)}`;
-        const apps = historyData[dateStr].apps;
+        let apps = historyData[dateStr].apps;
+        
+        // Sắp xếp các app theo doanh thu giảm dần
+        apps.sort((a,b) => b.rev - a.rev);
         
         let html = '';
         let totalModal = 0;
