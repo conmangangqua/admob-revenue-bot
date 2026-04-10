@@ -3,403 +3,463 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📊 AdMob Revenue Intelligence</title>
-    <!-- Use Fira Sans for Body and Fira Code for Numbers -->
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Fira+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <title>📱 AdMob Revenue Intelligence</title>
+    <!-- Font Inter cho phong cách thân thiện, hiện đại -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            /* Data-Dense Platinum Light Palette */
-            --color-primary: #1E40AF;
-            --color-on-primary: #FFFFFF;
-            --color-secondary: #3B82F6;
-            --color-accent: #D97706;
-            --color-background: #F8FAFC;
-            --color-surface: #FFFFFF;
-            --color-foreground: #0F172A;
-            --color-muted: #F1F5F9;
+            --color-bg: #F0F4F8;
+            --color-card: #FFFFFF;
+            --color-text: #0F172A;
+            --color-text-muted: #64748b;
             --color-border: #E2E8F0;
-            --color-success: #16A34A;
-            --color-destructive: #DC2626;
+            --color-accent: #3B82F6;
+            --color-success: #10B981;
+            --color-success-bg: #D1FAE5;
+            --color-danger: #EF4444;
+            --color-danger-bg: #FEE2E2;
             
-            --font-ui: 'Fira Sans', sans-serif;
-            --font-data: 'Fira Code', monospace;
+            --hero-bg: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
+            --hero-text: #FFFFFF;
+            
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
+            --shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.08);
+            --radius-lg: 16px;
+            --radius-md: 12px;
+            
+            font-family: 'Inter', sans-serif;
+            font-variant-numeric: tabular-nums;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: var(--font-ui);
-            background-color: var(--color-background);
-            color: var(--color-foreground);
+            background-color: var(--color-bg);
+            color: var(--color-text);
             min-height: 100vh;
-            padding: 2rem;
+            padding: 1.5rem;
             line-height: 1.5;
         }
 
-        .data-text { font-family: var(--font-data); }
-        .container { max-width: 1400px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
 
         header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-end;
+            align-items: center;
             margin-bottom: 2rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--color-border);
+            flex-wrap: wrap;
+            gap: 1rem;
         }
 
-        h1 { 
-            font-size: 1.6rem; 
-            font-weight: 700; 
-            letter-spacing: -0.025em; 
-            color: var(--color-primary);
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
-
+        
+        h1 { font-size: 1.5rem; font-weight: 800; color: var(--color-text); letter-spacing: -0.02em; }
+        
         .status-badge {
-            font-family: var(--font-data);
-            font-size: 0.75rem; 
-            color: var(--color-on-primary); 
-            background: var(--color-success);
-            padding: 0.25rem 0.6rem;
-            border-radius: 4px;
-            font-weight: 600;
+            font-size: 0.75rem; color: #047857; background: #A7F3D0;
+            padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: 700;
+            animation: pulse 2s infinite;
         }
 
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(167, 243, 208, 0.7); }
+            70% { box-shadow: 0 0 0 6px rgba(167, 243, 208, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(167, 243, 208, 0); }
+        }
+
+        .controls { display: flex; align-items: center; gap: 1rem; }
+        
+        select {
+            padding: 0.6rem 1rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+            background: var(--color-card);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--color-text);
+            cursor: pointer;
+            outline: none;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.2s;
+        }
+        select:hover { border-color: var(--color-accent); }
+
+        /* Summary Grid */
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 1.25rem;
-            margin-bottom: 1.5rem;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .stat-card {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            padding: 1.25rem;
-            border-radius: 6px; 
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
-            transition: all 0.2s ease;
+            background: var(--color-card);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            transition: transform 0.2s, box-shadow 0.2s;
             position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
-        
-        .stat-card:hover {
-            border-color: var(--color-secondary);
-            box-shadow: 0 4px 6px -1px rgba(30, 64, 175, 0.1);
-        }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
 
-        .stat-label { 
-            color: #64748b; 
-            font-size: 0.75rem; 
-            font-weight: 600; 
-            text-transform: uppercase; 
-            letter-spacing: 0.05em; 
-            margin-bottom: 0.5rem;
-        }
-        
-        .stat-value { 
-            font-family: var(--font-data);
-            font-size: 1.8rem; 
-            font-weight: 700; 
-            color: var(--color-primary); 
-        }
+        /* The Hero Card */
+        .stat-card.hero { background: var(--hero-bg); color: var(--hero-text); box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3); }
+        .stat-card.hero .stat-label { color: rgba(255,255,255,0.8); }
+        .stat-card.hero .stat-value { color: #FFFFFF; }
+        .stat-card.hero .trend-badge.positive { background: rgba(16, 185, 129, 0.2); color: #A7F3D0; }
+        .stat-card.hero .trend-badge.negative { background: rgba(239, 68, 68, 0.2); color: #FECACA; }
 
+        .stat-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
+        .stat-icon { font-size: 1.25rem; }
+        .stat-label { color: var(--color-text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .stat-value { font-size: 2.2rem; font-weight: 800; color: var(--color-text); line-height: 1.1; letter-spacing: -0.03em; }
+
+        .trend-wrap { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; }
+        .trend-badge {
+            font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 6px;
+        }
+        .trend-badge.positive { background: var(--color-success-bg); color: var(--color-success); }
+        .trend-badge.negative { background: var(--color-danger-bg); color: var(--color-danger); }
+        .trend-badge.neutral { background: #F1F5F9; color: #64748b; }
+        .trend-text { font-size: 0.75rem; color: var(--color-text-muted); font-weight: 500; }
+
+        /* Charts */
         .dashboard-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 2fr 1fr;
             gap: 1.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
+        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
 
         .card {
-            background: var(--color-surface);
-            border: 1px solid var(--color-border);
-            padding: 1.25rem;
-            border-radius: 6px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            background: var(--color-card);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
         }
 
-        .card-title { 
-            font-size: 1rem; 
-            font-weight: 600; 
-            margin-bottom: 1.25rem; 
-            color: var(--color-primary);
-            border-bottom: 1px solid var(--color-border);
-            padding-bottom: 0.75rem;
-        }
+        .card-title { font-size: 1.1rem; font-weight: 700; color: var(--color-text); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; }
 
-        /* Calendar */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 0.35rem; }
-        .day-label { color: #64748b; font-size: 0.7rem; font-weight: 700; padding-bottom: 0.5rem; text-align: center; }
-        .day {
-            aspect-ratio: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
-            border-radius: 4px; background: var(--color-muted); font-size: 0.85rem; cursor: pointer; transition: all 0.2s;
-            border: 1px solid transparent;
+        /* App List */
+        .app-list { display: flex; flex-direction: column; gap: 0.75rem; max-height: 280px; overflow-y: auto; padding-right: 0.5rem; }
+        .app-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 0.75rem 1rem; border-radius: var(--radius-md); background: var(--color-bg);
+            transition: background 0.2s;
         }
-        
-        .day.has-data { 
-            background: var(--color-surface); 
-            border: 1px solid var(--color-border);
-        }
-        .day.has-data:hover { 
-            background: #EFF6FF; 
-            border-color: var(--color-secondary); 
-        }
-        .day.today { 
-            border: 2px solid var(--color-accent); 
-        }
-        
-        .day-date { font-weight: 600; color: #64748b; }
-        .day.has-data .day-date { color: var(--color-foreground); }
-        .day-rev { 
-            font-family: var(--font-data);
-            font-size: 0.7rem; 
-            color: var(--color-success); 
-            font-weight: 600; 
-            margin-top: 2px; 
-        }
+        .app-item:hover { background: #E2E8F0; }
+        .app-name-wrap { display: flex; align-items: center; gap: 0.75rem; }
+        .app-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .app-name { font-weight: 600; font-size: 0.9rem; color: var(--color-text); }
+        .app-rev { font-weight: 700; font-size: 1rem; color: var(--color-text); }
 
-        /* App List Table */
-        .table-container { overflow-x: auto; max-height: 250px; overflow-y: auto; }
-        .app-table { width: 100%; border-collapse: collapse; }
-        .app-table th { 
-            text-align: left; 
-            font-size: 0.7rem; 
-            color: #64748b; 
-            text-transform: uppercase; 
-            padding: 0.6rem 0.5rem; 
-            border-bottom: 2px solid var(--color-border); 
-            position: sticky;
-            top: 0;
-            background: var(--color-surface);
-        }
-        .app-table td { 
-            padding: 0.6rem 0.5rem; 
-            font-size: 0.85rem; 
-            border-bottom: 1px solid var(--color-border); 
-        }
-        .app-table tr:hover td { background-color: #F8FAFC; }
-        .app-tag { display: inline-block; width: 8px; height: 8px; border-radius: 2px; margin-right: 8px; }
-
-        .full-width-card { margin-top: 1.5rem; }
-
-        /* Modal */
-        #detailPanel {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90%; max-width: 500px; background: var(--color-surface); border-radius: 6px; padding: 1.5rem;
-            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25); z-index: 1000; display: none;
-            border: 1px solid var(--color-border);
-        }
-        .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(2px); z-index: 999; display: none; }
-        
-        .btn-close { background: none; border: none; color: #64748b; font-size: 1.5rem; font-weight: bold; cursor: pointer; float: right; margin-top: -0.5rem; }
-        .btn-close:hover { color: var(--color-destructive); }
-
-        @media (max-width: 1024px) { .dashboard-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-<div class="overlay" id="overlay" onclick="closeDetail()"></div>
-<div id="detailPanel">
-    <button class="btn-close" onclick="closeDetail()">×</button>
-    <h3 id="detailDate" style="font-family: var(--font-data); margin-bottom: 1rem; color: var(--color-primary); border-bottom: 1px solid var(--color-border); padding-bottom: 0.5rem;">Daily Breakdown</h3>
-    <div id="detailList" style="max-height: 400px; overflow-y: auto;"></div>
-</div>
-
 <div class="container">
     <header>
-        <div>
-            <h1>AdMob Revenue Dashboard</h1>
-            <div style="font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;">Data-Dense Enterprise View</div>
-        </div>
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <div id="lastUpdated" class="data-text" style="font-size: 0.75rem; color: #64748b;">LAST SYNC: --</div>
+        <div class="header-title">
+            <h1>🚀 AdMob Dashboard</h1>
             <div class="status-badge">LIVE</div>
+        </div>
+        <div class="controls">
+            <span id="lastUpdated" style="font-size: 0.8rem; color: var(--color-text-muted); font-weight: 500;">⏳ Syncing...</span>
+            <select id="timeFilter" onchange="applyFilter()">
+                <option value="today">Hôm nay (Today)</option>
+                <option value="yesterday">Hôm qua (Yesterday)</option>
+                <option value="7days">7 Ngày Qua (Last 7D)</option>
+                <option value="30days">30 Ngày Qua (Last 30D)</option>
+                <option value="thismonth">Tháng Này (This Month)</option>
+            </select>
         </div>
     </header>
 
     <div class="summary-grid">
-        <div class="stat-card">
-            <div class="stat-label">7-Day Yield</div>
-            <div class="stat-value" id="weekRev">$0.00</div>
-            <div id="weekTrend" style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">Rolling sum</div>
+        <!-- Hero: Main Revenue -->
+        <div class="stat-card hero">
+            <div class="stat-header">
+                <span class="stat-icon">💰</span>
+                <span class="stat-label" id="lblHeroRev">Doanh thu Hôm nay</span>
+            </div>
+            <div class="stat-value" id="valHeroRev">$0.00</div>
+            <div class="trend-wrap">
+                <span class="trend-badge" id="trendHeroBadge">--</span>
+                <span class="trend-text" id="trendHeroText">so với kỳ trước</span>
+            </div>
         </div>
+
+        <!-- Average / Day -->
         <div class="stat-card">
-            <div class="stat-label">MTD Yield</div>
-            <div class="stat-value" id="monthRev">$0.00</div>
-            <div id="monthProjected" class="data-text" style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">Projected: $--</div>
+            <div class="stat-header">
+                <span class="stat-icon">📈</span>
+                <span class="stat-label">Trung bình / Ngày</span>
+            </div>
+            <div class="stat-value" id="valAvgRev">$0.00</div>
+            <div class="trend-wrap">
+                <span class="trend-text" id="descAvgRev">Trong khoảng thời gian chọn</span>
+            </div>
         </div>
+
+        <!-- MTD / Fixed Month -->
         <div class="stat-card">
-            <div class="stat-label">Top Performer (7D)</div>
-            <div class="stat-value data-text" id="topApp" style="font-size: 1.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 0.4rem; color: var(--color-foreground);">--</div>
-            <div id="topAppRev" class="data-text" style="font-size: 0.85rem; color: var(--color-success); font-weight: 600; margin-top: 4px;">--</div>
+            <div class="stat-header">
+                <span class="stat-icon">🗓️</span>
+                <span class="stat-label" id="lblMonth">Tháng này (MTD)</span>
+            </div>
+            <div class="stat-value" id="valMonthRev">$0.00</div>
+            <div class="trend-wrap">
+                <span class="trend-text" id="valMonthProj">Dự kiến: $0.00</span>
+            </div>
         </div>
+
+        <!-- Top App -->
         <div class="stat-card">
-            <div class="stat-label">Active Deployments</div>
-            <div class="stat-value" id="activeAppsCount">0</div>
-            <div style="font-size: 0.75rem; color: #64748b; margin-top: 4px;">Apps generating impressions</div>
+            <div class="stat-header">
+                <span class="stat-icon">🏆</span>
+                <span class="stat-label">Top Thần Tài</span>
+            </div>
+            <div class="stat-value" id="valTopApp" style="font-size: 1.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-top: 0.5rem;">--</div>
+            <div class="trend-wrap">
+                <span class="trend-badge neutral" id="valTopAppRev">--</span>
+            </div>
         </div>
     </div>
 
     <div class="dashboard-grid">
-        <!-- Calendar View -->
+        <!-- Main Chart -->
         <div class="card">
-            <div class="card-title">Daily Operations Matrix</div>
-            <div class="calendar-grid" id="calendarGrid">
-                <div class="day-label">MON</div><div class="day-label">TUE</div><div class="day-label">WED</div>
-                <div class="day-label">THU</div><div class="day-label">FRI</div><div class="day-label">SAT</div>
-                <div class="day-label">SUN</div>
+            <div class="card-title">📊 Xu hướng Biến động</div>
+            <div style="height: 300px; width: 100%;">
+                <canvas id="revenueLineChart"></canvas>
             </div>
         </div>
 
-        <!-- App Performance -->
+        <!-- App Breakdown -->
         <div class="card">
-            <div class="card-title">Application Yield Distribution</div>
-            <div style="display: flex; gap: 1.25rem; align-items: center;">
-                <div style="width: 130px; height: 130px; flex-shrink: 0;">
-                    <canvas id="appPieChart"></canvas>
-                </div>
-                <div class="table-container" style="flex-grow: 1;">
-                    <table class="app-table">
-                        <thead><tr><th>Application</th><th style="text-align: right;">Yield (7D)</th></tr></thead>
-                        <tbody id="appRankBody"></tbody>
-                    </table>
-                </div>
+            <div class="card-title">📱 Cơ cấu Dòng tiền</div>
+            <div style="height: 150px; margin-bottom: 1.5rem; display: flex; justify-content: center;">
+                <canvas id="appPieChart"></canvas>
             </div>
-        </div>
-    </div>
-
-    <!-- Main Chart -->
-    <div class="card full-width-card">
-        <div class="card-title">Network Yield Trend (7D)</div>
-        <div style="height: 280px; width: 100%;">
-            <canvas id="revenueLineChart"></canvas>
+            <div class="app-list" id="appListUI">
+                <!-- Injected via JS -->
+            </div>
         </div>
     </div>
 </div>
 
 <script>
     let historyData = {};
-    Chart.defaults.font.family = "'Fira Code', monospace";
-    Chart.defaults.color = '#64748b';
+    let sortedDates = [];
     
-    // Enterprise color palette generated by AI engine
-    const COLORS = ['#1E40AF', '#3B82F6', '#60A5FA', '#93C5FD', '#16A34A', '#4ADE80', '#D97706', '#FBBF24', '#8B5CF6'];
+    let lineChartObj = null;
+    let pieChartObj = null;
+
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.color = '#64748b';
+    const COLORS = ['#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#14B8A6', '#6366F1'];
 
     async function init() {
         try {
             const resp = await fetch('/api/revenue');
             historyData = await resp.json();
+            sortedDates = Object.keys(historyData).sort().reverse();
             
-            const dates = Object.keys(historyData).sort();
-            if (dates.length > 0) {
-                document.getElementById('lastUpdated').innerText = `LAST SYNC: ${formatVN(dates[dates.length-1])}`;
+            if (sortedDates.length > 0) {
+                document.getElementById('lastUpdated').innerText = `🔄 Cập nhật: ${formatVNDate(sortedDates[0])}`;
             }
-
-            processData();
-            renderCalendar();
+            
+            // Setup MTD which is fixed regardless of filter
+            setupFixedMTD();
+            
+            // Apply default filter (today)
+            applyFilter();
         } catch (e) {
             console.error('Failed to load data', e);
+            document.getElementById('lastUpdated').innerText = `⚠️ Lỗi mất kết nối!`;
         }
     }
 
-    function formatVN(dateStr) {
+    function formatVNDate(dateStr) {
+        if (!dateStr) return '';
         const [y, m, d] = dateStr.split('-');
-        return `${d}/${m}/${y}`;
+        return `${d}/${m}`;
     }
 
-    function processData() {
-        const sortedDates = Object.keys(historyData).sort().reverse();
+    function setupFixedMTD() {
+        if(sortedDates.length === 0) return;
+        const latestDataParts = sortedDates[0].split('-');
+        const currentMonthPrefix = `${latestDataParts[0]}-${latestDataParts[1]}`; // YYYY-MM
         
-        // 1. Weekly Stats
-        let weekTotal = 0;
-        let appSummary = {};
-        for (let i = 0; i < Math.min(7, sortedDates.length); i++) {
-            const day = historyData[sortedDates[i]];
-            weekTotal += day.total;
-            day.apps.forEach(app => {
-                appSummary[app.name] = (appSummary[app.name] || 0) + app.rev;
-            });
+        let monthIterRev = 0;
+        let daysInMonthSoFar = 0;
+        for (let d of sortedDates) {
+            if (d.startsWith(currentMonthPrefix)) {
+                monthIterRev += historyData[d].total;
+                daysInMonthSoFar++;
+            }
         }
-        document.getElementById('weekRev').innerText = `$${weekTotal.toFixed(2)}`;
-
-        // 2. Month Stats
-        const now = new Date();
-        const curM = (now.getMonth() + 1).toString().padStart(2, '0');
-        const curY = now.getFullYear().toString();
-        let monthTotal = 0, monthDays = 0;
-        Object.entries(historyData).forEach(([d, val]) => {
-            if (d.startsWith(`${curY}-${curM}`)) { monthTotal += val.total; monthDays++; }
-        });
-        document.getElementById('monthRev').innerText = `$${monthTotal.toFixed(2)}`;
-        if (monthDays > 0) {
-            const proj = (monthTotal / monthDays) * new Date(now.getFullYear(), now.getMonth()+1, 0).getDate();
-            document.getElementById('monthProjected').innerText = `Projected: $${proj.toFixed(2)}`;
+        
+        document.getElementById('lblMonth').innerText = `Tháng ${latestDataParts[1]} (MTD)`;
+        document.getElementById('valMonthRev').innerText = `$${monthIterRev.toFixed(2)}`;
+        
+        if (daysInMonthSoFar > 0) {
+            const tempDate = new Date(latestDataParts[0], latestDataParts[1], 0); // Last day of month
+            const totalDays = tempDate.getDate();
+            const projected = (monthIterRev / daysInMonthSoFar) * totalDays;
+            document.getElementById('valMonthProj').innerText = `Dự phóng: $${projected.toFixed(0)}`;
         }
-
-        // 3. App Rankings & Charts
-        const appList = Object.entries(appSummary).sort((a,b) => b[1] - a[1]);
-        if (appList.length > 0) {
-            document.getElementById('topApp').innerText = appList[0][0];
-            document.getElementById('topAppRev').innerText = `$${appList[0][1].toFixed(2)} (7D)`;
-            document.getElementById('activeAppsCount').innerText = appList.length;
-        }
-
-        renderAppList(appList);
-        renderAppPie(appList);
-        renderLineChart(sortedDates.slice(0, 7).reverse());
     }
 
-    function renderAppList(appList) {
-        const body = document.getElementById('appRankBody');
-        body.innerHTML = appList.map((app, i) => `
-            <tr>
-                <td><span class="app-tag" style="background: ${COLORS[i % COLORS.length]}"></span><span style="font-weight: 500;">${app[0]}</span></td>
-                <td class="data-text" style="text-align: right; font-weight: 600; color: #0F172A;">$${app[1].toFixed(2)}</td>
-            </tr>
-        `).join('');
+    function applyFilter() {
+        const filterChoice = document.getElementById('timeFilter').value;
+        if(sortedDates.length === 0) return;
+
+        let curPeriodDates = [];
+        let prevPeriodDates = [];
+        let lblHero = "Doanh thu";
+
+        if (filterChoice === 'today') {
+            curPeriodDates = [sortedDates[0]];
+            prevPeriodDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
+            lblHero = "Doanh thu Hôm nay";
+        } else if (filterChoice === 'yesterday') {
+            curPeriodDates = sortedDates.length > 1 ? [sortedDates[1]] : [sortedDates[0]];
+            prevPeriodDates = sortedDates.length > 2 ? [sortedDates[2]] : [];
+            lblHero = "Doanh thu Hôm qua";
+        } else if (filterChoice === '7days') {
+            curPeriodDates = sortedDates.slice(0, 7);
+            prevPeriodDates = sortedDates.slice(7, 14);
+            lblHero = "Tổng 7 Ngày Qua";
+        } else if (filterChoice === '30days') {
+            curPeriodDates = sortedDates.slice(0, 30);
+            prevPeriodDates = sortedDates.slice(30, 60);
+            lblHero = "Tổng 30 Ngày Qua";
+        } else if (filterChoice === 'thismonth') {
+            const currentMonthPrefix = sortedDates[0].substring(0, 7);
+            curPeriodDates = sortedDates.filter(d => d.startsWith(currentMonthPrefix));
+            // prev month basic logic (heuristic)
+            const prevDaysLimit = curPeriodDates.length;
+            prevPeriodDates = sortedDates.filter(d => !d.startsWith(currentMonthPrefix)).slice(0, prevDaysLimit);
+            lblHero = "Tháng Này";
+        }
+
+        renderDashboardBlock(curPeriodDates, prevPeriodDates, lblHero);
     }
 
-    function renderAppPie(appList) {
-        const ctx = document.getElementById('appPieChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: appList.map(a => a[0]),
-                datasets: [{
-                    data: appList.map(a => a[1]),
-                    backgroundColor: COLORS,
-                    borderWidth: 2,
-                    borderColor: '#FFFFFF',
-                    hoverOffset: 6
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                plugins: { legend: { display: false }, tooltip: { bodyFont: { family: "'Fira Code', monospace" } } },
-                cutout: '65%'
+    function renderDashboardBlock(curDates, prevDates, heroLabel) {
+        // Compute Totals
+        let curTotal = 0;
+        let prevTotal = 0;
+        let appAgg = {};
+
+        curDates.forEach(d => {
+            if(historyData[d]) {
+                curTotal += historyData[d].total;
+                historyData[d].apps.forEach(app => {
+                    appAgg[app.name] = (appAgg[app.name] || 0) + app.rev;
+                });
             }
         });
+
+        prevDates.forEach(d => {
+            if(historyData[d]) prevTotal += historyData[d].total;
+        });
+
+        // Update Hero
+        document.getElementById('lblHeroRev').innerText = heroLabel;
+        document.getElementById('valHeroRev').innerText = `$${curTotal.toFixed(2)}`;
+
+        // Trend
+        const badgeObj = document.getElementById('trendHeroBadge');
+        if (prevTotal > 0) {
+            const pct = ((curTotal - prevTotal) / prevTotal) * 100;
+            if (pct >= 0) {
+                badgeObj.className = 'trend-badge positive';
+                badgeObj.innerText = `+${pct.toFixed(1)}% ↗`;
+            } else {
+                badgeObj.className = 'trend-badge negative';
+                badgeObj.innerText = `${pct.toFixed(1)}% ↘`;
+            }
+            document.getElementById('trendHeroText').innerText = `so với ${prevDates.length} ngày liền trước`;
+        } else {
+            badgeObj.className = 'trend-badge neutral';
+            badgeObj.innerText = `N/A`;
+            document.getElementById('trendHeroText').innerText = `Không đủ dữ liệu so sánh`;
+        }
+
+        // Update Avg
+        let avg = curDates.length > 0 ? (curTotal / curDates.length) : 0;
+        document.getElementById('valAvgRev').innerText = `$${avg.toFixed(2)}`;
+        document.getElementById('descAvgRev').innerText = `/ ${curDates.length} ngày`;
+
+        // Update Top App
+        const appArr = Object.entries(appAgg).sort((a,b) => b[1] - a[1]);
+        if (appArr.length > 0) {
+            document.getElementById('valTopApp').innerText = appArr[0][0];
+            document.getElementById('valTopAppRev').innerText = `$${appArr[0][1].toFixed(2)}`;
+        } else {
+            document.getElementById('valTopApp').innerText = 'Chưa có data';
+            document.getElementById('valTopAppRev').innerText = '--';
+        }
+
+        renderAppListUI(appArr);
+        renderCharts(curDates.reverse(), appArr); 
     }
 
-    function renderLineChart(dates) {
-        const ctx = document.getElementById('revenueLineChart').getContext('2d');
-        new Chart(ctx, {
+    function renderAppListUI(appArr) {
+        const container = document.getElementById('appListUI');
+        container.innerHTML = appArr.map((app, i) => {
+            const cColor = COLORS[i % COLORS.length];
+            return `
+            <div class="app-item">
+                <div class="app-name-wrap">
+                    <div class="app-dot" style="background-color: ${cColor}"></div>
+                    <div class="app-name">${app[0]}</div>
+                </div>
+                <div class="app-rev">$${app[1].toFixed(2)}</div>
+            </div>
+            `;
+        }).join('');
+    }
+
+    function renderCharts(orderedDates, appArr) {
+        const lineCtx = document.getElementById('revenueLineChart').getContext('2d');
+        const pieCtx = document.getElementById('appPieChart').getContext('2d');
+
+        // Destroy previous charts to redraw
+        if (lineChartObj) lineChartObj.destroy();
+        if (pieChartObj) pieChartObj.destroy();
+
+        // 1. Line Chart
+        lineChartObj = new Chart(lineCtx, {
             type: 'line',
             data: {
-                labels: dates.map(d => d.split('-')[2] + '/' + d.split('-')[1]),
+                labels: orderedDates.map(d => formatVNDate(d)),
                 datasets: [{
-                    label: 'Yield',
-                    data: dates.map(d => historyData[d].total),
-                    borderColor: '#1E40AF',
-                    backgroundColor: 'rgba(30, 64, 175, 0.08)',
+                    label: 'Doanh thu ($)',
+                    data: orderedDates.map(d => historyData[d].total),
+                    borderColor: '#3B82F6', // accent
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
                     borderWidth: 3,
-                    tension: 0.3,
+                    tension: 0.4,
                     fill: true,
                     pointBackgroundColor: '#FFFFFF',
-                    pointBorderColor: '#1E40AF',
+                    pointBorderColor: '#3B82F6',
                     pointBorderWidth: 2,
-                    pointRadius: 4,
+                    pointRadius: window.innerWidth > 600 ? 4 : 2,
                     pointHoverRadius: 6
                 }]
             },
@@ -409,72 +469,53 @@
                     legend: { display: false },
                     tooltip: {
                         backgroundColor: '#0F172A',
-                        titleFont: { family: "'Fira Code', monospace" },
-                        bodyFont: { family: "'Fira Code', monospace" },
-                        padding: 12,
-                        cornerRadius: 4
+                        titleFont: { family: "'Inter', sans-serif", weight: 600 },
+                        bodyFont: { family: "'Inter', sans-serif", weight: 500, size: 14 },
+                        padding: 12, cornerRadius: 8
                     }
                 },
                 scales: {
-                    y: { 
-                        grid: { color: '#E2E8F0', drawBorder: false }, 
-                        ticks: { color: '#64748b', callback: function(value) { return '$' + value; } } 
-                    },
-                    x: { 
-                        grid: { display: false }, 
-                        ticks: { color: '#64748b' } 
-                    }
+                    y: { grid: { color: '#F1F5F9' }, border: { display: false }, ticks: { callback: v => '$'+v } },
+                    x: { grid: { display: false }, border: { display: false } }
                 },
-                interaction: {
-                    intersect: false,
-                    mode: 'index',
-                },
+                interaction: { intersect: false, mode: 'index' }
             }
         });
-    }
 
-    function renderCalendar() {
-        const now = new Date();
-        const first = new Date(now.getFullYear(), now.getMonth(), 1);
-        const last = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-        let startIdx = (first.getDay() === 0) ? 6 : first.getDay() - 1;
+        // 2. Pie Chart
+        const pieLabels = appArr.map(a => a[0]);
+        const pieData = appArr.map(a => a[1]);
         
-        const grid = document.getElementById('calendarGrid');
-        while (grid.children.length > 7) grid.removeChild(grid.lastChild);
-
-        for (let i = 0; i < startIdx; i++) grid.appendChild(document.createElement('div'));
-
-        for (let d = 1; d <= last.getDate(); d++) {
-            const dStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
-            const el = document.createElement('div');
-            el.className = 'day';
-            if (d === now.getDate()) el.classList.add('today');
-            el.innerHTML = `<span class="day-date">${d}</span>`;
-            if (historyData[dStr]) {
-                el.classList.add('has-data');
-                el.innerHTML += `<span class="day-rev">$${historyData[dStr].total.toFixed(2)}</span>`;
-                el.onclick = () => showDetail(dStr);
+        pieChartObj = new Chart(pieCtx, {
+            type: 'doughnut',
+            data: {
+                labels: pieLabels,
+                datasets: [{
+                    data: pieData,
+                    backgroundColor: COLORS.slice(0, pieData.length),
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true, maintainAspectRatio: false,
+                cutout: '70%',
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0F172A',
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                if (label) { label += ': '; }
+                                if (context.parsed !== null) { label += '$' + context.parsed.toFixed(2); }
+                                return label;
+                            }
+                        }
+                    }
+                }
             }
-            grid.appendChild(el);
-        }
-    }
-
-    function showDetail(dateStr) {
-        const data = historyData[dateStr];
-        document.getElementById('detailDate').innerText = `Date: ${formatVN(dateStr)}`;
-        document.getElementById('detailList').innerHTML = data.apps.map(app => `
-            <div style="display:flex; justify-content:space-between; padding: 0.8rem 0; border-bottom: 1px solid var(--color-border);">
-                <span style="font-weight:500; color: #0F172A;">${app.name}</span>
-                <span class="data-text" style="color:var(--color-primary); font-weight:600;">$${app.rev.toFixed(2)}</span>
-            </div>
-        `).join('');
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('detailPanel').style.display = 'block';
-    }
-
-    function closeDetail() {
-        document.getElementById('overlay').style.display = 'none';
-        document.getElementById('detailPanel').style.display = 'none';
+        });
     }
 
     init();
