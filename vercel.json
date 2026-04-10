@@ -6,13 +6,21 @@
       "use": "@vercel/python"
     }
   ],
-  "routes": [
+  "rewrites": [
     {
-      "src": "/api/revenue",
-      "dest": "/api/revenue.py",
-      "headers": {
-        "Cache-Control": "s-maxage=60, stale-while-revalidate=120"
-      }
+      "source": "/api/revenue",
+      "destination": "/api/revenue.py"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/api/revenue.py",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "s-maxage=60, stale-while-revalidate=120"
+        }
+      ]
     }
   ]
 }
