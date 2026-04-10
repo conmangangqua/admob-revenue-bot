@@ -1,6 +1,6 @@
 {
   "2026-04-09": {
-    "total": 2423.29,
+    "total": 2423.85,
     "apps": [
       {
         "name": "Aura-Recover",
@@ -16,14 +16,14 @@
       },
       {
         "name": "Quicksave",
-        "rev": 2274.5,
-        "imp": 316796,
+        "rev": 2275.07,
+        "imp": 316864,
         "ecpm": 7.18
       },
       {
         "name": "Herond Snapvid",
         "rev": 58.04,
-        "imp": 14838,
+        "imp": 14839,
         "ecpm": 3.91
       }
     ]
