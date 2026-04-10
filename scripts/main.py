@@ -38,6 +38,48 @@ def get_access_token_local(client_id: str, client_secret: str, refresh_token: st
         return json.loads(r.read())["access_token"]
 
 
+def save_historical_data(apps_data, report_date):
+    """Lưu dữ liệu doanh thu vào file JSON lịch sử để Web Dashboard hiển thị."""
+    # Tìm đường dẫn tuyệt đối đến thư mục data/
+    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    history_file = os.path.join(base_dir, "data", "revenue_history.json")
+    
+    # Đọc dữ liệu cũ nếu có
+    history = {}
+    if os.path.exists(history_file):
+        try:
+            with open(history_file, "r", encoding="utf-8") as f:
+                history = json.load(f)
+        except Exception:
+            history = {}
+
+    # Chuẩn bị dữ liệu mới (theo ngày YYYY-MM-DD làm key)
+    date_key = report_date.strftime("%Y-%m-%d")
+    total_rev = sum(app["revenue"] for app in apps_data)
+    
+    # Chỉ lưu các app có doanh thu để file JSON nhẹ nhàng
+    history[date_key] = {
+        "total": round(total_rev, 2),
+        "apps": [
+            {
+                "name": app["app_name"],
+                "rev": round(app["revenue"], 2),
+                "imp": app["impressions"],
+                "ecpm": round(app["ecpm"], 2)
+            }
+            for app in apps_data if app["revenue"] > 0
+        ]
+    }
+    
+    # Sắp xếp lại theo thời gian cho đẹp (tùy chọn)
+    sorted_history = dict(sorted(history.items(), reverse=True))
+
+    # Ghi lại file
+    with open(history_file, "w", encoding="utf-8") as f:
+        json.dump(sorted_history, f, indent=2, ensure_ascii=False)
+    print(f"   💾 Đã lưu dữ liệu lịch sử ngày {date_key} vào: {history_file}")
+
+
 def main():
     print("=" * 55)
     print("  📊 Firebase Revenue Bot — Bắt đầu chạy")
@@ -92,11 +134,14 @@ def main():
     )
 
     if success:
-        print("\n✅ Hoàn tất!")
+        print("\n✅ Hoàn tất gửi Discord!")
     else:
         # Discord fail → chỉ warn, không crash workflow
         print("\n⚠️  Gửi Discord thất bại — nhưng data đã lấy thành công.")
-        print("   👉 Sếp cần tạo lại Discord Webhook và update GitHub Secret DISCORD_WEBHOOK_URL")
+
+    # [NEW] Lưu dữ liệu vào file lịch sử cho Web Dashboard
+    print("\n📂 Đang lưu dữ liệu lịch sử...")
+    save_historical_data(apps_today, yesterday)
 
 
 if __name__ == "__main__":

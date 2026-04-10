@@ -1,0 +1,52 @@
+name: 🚀 Deploy Dashboard to Pages
+
+on:
+  # Tự động deploy khi có thay đổi ở giao diện hoặc dữ liệu
+  push:
+    branches: ["main"]
+    paths:
+      - 'index.html'
+      - 'data/**'
+  
+  # Tự động deploy SAU KHI Bot báo cáo doanh thu chạy xong thành công
+  workflow_run:
+    workflows: ["📊 Daily AdMob Revenue Report"]
+    types:
+      - completed
+
+  # Cho phép chạy thủ công để test
+  workflow_dispatch:
+
+# Cấp quyền tối thiểu cần thiết để deploy Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Đảm bảo chỉ có một tiến trình deploy chạy tại một thời điểm
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: ⚙️ Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: 📤 Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Deploy toàn bộ thư mục root (chứa index.html và data/)
+          path: '.'
+
+      - name: 🚀 Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

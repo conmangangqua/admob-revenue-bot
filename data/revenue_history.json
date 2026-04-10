@@ -1,0 +1,26 @@
+{
+  "2026-04-10": {
+    "total": 245.8,
+    "apps": [
+      { "name": "B098 - Ai Art", "rev": 150.2, "imp": 7500, "ecpm": 20.03 },
+      { "name": "B099 - PDF Tool", "rev": 72.4, "imp": 4100, "ecpm": 17.66 },
+      { "name": "B100 - Scanner", "rev": 23.2, "imp": 1400, "ecpm": 16.57 }
+    ]
+  },
+  "2026-04-09": {
+    "total": 236.3,
+    "apps": [
+      { "name": "B098 - Ai Art", "rev": 145.3, "imp": 7200, "ecpm": 20.18 },
+      { "name": "B099 - PDF Tool", "rev": 67.2, "imp": 3800, "ecpm": 17.68 },
+      { "name": "B100 - Scanner", "rev": 23.8, "imp": 1450, "ecpm": 16.41 }
+    ]
+  },
+  "2026-04-08": {
+    "total": 210.22,
+    "apps": [
+      { "name": "B098 - Ai Art", "rev": 130.5, "imp": 6800, "ecpm": 19.19 },
+      { "name": "B099 - PDF Tool", "rev": 60.1, "imp": 3500, "ecpm": 17.17 },
+      { "name": "B100 - Scanner", "rev": 19.62, "imp": 1200, "ecpm": 16.35 }
+    ]
+  }
+}

@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 AdMob Revenue Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --primary-blue: #38bdf8;
+            --success-green: #4ade80;
+            --danger-red: #f87171;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.05) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(74, 222, 128, 0.05) 0%, transparent 20%);
+            color: var(--text-main);
+            min-height: 100vh;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        h1 { font-size: 1.8rem; font-weight: 700; letter-spacing: -0.025em; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+        }
+
+        .stat-label { color: var(--text-muted); font-size: 0.875rem; font-weight: 600; text-transform: uppercase; }
+        .stat-value { font-size: 2rem; font-weight: 700; margin: 0.5rem 0; color: var(--primary-blue); }
+
+        .dashboard-main {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        /* Calendar Styles */
+        .calendar-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 1rem;
+        }
+
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.5rem;
+            text-align: center;
+        }
+
+        .day-label { color: var(--text-muted); font-size: 0.75rem; font-weight: 700; padding: 0.5rem 0; }
+        
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 0.5rem;
+            background: rgba(255,255,255,0.03);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .day:hover { background: rgba(255,255,255,0.1); transform: scale(1.05); }
+        .day.has-data { border: 1px solid rgba(56, 189, 248, 0.3); }
+        .day.today { outline: 2px solid var(--primary-blue); outline-offset: 2px; }
+
+        .day-rev { font-size: 0.7rem; color: var(--success-green); font-weight: 600; margin-top: 2px; }
+
+        /* Chart Styles */
+        .chart-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 1.5rem;
+            border-radius: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Modal / Detail Styles */
+        #detailPanel {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 500px;
+            background: #1e293b;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 1rem;
+            padding: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            display: none;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .btn-close {
+            background: none; border: none; color: var(--text-muted);
+            font-size: 1.5rem; cursor: pointer; float: right;
+        }
+
+        @media (max-width: 900px) {
+            .dashboard-main { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeDetail()"></div>
+<div id="detailPanel">
+    <button class="btn-close" onclick="closeDetail()">×</button>
+    <h3 id="detailDate" style="margin-bottom: 1.5rem; color: var(--primary-blue);">Chi Tiết Doanh Thu</h3>
+    <div id="detailList"></div>
+</div>
+
+<div class="container">
+    <header>
+        <h1>📊 AdMob Hub Dashboard</h1>
+        <div id="lastUpdated" style="font-size: 0.8rem; color: var(--text-muted);">Cập nhật: --/--</div>
+    </header>
+
+    <div class="summary-grid">
+        <div class="stat-card">
+            <div class="stat-label">Doanh thu 7 ngày qua</div>
+            <div class="stat-value" id="weekRev">$0.00</div>
+            <div id="weekDelta" style="font-size: 0.8rem;">--</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">Doanh thu tháng này</div>
+            <div class="stat-value" id="monthRev">$0.00</div>
+            <div id="monthProjected" style="font-size: 0.8rem; color: var(--text-muted);">Dự kiến: $--</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-label">App doanh thu cao nhất</div>
+            <div class="stat-value" id="topApp" style="font-size: 1.2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">--</div>
+            <div id="topAppRev" style="font-size: 0.8rem; color: var(--success-green);">--</div>
+        </div>
+    </div>
+
+    <div class="dashboard-main">
+        <div class="calendar-card">
+            <div class="calendar-header">
+                <h3 id="currentMonthYear">Tháng -- năm --</h3>
+            </div>
+            <div class="calendar-grid" id="calendarGrid">
+                <div class="day-label">T2</div>
+                <div class="day-label">T3</div>
+                <div class="day-label">T4</div>
+                <div class="day-label">T5</div>
+                <div class="day-label">T6</div>
+                <div class="day-label">T7</div>
+                <div class="day-label">CN</div>
+                <!-- Days will be generated by JS -->
+            </div>
+        </div>
+
+        <div class="chart-card">
+            <h3 style="margin-bottom: 1rem;">Xu hướng 7 ngày gần nhất</h3>
+            <div style="flex-grow: 1; position: relative;">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let historyData = {};
+
+    async function init() {
+        try {
+            const resp = await fetch('data/revenue_history.json');
+            historyData = await resp.json();
+            
+            const dates = Object.keys(historyData).sort();
+            if (dates.length > 0) {
+                document.getElementById('lastUpdated').innerText = `Cập nhật: ${formatVN(dates[dates.length-1])}`;
+            }
+
+            updateSummary();
+            renderCalendar();
+            renderChart();
+        } catch (e) {
+            console.error("Lỗi khi tải dữ liệu:", e);
+            document.getElementById('appContainer').innerHTML = `<p style="text-align:center; padding: 2rem;">Chưa có dữ liệu lịch sử. Vui lòng đợi bot chạy đợt tiếp theo.</p>`;
+        }
+    }
+
+    function formatVN(dateStr) {
+        const [y, m, d] = dateStr.split('-');
+        return `${d}/${m}/${y}`;
+    }
+
+    function updateSummary() {
+        const sortedDates = Object.keys(historyData).sort().reverse();
+        
+        // 7 days
+        let weekTotal = 0;
+        for (let i = 0; i < Math.min(7, sortedDates.length); i++) {
+            weekTotal += historyData[sortedDates[i]].total;
+        }
+        document.getElementById('weekRev').innerText = `$${weekTotal.toFixed(2)}`;
+
+        // Month
+        const now = new Date();
+        const currentM = (now.getMonth() + 1).toString().padStart(2, '0');
+        const currentY = now.getFullYear().toString();
+        let monthTotal = 0;
+        let dayCount = 0;
+        
+        // Top App
+        let appStats = {};
+
+        Object.entries(historyData).forEach(([d, val]) => {
+            if (d.startsWith(`${currentY}-${currentM}`)) {
+                monthTotal += val.total;
+                dayCount++;
+            }
+            val.apps.forEach(app => {
+                appStats[app.name] = (appStats[app.name] || 0) + app.rev;
+            });
+        });
+
+        document.getElementById('monthRev').innerText = `$${monthTotal.toFixed(2)}`;
+        
+        if (dayCount > 0) {
+            const avg = monthTotal / dayCount;
+            const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+            document.getElementById('monthProjected').innerText = `Dự kiến: $${(avg * daysInMonth).toFixed(2)}`;
+        }
+
+        // Top App
+        let topAppName = "--";
+        let topAppVal = 0;
+        Object.entries(appStats).forEach(([name, rev]) => {
+            if (rev > topAppVal) {
+                topAppVal = rev;
+                topAppName = name;
+            }
+        });
+        document.getElementById('topApp').innerText = topAppName;
+        document.getElementById('topAppRev').innerText = `$${topAppVal.toFixed(2)} (Tổng lịch sử)`;
+    }
+
+    function renderCalendar() {
+        const now = new Date();
+        const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+        const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+        
+        document.getElementById('currentMonthYear').innerText = `Tháng ${now.getMonth()+1} năm ${now.getFullYear()}`;
+        
+        const grid = document.getElementById('calendarGrid');
+        // Clear previous days (keep T2..CN labels)
+        while (grid.children.length > 7) grid.removeChild(grid.lastChild);
+
+        // Padding for first day (Monday = 1, Sunday = 0)
+        let firstDayIdx = firstDay.getDay() - 1;
+        if (firstDayIdx < 0) firstDayIdx = 6; // Sunday fix
+        
+        for (let i = 0; i < firstDayIdx; i++) {
+            const empty = document.createElement('div');
+            grid.appendChild(empty);
+        }
+
+        for (let d = 1; d <= lastDay.getDate(); d++) {
+            const dateStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
+            const dayEl = document.createElement('div');
+            dayEl.className = 'day';
+            if (d === now.getDate()) dayEl.classList.add('today');
+            
+            dayEl.innerHTML = `<span>${d}</span>`;
+            
+            if (historyData[dateStr]) {
+                dayEl.classList.add('has-data');
+                dayEl.innerHTML += `<span class="day-rev">$${historyData[dateStr].total.toFixed(2)}</span>`;
+                dayEl.onclick = () => showDetail(dateStr);
+            }
+            
+            grid.appendChild(dayEl);
+        }
+    }
+
+    function renderChart() {
+        const sortedDates = Object.keys(historyData).sort().slice(-7);
+        const labels = sortedDates.map(d => d.split('-')[2] + '/' + d.split('-')[1]);
+        const values = sortedDates.map(d => historyData[d].total);
+
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Doanh thu ($)',
+                    data: values,
+                    borderColor: '#38bdf8',
+                    backgroundColor: 'rgba(56, 189, 248, 0.1)',
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true,
+                    pointBackgroundColor: '#38bdf8'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                }
+            }
+        });
+    }
+
+    function showDetail(dateStr) {
+        const data = historyData[dateStr];
+        document.getElementById('detailDate').innerText = `Chi tiết ${formatVN(dateStr)}: $${data.total.toFixed(2)}`;
+        const list = document.getElementById('detailList');
+        list.innerHTML = data.apps.map(app => `
+            <div class="detail-item">
+                <span style="font-weight: 600;">${app.name}</span>
+                <span style="color: var(--success-green);">$${app.rev.toFixed(2)}</span>
+            </div>
+        `).join('');
+        
+        document.getElementById('overlay').style.display = 'block';
+        document.getElementById('detailPanel').style.display = 'block';
+    }
+
+    function closeDetail() {
+        document.getElementById('overlay').style.display = 'none';
+        document.getElementById('detailPanel').style.display = 'none';
+    }
+
+    init();
+</script>
+</body>
+</html>
