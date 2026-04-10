@@ -6,6 +6,7 @@
     <title>📱 AdMob Revenue Intelligence</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         :root {
             --color-bg: #F0F4F8;
@@ -47,7 +48,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             flex-wrap: wrap;
             gap: 1rem;
         }
@@ -89,6 +90,15 @@
             transition: all 0.2s;
         }
         select:hover { border-color: var(--color-accent); }
+        
+        /* Cà khịa Joke Box */
+        .ai-joke-box {
+            background: rgba(139, 92, 246, 0.1); border-left: 4px solid #8B5CF6; border-radius: 4px 8px 8px 4px;
+            padding: 0.75rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem;
+            animation: fadeIn 0.5s ease;
+        }
+        .ai-joke-text { color: #6D28D9; font-weight: 600; font-size: 0.95rem; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* Summary Grid */
         .summary-grid {
@@ -112,12 +122,22 @@
         }
         .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
 
-        .stat-card.hero { background: var(--hero-bg); color: var(--hero-text); box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3); }
+        /* Hero Card Easter Egg Clickable styling */
+        .stat-card.hero { 
+            background: var(--hero-bg); color: var(--hero-text); box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            cursor: pointer; user-select: none;
+        }
         .stat-card.hero .stat-label { color: rgba(255,255,255,0.9); text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .stat-card.hero .stat-value { color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .stat-card.hero .trend-badge.positive { background: rgba(16, 185, 129, 0.25); color: #FFFFFF; }
         .stat-card.hero .trend-badge.negative { background: rgba(239, 68, 68, 0.3); color: #FFFFFF; }
         .stat-card.hero .trend-text { color: rgba(255,255,255,0.85); text-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        
+        .converter-box {
+            margin-top: 0.5rem; padding: 0.3rem 0.6rem; border-radius: 6px;
+            background: rgba(255,255,255,0.15); display: inline-block; font-size: 0.8rem;
+            font-weight: 500; color: #FFFFFF; letter-spacing: 0.02em; animation: pulse 3s infinite;
+        }
 
         .stat-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
         .stat-icon { font-size: 1.25rem; }
@@ -200,17 +220,25 @@
         </div>
     </header>
 
+    <div class="ai-joke-box" id="aiJokeBox" style="display: none;">
+        <span style="font-size: 1.5rem;">🤖</span>
+        <span class="ai-joke-text" id="aiJokeText">Đang phân tích số...</span>
+    </div>
+
     <div class="summary-grid">
-        <div class="stat-card hero">
+        <!-- Add onclick to Hero Card for Easter Egg -->
+        <div class="stat-card hero" id="heroCard" onclick="triggerEasterEgg()">
             <div class="stat-header">
                 <span class="stat-icon">💰</span>
                 <span class="stat-label" id="lblHeroRev">Tổng Doanh thu</span>
+                <span style="font-size: 0.6rem; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; margin-left: auto;">Tap here 💸</span>
             </div>
             <div class="stat-value" id="valHeroRev">$0.00</div>
             <div class="trend-wrap">
                 <span class="trend-badge" id="trendHeroBadge">--</span>
                 <span class="trend-text" id="trendHeroText">so với kỳ trước</span>
             </div>
+            <div id="converterBox" style="display:none;"></div>
         </div>
 
         <div class="stat-card">
@@ -270,6 +298,7 @@
     let sortedDates = [];
     let allApps = new Set();
     let currentVndRate = 25400; // Tỷ giá dự phòng
+    let clickCount = 0;
     
     let lineChartObj = null;
     let pieChartObj = null;
@@ -277,6 +306,26 @@
     Chart.defaults.font.family = "'Inter', sans-serif";
     Chart.defaults.color = '#64748b';
     const COLORS = ['#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#14B8A6', '#6366F1'];
+
+    const POSITIVE_QUOTES = [
+        "Sếp đi sắm ngay chiếc Mẹc đi, để em code phần còn lại cho! 🚗💨",
+        "Tuyệt trần! Trend xanh mướt thế này tối nay anh em đi nhậu Buffet Sếp nhỉ? 🥂",
+        "Tiền về như lốc! Gửi Bank lấy lãi kép thôi Sếp! 💸",
+        "Nhìn số nhảy sướng con mắt, mai cho em xin nghỉ phép 1 hôm đi shopping nhé! 🛍️"
+    ];
+    const NEGATIVE_QUOTES = [
+        "Tụt tí thôi, phong độ là nhất thời. Hít thở sâu vào Sếp đừng giận em! 🧘‍♂️",
+        "Tiền ngoài trạm thu phí còn tắc cơ mà, mai rồi cá lại về lưới Sếp ạ! 🚦",
+        "Thôi đừng căng thẳng Sếp ơi! Làm cốc Trà đá 3k hút thuốc lào cho tỉnh nhé 🍵",
+        "Đồ thị biểu diễn nhịp tim đấy Sếp, lúc lên lúc xuống mới khỏe! 💓"
+    ];
+    const FUNNY_CONVERSIONS = [
+        { label: "Bát Phở Thìn bò lăn 🍜", price: 70000 },
+        { label: "Tháng Netflix Premium 🍿", price: 260000 },
+        { label: "Đĩa Vịt Quay Bắc Kinh 🦆", price: 800000 },
+        { label: "Chỉ Vàng 9999 SJC 🪙", price: 8500000 },
+        { label: "Tháng Lương Dev Quèn 👨‍💻", price: 15000000 }
+    ];
 
     async function init() {
         try {
@@ -287,7 +336,6 @@
                     const exData = await exResp.json();
                     if(exData && exData.rates && exData.rates.VND) {
                         currentVndRate = exData.rates.VND;
-                        console.log("Tỷ giá Realtime:", currentVndRate);
                     }
                 }
             } catch(ex) { console.error('Failed to load exchange rate', ex); }
@@ -323,6 +371,35 @@
         }
     }
 
+    function triggerEasterEgg() {
+        clickCount++;
+        if(clickCount >= 3) {
+            clickCount = 0;
+            // Confetti Money Rain
+            const moneyShape = confetti.shapeFromText({ text: '💸', scalar: 2.5 });
+            confetti({
+                particleCount: 150,
+                spread: 100,
+                origin: { y: 0.6 },
+                shapes: [moneyShape, 'circle'],
+                colors: ['#10B981', '#FDE047']
+            });
+            
+            // Random fun quote even if you just click
+            document.getElementById('aiJokeBox').style.display = 'flex';
+            document.getElementById('aiJokeText').innerText = "Trời mưa lộc, rơi tiền rồi kìa nhặt đi Sếp ơiiiii !!! 🚀🚀🚀";
+        }
+    }
+
+    function getFunnyConverterText(usdValue) {
+        if(usdValue <= 0) return "";
+        const vnd = usdValue * currentVndRate;
+        const mtb = FUNNY_CONVERSIONS[Math.floor(Math.random() * FUNNY_CONVERSIONS.length)];
+        const qty = Math.floor(vnd / mtb.price);
+        if (qty < 1) return `Mua được vài ly Trà Đá 🍵`;
+        return `Tương đương: ~${qty.toLocaleString('vi-VN')} ${mtb.label}`;
+    }
+
     function formatVNDate(dateStr) {
         if (!dateStr) return '';
         const [y, m, d] = dateStr.split('-');
@@ -332,7 +409,6 @@
     function formatVnd(usdValue) {
         const vnd = usdValue * currentVndRate;
         if(vnd >= 1000000) {
-            // Hiển thị dạng 24.5 Tr VNĐ nếu lớn hơn 1 Triệu
             return `~${(vnd / 1000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tr đ`;
         }
         return `~${Math.round(vnd).toLocaleString('vi-VN')} đ`;
@@ -399,10 +475,18 @@
             prevTotal += getAppRev(historyData[d], appSel);
         });
 
-        // 1. Hero Card
+        // 1. Hero Card & Fun Features
         if (appSel !== 'all') lblHero += ` (${appSel})`;
         document.getElementById('lblHeroRev').innerText = lblHero;
         document.getElementById('valHeroRev').innerHTML = `$${curTotal.toFixed(2)} <div style="font-size: 1rem; font-weight: 500; color: rgba(255,255,255,0.85); margin-top: -0.2rem; text-shadow: 0 1px 1px rgba(0,0,0,0.1);">${formatVndRaw(curTotal)}</div>`;
+
+        // The Converter Box
+        if (curTotal > 0) {
+            document.getElementById('converterBox').style.display = 'inline-block';
+            document.getElementById('converterBox').innerHTML = `<div class="converter-box">${getFunnyConverterText(curTotal)}</div>`;
+        } else {
+            document.getElementById('converterBox').style.display = 'none';
+        }
 
         const badgeObj = document.getElementById('trendHeroBadge');
         if (prevTotal > 0) {
@@ -410,10 +494,16 @@
             badgeObj.className = 'trend-badge ' + (pct >= 0 ? 'positive' : 'negative');
             badgeObj.innerText = (pct >= 0 ? '+' : '') + pct.toFixed(1) + (pct >= 0 ? '% ↗' : '% ↘');
             document.getElementById('trendHeroText').innerText = `so với ${prevDates.length} ngày liền trước`;
+            
+            // Sarcastic Bot
+            document.getElementById('aiJokeBox').style.display = 'flex';
+            let quotes = pct >= 0 ? POSITIVE_QUOTES : NEGATIVE_QUOTES;
+            document.getElementById('aiJokeText').innerText = quotes[Math.floor(Math.random() * quotes.length)];
         } else {
             badgeObj.className = 'trend-badge neutral';
             badgeObj.innerText = `N/A`;
             document.getElementById('trendHeroText').innerText = `Thiếu dữ liệu`;
+            document.getElementById('aiJokeBox').style.display = 'none';
         }
 
         // 2. Avg Daily
