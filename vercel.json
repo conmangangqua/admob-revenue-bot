@@ -1,19 +1,13 @@
 {
-  "rewrites": [
-    {
-      "source": "/api/revenue",
-      "destination": "/api/index.py"
-    }
+  "version": 2,
+  "builds": [
+    { "src": "index.html", "use": "@vercel/static" },
+    { "src": "data/**", "use": "@vercel/static" },
+    { "src": "api/index.py", "use": "@vercel/python" }
   ],
-  "headers": [
-    {
-      "source": "/api/index.py",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "s-maxage=60, stale-while-revalidate=120"
-        }
-      ]
-    }
+  "routes": [
+    { "src": "/api/revenue", "dest": "/api/index.py" },
+    { "src": "/", "dest": "/index.html" },
+    { "src": "/(.*)", "dest": "/$1" }
   ]
 }
