@@ -2,12 +2,12 @@
   "rewrites": [
     {
       "source": "/api/revenue",
-      "destination": "/api/revenue.py"
+      "destination": "/api/index.py"
     }
   ],
   "headers": [
     {
-      "source": "/api/revenue.py",
+      "source": "/api/index.py",
       "headers": [
         {
           "key": "Cache-Control",
