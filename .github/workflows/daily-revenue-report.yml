@@ -1,9 +1,9 @@
 name: 📊 Daily AdMob Revenue Report
 
 on:
-  # Chạy lúc 8:00 AM giờ Việt Nam (UTC+7) = 01:00 UTC
+  # Chạy lúc 7:45 AM giờ Việt Nam (UTC+7) = 00:45 UTC (Tránh kẹt hàng đợi)
   schedule:
-    - cron: '0 1 * * *'
+    - cron: '45 0 * * *'
 
   # Cho phép trigger thủ công để test
   workflow_dispatch:
