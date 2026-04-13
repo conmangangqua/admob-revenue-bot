@@ -736,15 +736,19 @@
                     const sdProfitStr = s.marketing_profit_vnd || '0';
                     const sdPct = s.profit_pct_sheet || '-';
 
-                    // Hàm format tiền: Nếu chọn USD thì chia tỉ giá, nếu VND thì giữ nguyên
+                    // Hàm format tiền: Giá trị file là triệu đồng -> nhân 1.000.000
                     const formatSheetVal = (valStr) => {
                         let num = parseFloat(valStr.toString().replace(/[^0-9.-]/g, ''));
                         if (isNaN(num)) return valStr;
+                        
+                        // Chuyển đổi sang đơn vị tiền đồng (đ)
+                        let realAmountVnd = num * 1000000;
+                        
                         if (isVnd) {
-                            return num.toLocaleString('vi-VN') + ' đ';
+                            return realAmountVnd.toLocaleString('vi-VN') + ' đ';
                         } else {
-                            // Convert từ VND (trong file) sang USD
-                            let usdVal = num / currentVndRate;
+                            // Quy đổi từ tiền đồng thực tế sang USD
+                            let usdVal = realAmountVnd / currentVndRate;
                             return '$' + usdVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
                         }
                     };
