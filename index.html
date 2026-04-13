@@ -618,7 +618,7 @@
             if (hasTopAppSheetData) {
                 const pColor = topAppTotalProfit < 0 ? 'var(--color-danger)' : '#10b981';
                 topAppHtml += `<div style="font-size: 0.85rem; margin-top: 0.2rem; font-weight: 700; color: ${pColor}; opacity: 0.9;">
-                    Lãi trong kỳ: ${formatSheetVal(topAppTotalProfit)}
+                    Lãi thực: ${formatSheetVal(topAppTotalProfit)}
                 </div>`;
             } else {
                 topAppHtml += `<div style="font-size: 0.85rem; margin-top: 0.2rem; font-weight: 700; color: var(--color-text-muted); opacity: 0.5;">
@@ -693,7 +693,7 @@
             let sheetInfoHtml = '';
             if (hasSheetData) {
                 const pColor = totalSheetProfit < 0 ? 'var(--color-danger)' : '#10b981';
-                sheetInfoHtml = `<div style="font-size: 0.75rem; color: ${pColor}; font-weight: 700; margin-top: 0.1rem;">Lãi (trong kỳ): ${formatSheetVal(totalSheetProfit)}</div>`;
+                sheetInfoHtml = `<div style="font-size: 0.75rem; color: ${pColor}; font-weight: 700; margin-top: 0.1rem;">Lãi thực: ${formatSheetVal(totalSheetProfit)}</div>`;
             } else {
                 sheetInfoHtml = `<div style="font-size: 0.75rem; color: var(--color-text-muted); opacity: 0.6; margin-top: 0.1rem;">Lãi: --</div>`;
             }
