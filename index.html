@@ -651,36 +651,34 @@
 
     function renderAppListUI(appArr) {
         const container = document.getElementById('appListUI');
-        const latestDateObj = historyData[sortedDates[0]];
         
         container.innerHTML = appArr.map((app, i) => {
             const appName = app[0];
             const admobRev = app[1];
-            let sheetInfoHtml = '';
+            let totalSheetProfit = 0;
+            let hasSheetData = false;
             
-            // Tìm lãi thực tế: Ưu tiên ngày đang chọn, nếu 0 thì bốc ngày gần nhất có số (thường là hôm qua)
-            if (latestDateObj) {
-                let aData = latestDateObj.apps.find(a => a.name === appName);
-                let prof = (aData?.sheet_data?.marketing_profit_vnd);
-                
-                // Nếu lãi = 0 hoặc chưa có, tìm trong lịch sử ngày gần nhất có dữ liệu
-                if (!prof || parseFloat(prof) === 0) {
-                    for (let d of sortedDates) {
-                        const prevDay = historyData[d];
-                        const prevApp = prevDay.apps.find(a => a.name === appName);
-                        if (prevApp?.sheet_data?.marketing_profit_vnd && parseFloat(prevApp.sheet_data.marketing_profit_vnd) !== 0) {
-                            prof = prevApp.sheet_data.marketing_profit_vnd;
-                            break;
+            // Tính tổng lãi trong TOÀN BỘ khoảng ngày đang chọn (curDates)
+            curDates.forEach(d => {
+                const dayData = historyData[d];
+                if (dayData && dayData.apps) {
+                    const appData = dayData.apps.find(a => a.name === appName);
+                    if (appData && appData.sheet_data && appData.sheet_data.marketing_profit_vnd) {
+                        const prof = parseFloat(appData.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                        if (!isNaN(prof)) {
+                            totalSheetProfit += prof;
+                            hasSheetData = true;
                         }
                     }
                 }
+            });
 
-                if (prof && parseFloat(prof) !== 0) {
-                    const pColor = prof.toString().includes('-') ? 'var(--color-danger)' : '#10b981';
-                    sheetInfoHtml = `<div style="font-size: 0.75rem; color: ${pColor}; font-weight: 700; margin-top: 0.1rem;">Lãi thực (Gần nhất): ${formatSheetVal(prof)}</div>`;
-                } else {
-                    sheetInfoHtml = `<div style="font-size: 0.75rem; color: var(--color-text-muted); opacity: 0.6; margin-top: 0.1rem;">Lãi: Đang cập nhật...</div>`;
-                }
+            let sheetInfoHtml = '';
+            if (hasSheetData) {
+                const pColor = totalSheetProfit < 0 ? 'var(--color-danger)' : '#10b981';
+                sheetInfoHtml = `<div style="font-size: 0.75rem; color: ${pColor}; font-weight: 700; margin-top: 0.1rem;">Lãi (trong kỳ): ${formatSheetVal(totalSheetProfit)}</div>`;
+            } else {
+                sheetInfoHtml = `<div style="font-size: 0.75rem; color: var(--color-text-muted); opacity: 0.6; margin-top: 0.1rem;">Lãi: --</div>`;
             }
 
             return `
