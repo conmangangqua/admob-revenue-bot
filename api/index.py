@@ -78,9 +78,24 @@ class handler(BaseHTTPRequestHandler):
                 # Nếu API lỗi, bỏ qua và trả về dữ liệu lịch sử an toàn
                 print(f"Error fetching live data: {e}")
 
+        # Bước 3: Nạp thêm thông tin nâng cao từ Google Sheets cho app Quicksave
+        from scripts.sheet_reader import get_sheet_data_for_app
+        quicksave_sheet_data = get_sheet_data_for_app("Quicksave")
+
+        if quicksave_sheet_data:
+            for date_str, day_info in history_data.items():
+                if date_str in quicksave_sheet_data:
+                    q_data = quicksave_sheet_data[date_str]
+                    # Tìm app Quicksave trong data
+                    if "apps" in day_info:
+                        for app in day_info["apps"]:
+                            if app["name"].lower() == 'quicksave':
+                                app["sheet_data"] = q_data
+
         # Sắp xếp lại log theo ngày giảm dần chuẩn format Chart
         sorted_history = dict(sorted(history_data.items(), reverse=True))
 
         # Trả cục JSON gộp (Hybrid Data)
         self.wfile.write(json.dumps(sorted_history).encode('utf-8'))
         return
+

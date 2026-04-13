@@ -716,6 +716,28 @@
                                 <div style="font-size: 0.8rem; color: var(--color-text-muted); font-weight: 500;">${formatVnd(a.rev)}</div>
                             </div>
                          </div>`;
+                         
+                // Nạp thông tin Sheet Data nếu có (dành riêng cho Quicksave)
+                if (a.sheet_data) {
+                    html += `<div style="background: rgba(59, 130, 246, 0.05); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.8rem; margin-top: -0.4rem; font-size: 0.85rem;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem;">
+                            <span style="color:var(--color-text-muted);">Doanh thu Ads ($)</span>
+                            <span style="font-weight:600;">$${a.sheet_data.ads_rev_usd.toLocaleString('en-US')}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem;">
+                            <span style="color:var(--color-text-muted);">Doanh thu Sub ($)</span>
+                            <span style="font-weight:600;">$${a.sheet_data.sub_rev_usd.toLocaleString('en-US')}</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem;">
+                            <span style="color:var(--color-text-muted);">Doanh thu tổng (VND)</span>
+                            <span style="font-weight:600; color:var(--color-success);">${(a.sheet_data.total_rev_vnd * 1000).toLocaleString('vi-VN')} đ</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span style="color:var(--color-text-muted);">Chi phí (VND)</span>
+                            <span style="font-weight:600; color:var(--color-danger);">${(a.sheet_data.cost_vnd * 1000).toLocaleString('vi-VN')} đ</span>
+                        </div>
+                    </div>`;
+                }
             }
         });
         html += `<div class="detail-row" style="margin-top: 0.5rem; border-top: 2px dashed var(--color-border); padding-top: 1rem;">
