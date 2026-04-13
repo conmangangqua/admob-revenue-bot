@@ -96,8 +96,15 @@ def get_sheet_data_for_app(app_name="Quicksave"):
                             
                             if val == '' or val is None:
                                 val = 0
+                            
+                            val_str = str(val).strip()
+                            # Xử lý format số kiểu Việt Nam trong Google Sheet:
+                            # Nếu chuỗi có dấu chấm (thường để phân cách hàng nghìn) như "1.947", "50.622"
+                            # Ta bỏ dấu chấm đi. Và đổi dấu phẩy thành dấu chấm cho phần thập phân nếu có.
+                            val_str = val_str.replace('.', '').replace(',', '.')
+                            
                             try:
-                                metrics_map[date_str][code_id] = float(val)
+                                metrics_map[date_str][code_id] = float(val_str)
                             except:
                                 metrics_map[date_str][code_id] = 0
                         except:
