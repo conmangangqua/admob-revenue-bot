@@ -65,16 +65,16 @@ def get_sheet_data_for_app(app_name="Quicksave"):
         for row in total_rows:
             metric_name = str(row.get(metric_col, '')).strip()
             
-            code_id = None
-            if "Ads ($)" in metric_name and "#" not in metric_name:
+            low_metric = metric_name.lower()
+            if "ads ($)" in low_metric and "#" not in low_metric:
                 code_id = 'ads_rev_usd'
-            elif "Ads #" in metric_name:
+            elif "ads #" in low_metric:
                 code_id = 'ads_rev_hash_usd'
-            elif "Sub ($)" in metric_name:
+            elif "sub ($)" in low_metric:
                 code_id = 'sub_rev_usd'
-            elif "thu tổng" in metric_name:
+            elif any(k in low_metric for k in ["thu tổng", "doanh thu", "revenue"]):
                 code_id = 'total_rev_vnd'
-            elif "Chi phí" in metric_name:
+            elif any(k in low_metric for k in ["chi phí", "cost", "marketing"]):
                 code_id = 'cost_vnd'
                 
             if code_id:
@@ -98,10 +98,20 @@ def get_sheet_data_for_app(app_name="Quicksave"):
                                 val = 0
                             
                             val_str = str(val).strip()
-                            # Xử lý format số kiểu Việt Nam trong Google Sheet:
-                            # Nếu chuỗi có dấu chấm (thường để phân cách hàng nghìn) như "1.947", "50.622"
-                            # Ta bỏ dấu chấm đi. Và đổi dấu phẩy thành dấu chấm cho phần thập phân nếu có.
-                            val_str = val_str.replace('.', '').replace(',', '.')
+                            # Xử lý format số linh hoạt hơn: 
+                            # Nếu có dấu phẩy làm thập phân (kiểu VN: 1.234,5) hoặc ngược lại
+                            if ',' in val_str and '.' in val_str:
+                                if val_str.rfind(',') > val_str.rfind('.'): # Kiểu VN 1.234,56
+                                    val_str = val_str.replace('.', '').replace(',', '.')
+                                else: # Kiểu US 1,234.56
+                                    val_str = val_str.replace(',', '')
+                            elif ',' in val_str:
+                                # Nếu sau dấu phẩy có đúng 3 chữ số -> có thể là phân cách hàng nghìn
+                                if len(val_str.split(',')[-1]) == 3: val_str = val_str.replace(',', '')
+                                else: val_str = val_str.replace(',', '.')
+                            elif '.' in val_str:
+                                # Nếu sau dấu chấm có đúng 3 chữ số -> có thể là phân cách hàng nghìn
+                                if len(val_str.split('.')[-1]) == 3: val_str = val_str.replace('.', '')
                             
                             try:
                                 metrics_map[date_str][code_id] = float(val_str)
