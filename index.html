@@ -909,15 +909,20 @@
                 const s = aData.sheet_data;
                 const pVal = parseFloat(s.marketing_profit_vnd.toString().replace(/,/g, ''));
                 const pColor = pVal < 0 ? 'var(--color-danger)' : 'var(--color-success)';
+                const pPct = s.profit_pct_sheet || '0%';
                 
-                html += `<div style="background: rgba(59, 130, 246, 0.04); padding: 0.8rem 1rem; border-radius: 10px; margin-top: -0.5rem; margin-bottom: 1.25rem; border: 1px solid rgba(59, 130, 246, 0.1); font-size: 0.9rem;">
+                html += `<div style="background: rgba(59, 130, 246, 0.04); padding: 1rem; border-radius: 12px; margin-top: -0.5rem; margin-bottom: 1.5rem; border: 1px solid rgba(59, 130, 246, 0.1); font-size: 0.9rem;">
                             <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem; opacity: 0.8;">
-                                <span style="color:var(--color-text-muted);">Giá trị từ Sheets</span>
-                                <span style="font-weight:700; color:var(--color-accent);">${formatAmount(s.total_rev_vnd * 1000000)} (đ)</span>
+                                <span style="color:var(--color-text-muted);">Doanh thu tổng (VND)</span>
+                                <span style="font-weight:700; color:var(--color-accent);">${formatSheetValWithTime(s.total_rev_vnd)}</span>
                             </div>
-                            <div style="display:flex; justify-content:space-between;">
+                            <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem; opacity: 0.8;">
+                                <span style="color:var(--color-text-muted);">Chi phí Marketing (VND)</span>
+                                <span style="font-weight:700; color:var(--color-danger);">${formatSheetValWithTime(s.cost_vnd)}</span>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; padding-top: 0.4rem; border-top: 1px dashed rgba(0,0,0,0.05);">
                                 <span style="color:var(--color-text-muted); font-weight: 600;">Lãi thực</span>
-                                <span style="font-weight:800; color:${pColor};">${formatSheetValWithTime(s.marketing_profit_vnd)}</span>
+                                <span style="font-weight:800; color:${pColor};">${formatSheetValWithTime(s.marketing_profit_vnd)} <span style="font-size: 0.75rem; opacity: 0.8;">(${pPct})</span></span>
                             </div>
                         </div>`;
             }
