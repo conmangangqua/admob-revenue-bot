@@ -580,12 +580,26 @@
 
         // 4. Top App
         const appArr = Object.entries(appAgg).sort((a,b) => b[1] - a[1]);
-        if (appArr.length > 0 && appSel === 'all') {
-            document.getElementById('valTopApp').innerText = appArr[0][0];
-            document.getElementById('valTopAppRev').innerHTML = `<div class="usd">${formatAmount(appArr[0][1])}</div>`;
-        } else if (appSel !== 'all') {
-            document.getElementById('valTopApp').innerText = appSel;
-            document.getElementById('valTopAppRev').innerHTML = `<div class="usd">${formatAmount(curTotal)}</div>`;
+        if (appArr.length > 0) {
+            const topAppName = appSel === 'all' ? appArr[0][0] : appSel;
+            const topAppRev = appSel === 'all' ? appArr[0][1] : curTotal;
+            document.getElementById('valTopApp').innerText = topAppName;
+            
+            let topAppHtml = `<div class="usd">${formatAmount(topAppRev)}</div>`;
+            
+            // Lấy thêm lãi từ Sheet của ngày gần nhất cho widget TOP
+            const latestData = historyData[sortedDates[0]];
+            if (latestData) {
+                const appInLatest = latestData.apps.find(a => a.name === topAppName);
+                if (appInLatest && appInLatest.sheet_data && appInLatest.sheet_data.marketing_profit_vnd) {
+                    const profitVal = appInLatest.sheet_data.marketing_profit_vnd;
+                    const pColor = profitVal.toString().includes('-') ? 'var(--color-danger)' : '#10b981';
+                    topAppHtml += `<div style="font-size: 0.85rem; margin-top: 0.2rem; font-weight: 700; color: ${pColor}; opacity: 0.9;">
+                        Lãi thực: ${formatSheetVal(profitVal)}
+                    </div>`;
+                }
+            }
+            document.getElementById('valTopAppRev').innerHTML = topAppHtml;
         } else {
             document.getElementById('valTopApp').innerText = '--';
             document.getElementById('valTopAppRev').innerText = '--';
@@ -628,17 +642,36 @@
 
     function renderAppListUI(appArr) {
         const container = document.getElementById('appListUI');
-        container.innerHTML = appArr.map((app, i) => `
+        const latestDateObj = historyData[sortedDates[0]];
+        
+        container.innerHTML = appArr.map((app, i) => {
+            const appName = app[0];
+            const admobRev = app[1];
+            let sheetInfoHtml = '';
+            
+            // Tìm lãi thực tế từ sheet của ngày gần nhất
+            if (latestDateObj) {
+                const aData = latestDateObj.apps.find(a => a.name === appName);
+                if (aData && aData.sheet_data && aData.sheet_data.marketing_profit_vnd) {
+                    const prof = aData.sheet_data.marketing_profit_vnd;
+                    const pColor = prof.toString().includes('-') ? 'var(--color-danger)' : '#10b981';
+                    sheetInfoHtml = `<div style="font-size: 0.75rem; color: ${pColor}; font-weight: 700; margin-top: 0.1rem;">Lãi: ${formatSheetVal(prof)}</div>`;
+                }
+            }
+
+            return `
             <div class="app-item">
                 <div class="app-name-wrap">
                     <div class="app-dot" style="background-color: ${COLORS[i % COLORS.length]}"></div>
-                    <div class="app-name">${app[0]}</div>
+                    <div class="app-name">${appName}</div>
                 </div>
                 <div style="text-align: right;">
-                    <div class="app-rev">${formatAmount(app[1])}</div>
+                    <div class="app-rev">${formatAmount(admobRev)}</div>
+                    ${sheetInfoHtml}
                 </div>
             </div>
-        `).join('');
+            `;
+        }).join('');
     }
 
     function renderCharts(orderedDates, appArr, appSel) {
