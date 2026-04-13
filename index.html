@@ -326,6 +326,7 @@
 <script>
     let historyData = {};
     let sortedDates = [];
+    let curDates = []; // Biến toàn cục lưu danh sách ngày đang lọc
     let allApps = new Set();
     let currentVndRate = 25400; // Tỷ giá dự phòng
     let clickCount = 0;
@@ -494,7 +495,7 @@
         const appSel = document.getElementById('appFilter').value;
         if(sortedDates.length === 0) return;
 
-        let curDates = [], prevDates = [], lblHero = "Tổng Doanh Thu";
+        curDates = []; prevDates = []; let lblHero = "Tổng Doanh Thu";
 
         // Logic Date Range
         if (timeFilter === 'today') {
