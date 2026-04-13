@@ -434,6 +434,15 @@
         }
     }
 
+    function formatSheetVal(val) {
+        if (val === undefined || val === null || val === '') return '--';
+        let num = parseFloat(val.toString().replace(/,/g, ''));
+        if (isNaN(num)) return val;
+        // Nếu là số nhỏ (triệu), thêm chữ Tr
+        if (Math.abs(num) < 1000) return num.toLocaleString('vi-VN') + ' Tr';
+        return num.toLocaleString('vi-VN');
+    }
+
     function getFunnyConverterText(usdValue) {
         if(usdValue <= 0) return "";
         const vnd = usdValue * currentVndRate;
@@ -591,7 +600,7 @@
             const latestData = historyData[sortedDates[0]];
             if (latestData) {
                 const appInLatest = latestData.apps.find(a => a.name === topAppName);
-                if (appInLatest && appInLatest.sheet_data && appInLatest.sheet_data.marketing_profit_vnd) {
+                if (appInLatest?.sheet_data?.marketing_profit_vnd) {
                     const profitVal = appInLatest.sheet_data.marketing_profit_vnd;
                     const pColor = profitVal.toString().includes('-') ? 'var(--color-danger)' : '#10b981';
                     topAppHtml += `<div style="font-size: 0.85rem; margin-top: 0.2rem; font-weight: 700; color: ${pColor}; opacity: 0.9;">
