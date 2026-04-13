@@ -89,7 +89,9 @@ class handler(BaseHTTPRequestHandler):
                     # Tìm app Quicksave trong data
                     if "apps" in day_info:
                         for app in day_info["apps"]:
-                            if app["name"].lower() == 'quicksave':
+                            # So khớp tên app cực kỳ cẩn thận (xóa dấu cách, viết thường)
+                            target_name = app["name"].strip().lower()
+                            if 'quicksave' in target_name:
                                 app["sheet_data"] = q_data
 
         # Sắp xếp lại log theo ngày giảm dần chuẩn format Chart

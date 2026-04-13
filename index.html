@@ -658,13 +658,28 @@
             const admobRev = app[1];
             let sheetInfoHtml = '';
             
-            // Tìm lãi thực tế từ sheet của ngày gần nhất
+            // Tìm lãi thực tế: Ưu tiên ngày đang chọn, nếu 0 thì bốc ngày gần nhất có số (thường là hôm qua)
             if (latestDateObj) {
-                const aData = latestDateObj.apps.find(a => a.name === appName);
-                if (aData && aData.sheet_data && aData.sheet_data.marketing_profit_vnd) {
-                    const prof = aData.sheet_data.marketing_profit_vnd;
+                let aData = latestDateObj.apps.find(a => a.name === appName);
+                let prof = (aData?.sheet_data?.marketing_profit_vnd);
+                
+                // Nếu lãi = 0 hoặc chưa có, tìm trong lịch sử ngày gần nhất có dữ liệu
+                if (!prof || parseFloat(prof) === 0) {
+                    for (let d of sortedDates) {
+                        const prevDay = historyData[d];
+                        const prevApp = prevDay.apps.find(a => a.name === appName);
+                        if (prevApp?.sheet_data?.marketing_profit_vnd && parseFloat(prevApp.sheet_data.marketing_profit_vnd) !== 0) {
+                            prof = prevApp.sheet_data.marketing_profit_vnd;
+                            break;
+                        }
+                    }
+                }
+
+                if (prof && parseFloat(prof) !== 0) {
                     const pColor = prof.toString().includes('-') ? 'var(--color-danger)' : '#10b981';
-                    sheetInfoHtml = `<div style="font-size: 0.75rem; color: ${pColor}; font-weight: 700; margin-top: 0.1rem;">Lãi: ${formatSheetVal(prof)}</div>`;
+                    sheetInfoHtml = `<div style="font-size: 0.75rem; color: ${pColor}; font-weight: 700; margin-top: 0.1rem;">Lãi thực (Gần nhất): ${formatSheetVal(prof)}</div>`;
+                } else {
+                    sheetInfoHtml = `<div style="font-size: 0.75rem; color: var(--color-text-muted); opacity: 0.6; margin-top: 0.1rem;">Lãi: Đang cập nhật...</div>`;
                 }
             }
 
