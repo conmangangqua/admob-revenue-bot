@@ -717,24 +717,28 @@
                             </div>
                          </div>`;
                          
-                // Nạp thông tin Sheet Data nếu có (dành riêng cho Quicksave)
                 if (a.sheet_data) {
+                    const totalRevVnd = a.sheet_data.total_rev_vnd * 1000;
+                    const costVnd = a.sheet_data.cost_vnd * 1000;
+                    const laiMarketing = totalRevVnd - costVnd;
+                    const laiPct = totalRevVnd > 0 ? (laiMarketing / totalRevVnd * 100) : 0;
+                    const laiColor = laiMarketing >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
                     html += `<div style="background: rgba(59, 130, 246, 0.05); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.8rem; margin-top: -0.4rem; font-size: 0.85rem;">
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem;">
-                            <span style="color:var(--color-text-muted);">Doanh thu Ads ($)</span>
-                            <span style="font-weight:600;">$${a.sheet_data.ads_rev_usd.toFixed(0)}</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem;">
-                            <span style="color:var(--color-text-muted);">Doanh thu Sub ($)</span>
-                            <span style="font-weight:600;">$${a.sheet_data.sub_rev_usd.toFixed(0)}</span>
-                        </div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem;">
                             <span style="color:var(--color-text-muted);">Doanh thu tổng (VND)</span>
-                            <span style="font-weight:600; color:var(--color-success);">${(a.sheet_data.total_rev_vnd * 1000).toLocaleString('vi-VN')} đ</span>
+                            <span style="font-weight:600; color:var(--color-success);">${totalRevVnd.toLocaleString('vi-VN')} đ</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem;">
+                            <span style="color:var(--color-text-muted);">Chi phí tổng (VND)</span>
+                            <span style="font-weight:600; color:var(--color-danger);">${costVnd.toLocaleString('vi-VN')} đ</span>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem; border-top: 1px dashed var(--color-border); padding-top: 0.3rem;">
+                            <span style="color:var(--color-text-muted);">Lãi Marketing (VND)</span>
+                            <span style="font-weight:700; color:${laiColor};">${laiMarketing.toLocaleString('vi-VN')} đ</span>
                         </div>
                         <div style="display:flex; justify-content:space-between;">
-                            <span style="color:var(--color-text-muted);">Chi phí (VND)</span>
-                            <span style="font-weight:600; color:var(--color-danger);">${(a.sheet_data.cost_vnd * 1000).toLocaleString('vi-VN')} đ</span>
+                            <span style="color:var(--color-text-muted);">Lãi/Doanh thu (%)</span>
+                            <span style="font-weight:700; color:${laiColor};">${laiPct.toFixed(1)}%</span>
                         </div>
                     </div>`;
                 }
