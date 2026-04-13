@@ -63,22 +63,29 @@ def get_sheet_data_for_app(app_name="Quicksave"):
                 
         metrics_map = {}
         for row in total_rows:
-            metric_name = str(row.get(metric_col, '')).strip()
+            code_id = None
+            raw_metric_val = ""
             
-            low_metric = metric_name.lower()
-            if "ads ($)" in low_metric and "#" not in low_metric:
+            # Quét tất cả các cột để tìm tên metric (độ linh hoạt cao hơn)
+            for v in row.values():
+                v_str = str(v).lower().strip()
+                if any(x in v_str for x in ["ads", "sub", "doanh thu", "chi phí", "lãi"]):
+                    raw_metric_val = v_str
+                    break
+            
+            if "ads ($)" in raw_metric_val and "#" not in raw_metric_val:
                 code_id = 'ads_rev_usd'
-            elif "ads #" in low_metric:
+            elif "ads #" in raw_metric_val:
                 code_id = 'ads_rev_hash_usd'
-            elif "sub ($)" in low_metric:
+            elif "sub ($)" in raw_metric_val:
                 code_id = 'sub_rev_usd'
-            elif "doanh thu tổng (vnd)" in low_metric:
+            elif "doanh thu tổng" in raw_metric_val:
                 code_id = 'total_rev_vnd'
-            elif "chi phí tổng" in low_metric:
+            elif "chi phí" in raw_metric_val:
                 code_id = 'cost_vnd'
-            elif "lãi marketing" in low_metric:
+            elif "lãi marketing" in raw_metric_val or "lợi nhuận" in raw_metric_val:
                 code_id = 'marketing_profit_vnd'
-            elif "lãi/doanh thu" in low_metric:
+            elif "lãi/doanh thu" in raw_metric_val or "roi" in raw_metric_val:
                 code_id = 'profit_pct_sheet'
                 
             if code_id:
