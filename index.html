@@ -439,6 +439,10 @@
         if (val === undefined || val === null || val === '') return '--';
         let num = parseFloat(val.toString().replace(/,/g, ''));
         if (isNaN(num)) return val;
+        
+        // Nếu là 0, hiện nhãn Chưa cập nhật cho chuyên nghiệp
+        if (num === 0) return '<span style="font-weight:400; font-size:0.75rem; color:var(--color-text-muted); opacity:0.6;">Chưa cập nhật</span>';
+        
         // Nếu là số nhỏ (triệu), thêm chữ Tr
         if (Math.abs(num) < 1000) return num.toLocaleString('vi-VN') + ' Tr';
         return num.toLocaleString('vi-VN');
