@@ -597,17 +597,33 @@
             
             let topAppHtml = `<div class="usd">${formatAmount(topAppRev)}</div>`;
             
-            // Lấy thêm lãi từ Sheet của ngày gần nhất cho widget TOP
-            const latestData = historyData[sortedDates[0]];
-            if (latestData) {
-                const appInLatest = latestData.apps.find(a => a.name === topAppName);
-                if (appInLatest?.sheet_data?.marketing_profit_vnd) {
-                    const profitVal = appInLatest.sheet_data.marketing_profit_vnd;
-                    const pColor = profitVal.toString().includes('-') ? 'var(--color-danger)' : '#10b981';
-                    topAppHtml += `<div style="font-size: 0.85rem; margin-top: 0.2rem; font-weight: 700; color: ${pColor}; opacity: 0.9;">
-                        Lãi thực: ${formatSheetVal(profitVal)}
-                    </div>`;
+            // Tính TỔNG LÃI của Top App trong toàn bộ khoảng thời gian đang lọc (curDates)
+            let topAppTotalProfit = 0;
+            let hasTopAppSheetData = false;
+            
+            curDates.forEach(d => {
+                const dData = historyData[d];
+                if (dData && dData.apps) {
+                    const appData = dData.apps.find(a => a.name === topAppName);
+                    if (appData && appData.sheet_data && appData.sheet_data.marketing_profit_vnd) {
+                        const pVal = parseFloat(appData.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                        if (!isNaN(pVal)) {
+                            topAppTotalProfit += pVal;
+                            hasTopAppSheetData = true;
+                        }
+                    }
                 }
+            });
+
+            if (hasTopAppSheetData) {
+                const pColor = topAppTotalProfit < 0 ? 'var(--color-danger)' : '#10b981';
+                topAppHtml += `<div style="font-size: 0.85rem; margin-top: 0.2rem; font-weight: 700; color: ${pColor}; opacity: 0.9;">
+                    Lãi trong kỳ: ${formatSheetVal(topAppTotalProfit)}
+                </div>`;
+            } else {
+                topAppHtml += `<div style="font-size: 0.85rem; margin-top: 0.2rem; font-weight: 700; color: var(--color-text-muted); opacity: 0.5;">
+                    Lãi thực: --
+                </div>`;
             }
             document.getElementById('valTopAppRev').innerHTML = topAppHtml;
         } else {
