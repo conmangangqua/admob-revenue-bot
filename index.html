@@ -146,9 +146,8 @@
         .stat-label { color: var(--color-text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
         .stat-value { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.5rem; }
         .stat-value .usd { font-size: 2.2rem; font-weight: 800; color: var(--color-text); line-height: 1; letter-spacing: -0.04em; }
-        .stat-value .vnd { color: #94A3B8; font-size: 1.05rem; font-weight: 600; letter-spacing: -0.01em; display: flex; align-items: center; gap: 0.3rem; }
+        /* .stat-value .vnd removed to avoid double currency display */
         .stat-card.hero .stat-value .usd { color: #FFFFFF; font-size: 2.5rem; }
-        .stat-card.hero .stat-value .vnd { color: rgba(255,255,255,0.85); font-size: 1.15rem; }
 
         .trend-wrap { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; }
         .trend-badge { font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 6px; }
@@ -241,6 +240,10 @@
                 <option value="30days">30 Ngày Qua (Last 30D)</option>
                 <option value="thismonth">Tháng Này (This Month)</option>
             </select>
+            <select id="currencyFilter" onchange="setCurrency(this.value)">
+                <option value="VND" selected>VND (đ)</option>
+                <option value="USD">USD ($)</option>
+            </select>
         </div>
     </header>
 
@@ -258,7 +261,7 @@
                 <span style="font-size: 0.6rem; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; margin-left: auto;">Tap here 💸</span>
             </div>
             <div id="heroDateRange" style="font-size: 1.15rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 0.5rem; letter-spacing: 0.5px;">--</div>
-            <div class="stat-value" id="valHeroRev">$0.00</div>
+            <div class="stat-value" id="valHeroRev">--</div>
             <div class="trend-wrap">
                 <span class="trend-badge" id="trendHeroBadge">--</span>
                 <span class="trend-text" id="trendHeroText">so với kỳ trước</span>
@@ -271,7 +274,7 @@
                 <span class="stat-icon">📈</span>
                 <span class="stat-label">Trung bình / Ngày</span>
             </div>
-            <div class="stat-value" id="valAvgRev">$0.00</div>
+            <div class="stat-value" id="valAvgRev">--</div>
             <div class="trend-wrap">
                 <span class="trend-text" id="descAvgRev">--</span>
             </div>
@@ -282,9 +285,9 @@
                 <span class="stat-icon">🗓️</span>
                 <span class="stat-label" id="lblMonth">Tháng này (MTD)</span>
             </div>
-            <div class="stat-value" id="valMonthRev">$0.00</div>
+            <div class="stat-value" id="valMonthRev">--</div>
             <div class="trend-wrap">
-                <span class="trend-text" id="valMonthProj">Dự kiến: $0.00</span>
+                <span class="trend-text" id="valMonthProj">Dự kiến: --</span>
             </div>
         </div>
 
@@ -326,6 +329,7 @@
     let allApps = new Set();
     let currentVndRate = 25400; // Tỷ giá dự phòng
     let clickCount = 0;
+    let currentCurrency = 'VND'; // Mặc định hiển thị VND
     
     Chart.register(ChartDataLabels);
     
@@ -445,19 +449,27 @@
         return `${d}/${m}`;
     }
 
-    function formatVnd(usdValue) {
+    function formatVnd(usdValue, compact = true) {
         const vnd = usdValue * currentVndRate;
-        if(vnd >= 1000000000) {
-            return `${(vnd / 1000000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tỷ`;
-        }
-        if(vnd >= 1000000) {
-            return `${(vnd / 1000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tr`;
+        if(compact) {
+            if(vnd >= 1000000000) {
+                return `${(vnd / 1000000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tỷ`;
+            }
+            if(vnd >= 1000000) {
+                return `${(vnd / 1000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tr`;
+            }
         }
         return `${Math.round(vnd).toLocaleString('vi-VN')} đ`;
     }
 
-    function formatVndRaw(usdValue) {
-        return formatVnd(usdValue);
+    function formatAmount(usdValue, compact = true) {
+        if (currentCurrency === 'VND') return formatVnd(usdValue, compact);
+        return '$' + usdValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    }
+
+    function setCurrency(val) {
+        currentCurrency = val;
+        applyFilter();
     }
 
     function getAppRev(dataObj, appFilter) {
@@ -530,7 +542,7 @@
         if (appSel !== 'all') lblHero += ` (${appSel})`;
         
         document.getElementById('lblHeroRev').innerText = lblHero;
-        document.getElementById('valHeroRev').innerHTML = `<div class="usd">$${curTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVndRaw(curTotal)}</div>`;
+        document.getElementById('valHeroRev').innerHTML = `<div class="usd">${formatAmount(curTotal)}</div>`;
 
         // The Converter Box
         if (curTotal > 0) {
@@ -560,7 +572,7 @@
 
         // 2. Avg Daily
         let avg = curDates.length > 0 ? (curTotal / curDates.length) : 0;
-        document.getElementById('valAvgRev').innerHTML = `<div class="usd">$${avg.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVnd(avg)}</div>`;
+        document.getElementById('valAvgRev').innerHTML = `<div class="usd">${formatAmount(avg)}</div>`;
         document.getElementById('descAvgRev').innerText = `/ ${curDates.length} ngày`;
 
         // 3. MTD
@@ -570,10 +582,10 @@
         const appArr = Object.entries(appAgg).sort((a,b) => b[1] - a[1]);
         if (appArr.length > 0 && appSel === 'all') {
             document.getElementById('valTopApp').innerText = appArr[0][0];
-            document.getElementById('valTopAppRev').innerHTML = `<div class="usd">$${appArr[0][1].toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVnd(appArr[0][1])}</div>`;
+            document.getElementById('valTopAppRev').innerHTML = `<div class="usd">${formatAmount(appArr[0][1])}</div>`;
         } else if (appSel !== 'all') {
             document.getElementById('valTopApp').innerText = appSel;
-            document.getElementById('valTopAppRev').innerHTML = `<div class="usd">$${curTotal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div><div class="vnd">≈ ${formatVnd(curTotal)}</div>`;
+            document.getElementById('valTopAppRev').innerHTML = `<div class="usd">${formatAmount(curTotal)}</div>`;
         } else {
             document.getElementById('valTopApp').innerText = '--';
             document.getElementById('valTopAppRev').innerText = '--';
@@ -603,14 +615,14 @@
         }
         
         document.getElementById('lblMonth').innerText = `Tháng ${latestInfo[1]} (MTD)`;
-        document.getElementById('valMonthRev').innerHTML = `<div class="usd">$${monthIterRev.toLocaleString('en-US', {minimumFractionDigits: 0, maximumFractionDigits: 0})}</div><div class="vnd">≈ ${formatVnd(monthIterRev)}</div>`;
+        document.getElementById('valMonthRev').innerHTML = `<div class="usd">${formatAmount(monthIterRev)}</div>`;
         
         const daysElapsed = parseInt(latestInfo[2], 10);
         if (daysElapsed > 0) {
             const tempDate = new Date(latestInfo[0], latestInfo[1], 0);
             const daysInMonth = tempDate.getDate();
             const projected = (monthIterRev / daysElapsed) * daysInMonth;
-            document.getElementById('valMonthProj').innerText = `Dự kiến: $${projected.toFixed(0)} (${formatVnd(projected)})`;
+            document.getElementById('valMonthProj').innerText = `Dự kiến: ${formatAmount(projected)}`;
         }
     }
 
@@ -623,8 +635,7 @@
                     <div class="app-name">${app[0]}</div>
                 </div>
                 <div style="text-align: right;">
-                    <div class="app-rev">$${app[1].toFixed(2)}</div>
-                    <div style="font-size: 0.75rem; color: var(--color-text-muted); font-weight: 600;">${formatVnd(app[1])}</div>
+                    <div class="app-rev">${formatAmount(app[1])}</div>
                 </div>
             </div>
         `).join('');
@@ -640,7 +651,7 @@
             data: {
                 labels: orderedDates.map(d => formatVNDate(d)),
                 datasets: [{
-                    label: 'Doanh thu ($)',
+                    label: currentCurrency === 'VND' ? 'Doanh thu (VND)' : 'Doanh thu ($)',
                     data: orderedDates.map(d => getAppRev(historyData[d], appSel)),
                     borderColor: '#3B82F6', backgroundColor: 'rgba(59, 130, 246, 0.12)',
                     borderWidth: 3, tension: 0.4, fill: true,
@@ -662,18 +673,18 @@
                         anchor: 'end',
                         color: '#3B82F6',
                         font: { family: "'Inter', sans-serif", weight: 700, size: 10.5 },
-                        formatter: function(value) { return '$' + Math.round(value); }
+                        formatter: function(value) { return formatAmount(value); }
                     },
                     legend: { display: false },
                     tooltip: { 
                         displayColors: false, backgroundColor: '#0F172A', titleFont: { family: "'Inter', sans-serif" }, bodyFont: { family: "'Inter', sans-serif", size: 14 }, padding: 12, cornerRadius: 8,
                         callbacks: {
-                            label: (ctx) => ` Doanh thu: $${ctx.parsed.y.toFixed(2)} (${formatVnd(ctx.parsed.y)})`
+                            label: (ctx) => ` Doanh thu: ${formatAmount(ctx.parsed.y)}`
                         }
                     }
                 },
                 scales: {
-                    y: { grid: { color: '#F1F5F9' }, border: { display: false }, ticks: { callback: v => '$'+v } },
+                    y: { grid: { color: '#F1F5F9' }, border: { display: false }, ticks: { callback: v => formatAmount(v) } },
                     x: { grid: { display: false }, border: { display: false } }
                 },
                 interaction: { intersect: false, mode: 'index' }
@@ -692,7 +703,7 @@
                 plugins: {
                     datalabels: { display: false },
                     legend: { display: false },
-                    tooltip: { backgroundColor: '#0F172A', callbacks: { label: c => ` ${c.label}: $${c.parsed.toFixed(2)} (${formatVnd(c.parsed)})` } }
+                    tooltip: { backgroundColor: '#0F172A', callbacks: { label: c => ` ${c.label}: ${formatAmount(c.parsed)}` } }
                 }
             }
         });
@@ -710,45 +721,50 @@
             if (appSel === 'all' || a.name === appSel) {
                 totalModal += a.rev;
                 html += `<div class="detail-row">
-                            <span class="detail-app">${a.name}</span>
+                            <span class="detail-app" style="font-weight: 800; font-size: 1.1rem; color: var(--color-accent);">${a.name}</span>
                             <div style="text-align: right;">
-                                <div class="detail-rev">$${a.rev.toFixed(2)}</div>
-                                <div style="font-size: 0.8rem; color: var(--color-text-muted); font-weight: 500;">${formatVnd(a.rev)}</div>
+                                <div class="detail-rev" style="font-size: 1.2rem;">${formatAmount(a.rev, false)}</div>
                             </div>
                          </div>`;
                          
                 if (a.sheet_data) {
+                    const totalRevUsd = a.rev;
                     const totalRevVnd = a.sheet_data.total_rev_vnd * 1000;
                     const costVnd = a.sheet_data.cost_vnd * 1000;
-                    const laiMarketing = totalRevVnd - costVnd;
-                    const laiPct = totalRevVnd > 0 ? (laiMarketing / totalRevVnd * 100) : 0;
+                    const costUsd = costVnd / currentVndRate;
+                    
+                    const displayRev = currentCurrency === 'VND' ? totalRevVnd : totalRevUsd;
+                    const displayCost = currentCurrency === 'VND' ? costVnd : costUsd;
+                    const laiMarketing = displayRev - displayCost;
+                    const laiPct = displayRev > 0 ? (laiMarketing / displayRev * 100) : 0;
                     const laiColor = laiMarketing >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
-                    html += `<div style="background: rgba(59, 130, 246, 0.05); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.8rem; margin-top: -0.4rem; font-size: 0.85rem;">
-                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem;">
-                            <span style="color:var(--color-text-muted);">Doanh thu tổng (VND)</span>
-                            <span style="font-weight:600; color:var(--color-success);">${totalRevVnd.toLocaleString('vi-VN')} đ</span>
+                    const unit = currentCurrency === 'VND' ? ' (VND)' : ' (USD)';
+                    
+                    html += `<div style="background: rgba(59, 130, 246, 0.05); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.8rem; margin-top: -0.4rem; font-size: 0.9rem; border: 1px solid rgba(59, 130, 246, 0.1);">
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem;">
+                            <span style="color:var(--color-text-muted);">Doanh thu tổng${unit}</span>
+                            <span style="font-weight:700; color:var(--color-success);">${formatAmount(currentCurrency === 'VND' ? totalRevVnd / currentVndRate : totalRevUsd, false)}</span>
                         </div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem;">
-                            <span style="color:var(--color-text-muted);">Chi phí tổng (VND)</span>
-                            <span style="font-weight:600; color:var(--color-danger);">${costVnd.toLocaleString('vi-VN')} đ</span>
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem;">
+                            <span style="color:var(--color-text-muted);">Chi phí tổng${unit}</span>
+                            <span style="font-weight:700; color:var(--color-danger);">${formatAmount(currentCurrency === 'VND' ? costVnd / currentVndRate : costUsd, false)}</span>
                         </div>
-                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem; border-top: 1px dashed var(--color-border); padding-top: 0.3rem;">
-                            <span style="color:var(--color-text-muted);">Lãi Marketing (VND)</span>
-                            <span style="font-weight:700; color:${laiColor};">${laiMarketing.toLocaleString('vi-VN')} đ</span>
+                        <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem; border-top: 1px dashed var(--color-border); padding-top: 0.4rem;">
+                            <span style="color:var(--color-text-muted);">Lãi Marketing${unit}</span>
+                            <span style="font-weight:800; color:${laiColor};">${formatAmount(laiMarketing / (currentCurrency === 'VND' ? currentVndRate : 1), false)}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between;">
                             <span style="color:var(--color-text-muted);">Lãi/Doanh thu (%)</span>
-                            <span style="font-weight:700; color:${laiColor};">${laiPct.toFixed(1)}%</span>
+                            <span style="font-weight:800; color:${laiColor};">${laiPct.toFixed(1)}%</span>
                         </div>
                     </div>`;
                 }
             }
         });
         html += `<div class="detail-row" style="margin-top: 0.5rem; border-top: 2px dashed var(--color-border); padding-top: 1rem;">
-                    <span class="detail-app">TỔNG CỘNG</span>
+                    <span class="detail-app" style="font-weight: 800;">TỔNG CỘNG</span>
                     <div style="text-align: right;">
-                        <div class="detail-rev" style="font-size: 1.25rem;">$${totalModal.toFixed(2)}</div>
-                        <div style="font-size: 0.95rem; color: var(--color-text-muted); font-weight: 700;">${formatVndRaw(totalModal)}</div>
+                        <div class="detail-rev" style="font-size: 1.4rem; color: var(--color-text);">${formatAmount(totalModal, false)}</div>
                     </div>
                  </div>`;
         
