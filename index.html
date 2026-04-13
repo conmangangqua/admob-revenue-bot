@@ -169,28 +169,35 @@
             flex-direction: column;
             gap: 0.2rem;
         }
-        .top-app-rev-box .usd { font-size: 1.25rem; font-weight: 800; color: var(--color-accent); line-height: 1.2; letter-spacing: -0.02em; }
-        .top-app-rev-box .vnd { font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); }
-
-        /* Ranking Styles */
-        .ranking-item {
+        /* Ranking Styles - Horizontal Podium */
+        #valTop3List {
             display: flex;
-            align-items: center;
             gap: 1rem;
-            padding: 0.75rem 0;
-            border-bottom: 1px dashed rgba(0,0,0,0.05);
+            justify-content: space-between;
+            margin-top: 0.5rem;
+        }
+        .ranking-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 1rem 0.5rem;
+            background: rgba(255,255,255,0.4);
+            border-radius: 12px;
+            border: 1px solid rgba(0,0,0,0.03);
             transition: all 0.2s;
         }
-        .ranking-item:last-child { border-bottom: none; }
+        .ranking-item:hover { background: #FFFFFF; transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        
         .ranking-rank {
-            font-size: 1.5rem;
-            width: 32px;
-            display: flex;
-            justify-content: center;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            line-height: 1;
         }
-        .ranking-info { flex: 1; min-width: 0; }
-        .ranking-name { font-weight: 700; font-size: 1rem; color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ranking-stats { display: flex; align-items: baseline; gap: 0.5rem; margin-top: 0.1rem; }
+        .ranking-info { width: 100%; min-width: 0; }
+        .ranking-name { font-weight: 800; font-size: 0.9rem; color: var(--color-text); margin-bottom: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ranking-stats { display: flex; flex-direction: column; align-items: center; gap: 0.1rem; }
 
         /* Charts */
         .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; align-items: stretch; }
@@ -628,8 +635,8 @@
                         <div class="ranking-info">
                             <div class="ranking-name">${appName}</div>
                             <div class="ranking-stats">
-                                <div class="usd" style="font-size: 1.1rem; color: var(--color-accent); font-weight: 800;">${formatAmount(appRev)}</div>
-                                <div style="font-size: 0.75rem; color: ${profitColor}; font-weight: 700; opacity: 0.9;">${profitText}</div>
+                                <div class="usd" style="font-size: 1.15rem; color: var(--color-accent); font-weight: 800; line-height: 1.1;">${formatAmount(appRev)}</div>
+                                <div style="font-size: 0.7rem; color: ${profitColor}; font-weight: 700; opacity: 0.9; margin-top: 0.2rem;">${profitText}</div>
                             </div>
                         </div>
                     </div>
