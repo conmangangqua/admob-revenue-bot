@@ -171,13 +171,12 @@
         }
         /* Ranking Styles - Horizontal Podium */
         #valTop3List {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
-            justify-content: space-between;
             margin-top: 0.5rem;
         }
         .ranking-item {
-            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -187,6 +186,7 @@
             border-radius: 12px;
             border: 1px solid rgba(0,0,0,0.03);
             transition: all 0.2s;
+            min-width: 0; /* Cho phép co giãn */
         }
         .ranking-item:hover { background: #FFFFFF; transform: translateY(-2px); box-shadow: var(--shadow-sm); }
         
