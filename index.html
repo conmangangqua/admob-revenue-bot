@@ -727,11 +727,11 @@
                             </div>
                          </div>`;
                          
-                    const s = a.sheet_data;
-                    const sdRev = s.total_rev_vnd || '0';
-                    const sdCost = s.cost_vnd || '0';
-                    const sdProfit = s.marketing_profit_vnd || '0';
-                    const sdPct = s.profit_pct_sheet || '0';
+                    const s = a.sheet_data || {};
+                    const sdRev = s.total_rev_vnd || '-';
+                    const sdCost = s.cost_vnd || '-';
+                    const sdProfit = s.marketing_profit_vnd || '-';
+                    const sdPct = s.profit_pct_sheet || '-';
                     
                     const isVnd = currentCurrency === 'VND';
                     
