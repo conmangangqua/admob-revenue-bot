@@ -132,6 +132,7 @@
             background: var(--hero-bg); color: var(--hero-text); box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
             cursor: pointer; user-select: none;
         }
+        .stat-card.hero:hover { transform: scale(1.02); }
         .stat-card.hero .stat-label { color: rgba(255,255,255,0.9); text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .stat-card.hero .stat-value { color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .stat-card.hero .trend-badge.positive { background: rgba(16, 185, 129, 0.25); color: #FFFFFF; }
@@ -186,9 +187,10 @@
             border-radius: 12px;
             border: 1px solid rgba(0,0,0,0.03);
             transition: all 0.2s;
-            min-width: 0; /* Cho phép co giãn */
+            min-width: 0; 
+            cursor: pointer;
         }
-        .ranking-item:hover { background: #FFFFFF; transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+        .ranking-item:hover { background: #FFFFFF; transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--color-accent); }
         
         .ranking-rank {
             font-size: 2rem;
@@ -217,8 +219,9 @@
             padding: 1rem; border-radius: var(--radius-md); background: var(--color-bg);
             border: 1px solid rgba(0,0,0,0.05);
             transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
         }
-        .app-item:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); background: #FFFFFF; }
+        .app-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); background: #FFFFFF; border-color: var(--color-accent); }
         .app-name-wrap { display: flex; align-items: center; gap: 0.75rem; }
         .app-dot { width: 12px; height: 12px; border-radius: 50%; }
         .app-name { font-weight: 700; font-size: 0.95rem; color: var(--color-text); }
@@ -630,7 +633,7 @@
                 const profitText = hasSheet ? `Lãi thực: ${formatSheetVal(totalProfit)}` : 'Lãi thực: --';
 
                 top3Html += `
-                    <div class="ranking-item">
+                    <div class="ranking-item" onclick="showAppDetail('${appName}')">
                         <div class="ranking-rank">${medals[index] || (index + 1)}</div>
                         <div class="ranking-info">
                             <div class="ranking-name">${appName}</div>
@@ -715,7 +718,7 @@
             }
 
             return `
-            <div class="app-item">
+            <div class="app-item" onclick="showAppDetail('${appName}')">
                 <div class="app-name-wrap">
                     <div class="app-dot" style="background-color: ${COLORS[i % COLORS.length]}"></div>
                     <div class="app-name">${appName}</div>
