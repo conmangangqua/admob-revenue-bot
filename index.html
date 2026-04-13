@@ -727,39 +727,36 @@
                             </div>
                          </div>`;
                          
-                if (a.sheet_data) {
-                    const adsRevUsd = a.rev;
-                    const adsRevVnd = adsRevUsd * currentVndRate; 
-                    const sheetCostVnd = (a.sheet_data && a.sheet_data.cost_vnd) ? a.sheet_data.cost_vnd * 1000 : 0;
-                    const sheetCostUsd = sheetCostVnd / currentVndRate;
+                    const s = a.sheet_data;
+                    const sdRev = (s.total_rev_vnd || 0) * 1000;
+                    const sdCost = (s.cost_vnd || 0) * 1000;
+                    const sdProfit = (s.marketing_profit_vnd || 0) * 1000;
+                    const sdPct = s.profit_pct_sheet || 0;
                     
                     const isVnd = currentCurrency === 'VND';
-                    const displayRev = isVnd ? adsRevVnd : adsRevUsd;
-                    const displayCost = isVnd ? sheetCostVnd : sheetCostUsd;
-                    const laiMarketing = displayRev - displayCost;
-                    const laiPct = displayRev > 0 ? (laiMarketing / displayRev * 100) : 0;
-                    const laiColor = laiMarketing >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
+                    // Nếu ở mode USD, ta convert ngược lại để hiển thị đồng nhất đơn vị đang chọn
+                    const dispRev = isVnd ? sdRev : (sdRev / currentVndRate);
+                    const dispCost = isVnd ? sdCost : (sdCost / currentVndRate);
+                    const dispProfit = isVnd ? sdProfit : (sdProfit / currentVndRate);
                     
-                    const costDisplay = (sheetCostVnd === 0) ? 
-                        `<span style="color:var(--color-text-muted); font-size:0.75rem;">(Chưa có data)</span>` : 
-                        `<span style="font-weight:700; color:var(--color-danger);">${formatAmount(sheetCostUsd, false)}</span>`;
+                    const laiColor = sdProfit >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
 
                     html += `<div style="background: rgba(59, 130, 246, 0.05); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.8rem; margin-top: -0.4rem; font-size: 0.9rem; border: 1px solid rgba(59, 130, 246, 0.1);">
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem;">
-                            <span style="color:var(--color-text-muted);">Doanh thu AdMob</span>
-                            <span style="font-weight:700; color:var(--color-accent);">${formatAmount(adsRevUsd, false)}</span>
+                            <span style="color:var(--color-text-muted);">Doanh thu tổng</span>
+                            <span style="font-weight:700; color:var(--color-accent);">${formatAmount(isVnd ? dispRev / currentVndRate : dispRev, false)}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem;">
-                            <span style="color:var(--color-text-muted);">Chi phí Marketing</span>
-                            ${costDisplay}
+                            <span style="color:var(--color-text-muted);">Chi phí tổng</span>
+                            <span style="font-weight:700; color:var(--color-danger);">${formatAmount(isVnd ? dispCost / currentVndRate : dispCost, false)}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem; border-top: 1px dashed var(--color-border); padding-top: 0.4rem;">
                             <span style="color:var(--color-text-muted);">Lãi Marketing</span>
-                            <span style="font-weight:800; color:${laiColor};">${formatAmount(laiMarketing / (isVnd ? currentVndRate : 1), false)}</span>
+                            <span style="font-weight:800; color:${laiColor};">${formatAmount(isVnd ? dispProfit / currentVndRate : dispProfit, false)}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between;">
                             <span style="color:var(--color-text-muted);">Lãi/Doanh thu %</span>
-                            <span style="font-weight:800; color:${laiColor};">${laiPct.toFixed(1)}%</span>
+                            <span style="font-weight:800; color:${laiColor};">${sdPct}%</span>
                         </div>
                     </div>`;
                 }

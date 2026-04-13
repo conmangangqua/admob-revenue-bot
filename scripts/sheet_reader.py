@@ -72,10 +72,14 @@ def get_sheet_data_for_app(app_name="Quicksave"):
                 code_id = 'ads_rev_hash_usd'
             elif "sub ($)" in low_metric:
                 code_id = 'sub_rev_usd'
-            elif any(k in low_metric for k in ["thu tổng", "doanh thu", "revenue"]):
+            elif "doanh thu tổng (vnd)" in low_metric:
                 code_id = 'total_rev_vnd'
-            elif any(k in low_metric for k in ["chi phí", "cost", "marketing"]):
+            elif "chi phí tổng" in low_metric:
                 code_id = 'cost_vnd'
+            elif "lãi marketing" in low_metric:
+                code_id = 'marketing_profit_vnd'
+            elif "lãi/doanh thu" in low_metric:
+                code_id = 'profit_pct_sheet'
                 
             if code_id:
                 for key, val in row.items():
