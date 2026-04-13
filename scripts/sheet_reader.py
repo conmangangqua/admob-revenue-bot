@@ -98,29 +98,8 @@ def get_sheet_data_for_app(app_name="Quicksave"):
                             if date_str not in metrics_map:
                                 metrics_map[date_str] = {}
                             
-                            if val == '' or val is None:
-                                val = 0
-                            
-                            val_str = str(val).strip()
-                            # Xử lý format số linh hoạt hơn: 
-                            # Nếu có dấu phẩy làm thập phân (kiểu VN: 1.234,5) hoặc ngược lại
-                            if ',' in val_str and '.' in val_str:
-                                if val_str.rfind(',') > val_str.rfind('.'): # Kiểu VN 1.234,56
-                                    val_str = val_str.replace('.', '').replace(',', '.')
-                                else: # Kiểu US 1,234.56
-                                    val_str = val_str.replace(',', '')
-                            elif ',' in val_str:
-                                # Nếu sau dấu phẩy có đúng 3 chữ số -> có thể là phân cách hàng nghìn
-                                if len(val_str.split(',')[-1]) == 3: val_str = val_str.replace(',', '')
-                                else: val_str = val_str.replace(',', '.')
-                            elif '.' in val_str:
-                                # Nếu sau dấu chấm có đúng 3 chữ số -> có thể là phân cách hàng nghìn
-                                if len(val_str.split('.')[-1]) == 3: val_str = val_str.replace('.', '')
-                            
-                            try:
-                                metrics_map[date_str][code_id] = float(val_str)
-                            except:
-                                metrics_map[date_str][code_id] = 0
+                            # Lấy giá trị thô (Raw String) từ Sheet, không tính toán gì thêm
+                            metrics_map[date_str][code_id] = str(val).strip() if val is not None else "0"
                         except:
                             pass
         return metrics_map

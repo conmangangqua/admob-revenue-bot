@@ -728,35 +728,30 @@
                          </div>`;
                          
                     const s = a.sheet_data;
-                    const sdRev = (s.total_rev_vnd || 0) * 1000;
-                    const sdCost = (s.cost_vnd || 0) * 1000;
-                    const sdProfit = (s.marketing_profit_vnd || 0) * 1000;
-                    const sdPct = s.profit_pct_sheet || 0;
+                    const sdRev = s.total_rev_vnd || '-';
+                    const sdCost = s.cost_vnd || '-';
+                    const sdProfit = s.marketing_profit_vnd || '-';
+                    const sdPct = s.profit_pct_sheet || '-';
                     
-                    const isVnd = currentCurrency === 'VND';
-                    // Nếu ở mode USD, ta convert ngược lại để hiển thị đồng nhất đơn vị đang chọn
-                    const dispRev = isVnd ? sdRev : (sdRev / currentVndRate);
-                    const dispCost = isVnd ? sdCost : (sdCost / currentVndRate);
-                    const dispProfit = isVnd ? sdProfit : (sdProfit / currentVndRate);
-                    
-                    const laiColor = sdProfit >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
+                    // Xác định màu sắc cơ bản (nếu có dấu - thì là màu đỏ, còn lại dùng màu mặc định của user)
+                    const profitColor = sdProfit.toString().includes('-') ? 'var(--color-danger)' : 'var(--color-success)';
 
                     html += `<div style="background: rgba(59, 130, 246, 0.05); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.8rem; margin-top: -0.4rem; font-size: 0.9rem; border: 1px solid rgba(59, 130, 246, 0.1);">
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem;">
-                            <span style="color:var(--color-text-muted);">Doanh thu tổng</span>
-                            <span style="font-weight:700; color:var(--color-accent);">${formatAmount(isVnd ? dispRev / currentVndRate : dispRev, false)}</span>
+                            <span style="color:var(--color-text-muted);">Doanh thu tổng (VND)</span>
+                            <span style="font-weight:700; color:var(--color-accent);">${sdRev}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem;">
                             <span style="color:var(--color-text-muted);">Chi phí tổng</span>
-                            <span style="font-weight:700; color:var(--color-danger);">${formatAmount(isVnd ? dispCost / currentVndRate : dispCost, false)}</span>
+                            <span style="font-weight:700; color:var(--color-danger);">${sdCost}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem; border-top: 1px dashed var(--color-border); padding-top: 0.4rem;">
                             <span style="color:var(--color-text-muted);">Lãi Marketing</span>
-                            <span style="font-weight:800; color:${laiColor};">${formatAmount(isVnd ? dispProfit / currentVndRate : dispProfit, false)}</span>
+                            <span style="font-weight:800; color:${profitColor};">${sdProfit}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between;">
-                            <span style="color:var(--color-text-muted);">Lãi/Doanh thu %</span>
-                            <span style="font-weight:800; color:${laiColor};">${sdPct}%</span>
+                            <span style="color:var(--color-text-muted);">Lãi/Doanh thu</span>
+                            <span style="font-weight:800;">${sdPct}</span>
                         </div>
                     </div>`;
                 }
