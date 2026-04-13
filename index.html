@@ -712,7 +712,7 @@
                 html += `<div class="detail-row">
                             <span class="detail-app">${a.name}</span>
                             <div style="text-align: right;">
-                                <div class="detail-rev">$${a.rev.toFixed(2)}</div>
+                                <div class="detail-rev">$${a.rev.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
                                 <div style="font-size: 0.8rem; color: var(--color-text-muted); font-weight: 500;">${formatVnd(a.rev)}</div>
                             </div>
                          </div>`;
@@ -722,11 +722,11 @@
                     html += `<div style="background: rgba(59, 130, 246, 0.05); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.8rem; margin-top: -0.4rem; font-size: 0.85rem;">
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem;">
                             <span style="color:var(--color-text-muted);">Doanh thu Ads ($)</span>
-                            <span style="font-weight:600;">$${a.sheet_data.ads_rev_usd.toLocaleString('en-US')}</span>
+                            <span style="font-weight:600;">$${a.sheet_data.ads_rev_usd.toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0})}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem;">
                             <span style="color:var(--color-text-muted);">Doanh thu Sub ($)</span>
-                            <span style="font-weight:600;">$${a.sheet_data.sub_rev_usd.toLocaleString('en-US')}</span>
+                            <span style="font-weight:600;">$${a.sheet_data.sub_rev_usd.toLocaleString('en-US', {minimumFractionDigits:0, maximumFractionDigits:0})}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.3rem;">
                             <span style="color:var(--color-text-muted);">Doanh thu tổng (VND)</span>
@@ -743,7 +743,7 @@
         html += `<div class="detail-row" style="margin-top: 0.5rem; border-top: 2px dashed var(--color-border); padding-top: 1rem;">
                     <span class="detail-app">TỔNG CỘNG</span>
                     <div style="text-align: right;">
-                        <div class="detail-rev" style="font-size: 1.25rem;">$${totalModal.toFixed(2)}</div>
+                        <div class="detail-rev" style="font-size: 1.25rem;">$${totalModal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
                         <div style="font-size: 0.95rem; color: var(--color-text-muted); font-weight: 700;">${formatVndRaw(totalModal)}</div>
                     </div>
                  </div>`;
