@@ -735,13 +735,13 @@
                     
                     const isVnd = currentCurrency === 'VND';
                     
-                    // Hàm parse số từ chuỗi thô của user để format lại, tuyệt đối ko nhân chia
-                    const cleanAndFormat = (val) => {
-                        if (!val || val === '-') return '-';
-                        let num = parseFloat(val.toString().replace(/[^0-9.-]/g, ''));
-                        if (isNaN(num)) return val;
-                        return formatAmount(isVnd ? num * currentVndRate / currentVndRate : num, false); 
-                        // Mẹo gọi formatAmount(num, false) để nó thêm $ hoặc đ và dấu phân cách
+                    // Hàm format lại tiền từ Sheet: CHỈ LÀM ĐẸP, KHÔNG NHÂN CHIA, KHÔNG TỈ GIÁ
+                    const formatSheetVal = (val) => {
+                        if (!val || val === '-' || val === '0') return '0 đ';
+                        // Giữ nguyên chuỗi của user, chỉ đảm bảo hiển thị kèm đơn vị
+                        let sVal = val.toString().trim();
+                        if (currentCurrency === 'VND') return sVal + ' đ';
+                        return '$ ' + sVal;
                     };
 
                     const profitColor = sdProfit.toString().includes('-') ? 'var(--color-danger)' : 'var(--color-success)';
@@ -749,15 +749,15 @@
                     html += `<div style="background: rgba(59, 130, 246, 0.05); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.8rem; margin-top: -0.4rem; font-size: 0.9rem; border: 1px solid rgba(59, 130, 246, 0.1);">
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem;">
                             <span style="color:var(--color-text-muted);">Doanh thu tổng (VND)</span>
-                            <span style="font-weight:700; color:var(--color-accent);">${cleanAndFormat(sdRev)}</span>
+                            <span style="font-weight:700; color:var(--color-accent);">${formatSheetVal(sdRev)}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem;">
                             <span style="color:var(--color-text-muted);">Chi phí tổng</span>
-                            <span style="font-weight:700; color:var(--color-danger);">${cleanAndFormat(sdCost)}</span>
+                            <span style="font-weight:700; color:var(--color-danger);">${formatSheetVal(sdCost)}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem; border-top: 1px dashed var(--color-border); padding-top: 0.4rem;">
                             <span style="color:var(--color-text-muted);">Lãi Marketing</span>
-                            <span style="font-weight:800; color:${profitColor};">${cleanAndFormat(sdProfit)}</span>
+                            <span style="font-weight:800; color:${profitColor};">${formatSheetVal(sdProfit)}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between;">
                             <span style="color:var(--color-text-muted);">Lãi/Doanh thu</span>
