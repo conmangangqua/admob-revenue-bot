@@ -104,10 +104,13 @@
         /* Summary Grid */
         .summary-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            grid-template-columns: 1fr 1.5fr;
             gap: 1.5rem;
             margin-bottom: 2rem;
-            align-items: start;
+            align-items: stretch;
+        }
+        @media (max-width: 900px) {
+            .summary-grid { grid-template-columns: 1fr; }
         }
 
         .stat-card {
@@ -166,8 +169,28 @@
             flex-direction: column;
             gap: 0.2rem;
         }
-        .top-app-rev-box .usd { font-size: 1.4rem; font-weight: 800; color: var(--color-accent); line-height: 1; letter-spacing: -0.02em; }
-        .top-app-rev-box .vnd { font-size: 0.85rem; font-weight: 600; color: var(--color-text-muted); }
+        .top-app-rev-box .usd { font-size: 1.25rem; font-weight: 800; color: var(--color-accent); line-height: 1.2; letter-spacing: -0.02em; }
+        .top-app-rev-box .vnd { font-size: 0.8rem; font-weight: 600; color: var(--color-text-muted); }
+
+        /* Ranking Styles */
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 0;
+            border-bottom: 1px dashed rgba(0,0,0,0.05);
+            transition: all 0.2s;
+        }
+        .ranking-item:last-child { border-bottom: none; }
+        .ranking-rank {
+            font-size: 1.5rem;
+            width: 32px;
+            display: flex;
+            justify-content: center;
+        }
+        .ranking-info { flex: 1; min-width: 0; }
+        .ranking-name { font-weight: 700; font-size: 1rem; color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .ranking-stats { display: flex; align-items: baseline; gap: 0.5rem; margin-top: 0.1rem; }
 
         /* Charts */
         .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; align-items: stretch; }
@@ -269,35 +292,17 @@
             <div id="converterBox" style="display:none;"></div>
         </div>
 
-        <div class="stat-card">
-            <div class="stat-header">
-                <span class="stat-icon">📈</span>
-                <span class="stat-label">Trung bình / Ngày</span>
-            </div>
-            <div class="stat-value" id="valAvgRev">--</div>
-            <div class="trend-wrap">
-                <span class="trend-text" id="descAvgRev">--</span>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-header">
-                <span class="stat-icon">🗓️</span>
-                <span class="stat-label" id="lblMonth">Tháng này (MTD)</span>
-            </div>
-            <div class="stat-value" id="valMonthRev">--</div>
-            <div class="trend-wrap">
-                <span class="trend-text" id="valMonthProj">Dự kiến: --</span>
-            </div>
-        </div>
-
-        <div class="stat-card">
-            <div class="stat-header">
+        <div class="stat-card" style="padding-bottom: 0.5rem;">
+            <div class="stat-header" style="margin-bottom: 0.75rem;">
                 <span class="stat-icon">🏆</span>
-                <span class="stat-label">Top Thần Tài</span>
+                <span class="stat-label">Top App Thần Tài</span>
+                <span style="font-size: 0.7rem; color: var(--color-text-muted); margin-left: auto; font-weight: 600;">Ranking 1-3</span>
             </div>
-            <div class="stat-value" id="valTopApp" style="font-size: 1.3rem; font-weight: 800; color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding-top: 0.25rem; margin-bottom: 0.25rem;">--</div>
-            <div class="top-app-rev-box" id="valTopAppRev">--</div>
+            <div id="valTop3List" style="display: flex; flex-direction: column;">
+                <!-- Injected via JS -->
+                <div style="padding: 2rem 0; text-align: center; color: var(--color-text-muted); opacity: 0.5;">Đang lọc siêu sao...</div>
+            </div>
+        </div>
         </div>
     </div>
 
@@ -584,55 +589,55 @@
             document.getElementById('aiJokeBox').style.display = 'none';
         }
 
-        // 2. Avg Daily
-        let avg = curDates.length > 0 ? (curTotal / curDates.length) : 0;
-        document.getElementById('valAvgRev').innerHTML = `<div class="usd">${formatAmount(avg)}</div>`;
-        document.getElementById('descAvgRev').innerText = `/ ${curDates.length} ngày`;
-
-        // 3. MTD
-        setupFixedMTD(appSel);
-
-        // 4. Top App
+        // 2. Top App Ranking (Top 3)
         const appArr = Object.entries(appAgg).sort((a,b) => b[1] - a[1]);
+        const top3ListContainer = document.getElementById('valTop3List');
+        
         if (appArr.length > 0) {
-            const topAppName = appSel === 'all' ? appArr[0][0] : appSel;
-            const topAppRev = appSel === 'all' ? appArr[0][1] : curTotal;
-            document.getElementById('valTopApp').innerText = topAppName;
+            let top3Html = '';
+            const medals = ['🥇', '🥈', '🥉'];
+            const top3 = appArr.slice(0, 3);
             
-            let topAppHtml = `<div class="usd">${formatAmount(topAppRev)}</div>`;
-            
-            // Tính TỔNG LÃI của Top App trong toàn bộ khoảng thời gian đang lọc (curDates)
-            let topAppTotalProfit = 0;
-            let hasTopAppSheetData = false;
-            
-            curDates.forEach(d => {
-                const dData = historyData[d];
-                if (dData && dData.apps) {
-                    const appData = dData.apps.find(a => a.name === topAppName);
-                    if (appData && appData.sheet_data && appData.sheet_data.marketing_profit_vnd) {
-                        const pVal = parseFloat(appData.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
-                        if (!isNaN(pVal)) {
-                            topAppTotalProfit += pVal;
-                            hasTopAppSheetData = true;
+            top3.forEach((app, index) => {
+                const appName = app[0];
+                const appRev = app[1];
+                
+                // Tính TỔNG LÃI của app này trong kỳ
+                let totalProfit = 0;
+                let hasSheet = false;
+                curDates.forEach(d => {
+                    const dData = historyData[d];
+                    if (dData && dData.apps) {
+                        const aData = dData.apps.find(a => a.name === appName);
+                        if (aData && aData.sheet_data && aData.sheet_data.marketing_profit_vnd) {
+                            const pVal = parseFloat(aData.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                            if (!isNaN(pVal)) {
+                                totalProfit += pVal;
+                                hasSheet = true;
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            if (hasTopAppSheetData) {
-                const pColor = topAppTotalProfit < 0 ? 'var(--color-danger)' : '#10b981';
-                topAppHtml += `<div style="font-size: 0.85rem; margin-top: 0.2rem; font-weight: 700; color: ${pColor}; opacity: 0.9;">
-                    Lãi thực: ${formatSheetVal(topAppTotalProfit)}
-                </div>`;
-            } else {
-                topAppHtml += `<div style="font-size: 0.85rem; margin-top: 0.2rem; font-weight: 700; color: var(--color-text-muted); opacity: 0.5;">
-                    Lãi thực: --
-                </div>`;
-            }
-            document.getElementById('valTopAppRev').innerHTML = topAppHtml;
+                const profitColor = totalProfit < 0 ? 'var(--color-danger)' : '#10b981';
+                const profitText = hasSheet ? `Lãi thực: ${formatSheetVal(totalProfit)}` : 'Lãi thực: --';
+
+                top3Html += `
+                    <div class="ranking-item">
+                        <div class="ranking-rank">${medals[index] || (index + 1)}</div>
+                        <div class="ranking-info">
+                            <div class="ranking-name">${appName}</div>
+                            <div class="ranking-stats">
+                                <div class="usd" style="font-size: 1.1rem; color: var(--color-accent); font-weight: 800;">${formatAmount(appRev)}</div>
+                                <div style="font-size: 0.75rem; color: ${profitColor}; font-weight: 700; opacity: 0.9;">${profitText}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            top3ListContainer.innerHTML = top3Html;
         } else {
-            document.getElementById('valTopApp').innerText = '--';
-            document.getElementById('valTopAppRev').innerText = '--';
+            top3ListContainer.innerHTML = '<div style="padding: 2rem 0; text-align: center; color: var(--color-text-muted); opacity: 0.5;">Không có dữ liệu xếp hạng</div>';
         }
 
         // Render line charts
