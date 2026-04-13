@@ -728,33 +728,32 @@
                          </div>`;
                          
                 if (a.sheet_data) {
-                    const totalRevUsd = a.rev;
-                    const totalRevVnd = a.sheet_data.total_rev_vnd * 1000;
-                    const costVnd = a.sheet_data.cost_vnd * 1000;
-                    const costUsd = costVnd / currentVndRate;
+                    const adsRevUsd = a.rev;
+                    const adsRevVnd = adsRevUsd * currentVndRate; // Đồng bộ với tỉ lệ hiển thị
+                    const sheetCostVnd = a.sheet_data.cost_vnd * 1000;
+                    const sheetCostUsd = sheetCostVnd / currentVndRate;
                     
-                    const displayRev = currentCurrency === 'VND' ? totalRevVnd : totalRevUsd;
-                    const displayCost = currentCurrency === 'VND' ? costVnd : costUsd;
+                    const displayRev = currentCurrency === 'VND' ? adsRevVnd : adsRevUsd;
+                    const displayCost = currentCurrency === 'VND' ? sheetCostVnd : sheetCostUsd;
                     const laiMarketing = displayRev - displayCost;
                     const laiPct = displayRev > 0 ? (laiMarketing / displayRev * 100) : 0;
                     const laiColor = laiMarketing >= 0 ? 'var(--color-success)' : 'var(--color-danger)';
-                    const unit = currentCurrency === 'VND' ? ' (VND)' : ' (USD)';
                     
                     html += `<div style="background: rgba(59, 130, 246, 0.05); padding: 0.75rem; border-radius: 8px; margin-bottom: 0.8rem; margin-top: -0.4rem; font-size: 0.9rem; border: 1px solid rgba(59, 130, 246, 0.1);">
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem;">
-                            <span style="color:var(--color-text-muted);">Doanh thu tổng${unit}</span>
-                            <span style="font-weight:700; color:var(--color-success);">${formatAmount(currentCurrency === 'VND' ? totalRevVnd / currentVndRate : totalRevUsd, false)}</span>
+                            <span style="color:var(--color-text-muted);">Doanh thu AdMob</span>
+                            <span style="font-weight:700; color:var(--color-accent);">${formatAmount(adsRevUsd, false)}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem;">
-                            <span style="color:var(--color-text-muted);">Chi phí tổng${unit}</span>
-                            <span style="font-weight:700; color:var(--color-danger);">${formatAmount(currentCurrency === 'VND' ? costVnd / currentVndRate : costUsd, false)}</span>
+                            <span style="color:var(--color-text-muted);">Chi phí Marketing</span>
+                            <span style="font-weight:700; color:var(--color-danger);">${formatAmount(sheetCostUsd, false)}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem; border-top: 1px dashed var(--color-border); padding-top: 0.4rem;">
-                            <span style="color:var(--color-text-muted);">Lãi Marketing${unit}</span>
+                            <span style="color:var(--color-text-muted);">Lãi Marketing</span>
                             <span style="font-weight:800; color:${laiColor};">${formatAmount(laiMarketing / (currentCurrency === 'VND' ? currentVndRate : 1), false)}</span>
                         </div>
                         <div style="display:flex; justify-content:space-between;">
-                            <span style="color:var(--color-text-muted);">Lãi/Doanh thu (%)</span>
+                            <span style="color:var(--color-text-muted);">Lãi/Doanh thu %</span>
                             <span style="font-weight:800; color:${laiColor};">${laiPct.toFixed(1)}%</span>
                         </div>
                     </div>`;
