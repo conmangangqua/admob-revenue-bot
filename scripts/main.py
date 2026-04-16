@@ -32,6 +32,7 @@ def get_access_token_local(client_id: str, client_secret: str, refresh_token: st
         "client_secret": client_secret,
         "refresh_token": refresh_token,
         "grant_type": "refresh_token",
+        "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
     }).encode()
     req = urllib.request.Request(
         "https://oauth2.googleapis.com/token", data=data, method="POST"
