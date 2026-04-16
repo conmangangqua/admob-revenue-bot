@@ -94,6 +94,19 @@ class handler(BaseHTTPRequestHandler):
                             target_name = app["name"].strip().lower()
                             if 'quicksave' in target_name:
                                 app["sheet_data"] = q_data
+                                
+                                # Ghi đè doanh thu từ Google Sheets
+                                if 'total_rev_vnd' in q_data:
+                                    try:
+                                        total_rev_vnd_val = float(str(q_data['total_rev_vnd']).replace(',', '').strip())
+                                        if total_rev_vnd_val > 0:
+                                            rev_usd = total_rev_vnd_val / 25400.0
+                                            old_rev = app.get("rev", 0)
+                                            app["rev"] = round(rev_usd, 2)
+                                            if "total" in day_info:
+                                                day_info["total"] = round(day_info["total"] - old_rev + rev_usd, 2)
+                                    except Exception:
+                                        pass
 
         # Sắp xếp lại log theo ngày giảm dần chuẩn format Chart
         sorted_history = dict(sorted(history_data.items(), reverse=True))
