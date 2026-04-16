@@ -645,315 +645,315 @@
     </div>
 
     <script>
-    let historyData = {};
-    let sortedDates = [];
-    let curDates = []; // Biến toàn cục lưu danh sách ngày đang lọc
-    let allApps = new Set();
-    let currentVndRate = 25400; // Tỷ giá dự phòng
-    let clickCount = 0;
-    let currentCurrency = 'VND'; // Mặc định hiển thị VND
-    
-    Chart.register(ChartDataLabels);
-    
-    let lineChartObj = null;
-    let pieChartObj = null;
+        let historyData = {};
+        let sortedDates = [];
+        let curDates = []; // Biến toàn cục lưu danh sách ngày đang lọc
+        let allApps = new Set();
+        let currentVndRate = 25400; // Tỷ giá dự phòng
+        let clickCount = 0;
+        let currentCurrency = 'VND'; // Mặc định hiển thị VND
 
-    Chart.defaults.font.family = "'Inter', sans-serif";
-    Chart.defaults.color = '#64748b';
-    const COLORS = ['#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#14B8A6', '#6366F1'];
+        Chart.register(ChartDataLabels);
 
-    const POSITIVE_QUOTES = [
-        "Sếp đi sắm ngay chiếc Mẹc đi, để em code phần còn lại cho! 🚗💨",
-        "Tuyệt trần! Trend xanh mướt thế này tối nay anh em đi nhậu Buffet Sếp nhỉ? 🥂",
-        "Tiền về như lốc! Gửi Bank lấy lãi kép thôi Sếp! 💸",
-        "Nhìn số nhảy sướng con mắt, mai cho em xin nghỉ phép 1 hôm đi shopping nhé! 🛍️"
-    ];
-    const NEGATIVE_QUOTES = [
-        "Tụt tí thôi, phong độ là nhất thời. Hít thở sâu vào Sếp đừng giận em! 🧘‍♂️",
-        "Tiền ngoài trạm thu phí còn tắc cơ mà, mai rồi cá lại về lưới Sếp ạ! 🚦",
-        "Thôi đừng căng thẳng Sếp ơi! Làm cốc Trà đá 3k hút thuốc lào cho tỉnh nhé 🍵",
-        "Đồ thị biểu diễn nhịp tim đấy Sếp, lúc lên lúc xuống mới khỏe! 💓"
-    ];
-    const FUNNY_CONVERSIONS = [
-        { label: "Bát Phở Thìn bò lăn 🍜", price: 70000 },
-        { label: "Tháng Netflix Premium 🍿", price: 260000 },
-        { label: "Đĩa Vịt Quay Bắc Kinh 🦆", price: 800000 },
-        { label: "Chỉ Vàng 9999 SJC 🪙", price: 8500000 },
-        { label: "Tháng Lương Dev Quèn 👨‍💻", price: 15000000 }
-    ];
+        let lineChartObj = null;
+        let pieChartObj = null;
 
-    async function init() {
-        try {
-            // Lấy tỷ giá Real-time
+        Chart.defaults.font.family = "'Inter', sans-serif";
+        Chart.defaults.color = '#64748b';
+        const COLORS = ['#3B82F6', '#8B5CF6', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#14B8A6', '#6366F1'];
+
+        const POSITIVE_QUOTES = [
+            "Sếp đi sắm ngay chiếc Mẹc đi, để em code phần còn lại cho! 🚗💨",
+            "Tuyệt trần! Trend xanh mướt thế này tối nay anh em đi nhậu Buffet Sếp nhỉ? 🥂",
+            "Tiền về như lốc! Gửi Bank lấy lãi kép thôi Sếp! 💸",
+            "Nhìn số nhảy sướng con mắt, mai cho em xin nghỉ phép 1 hôm đi shopping nhé! 🛍️"
+        ];
+        const NEGATIVE_QUOTES = [
+            "Tụt tí thôi, phong độ là nhất thời. Hít thở sâu vào Sếp đừng giận em! 🧘‍♂️",
+            "Tiền ngoài trạm thu phí còn tắc cơ mà, mai rồi cá lại về lưới Sếp ạ! 🚦",
+            "Thôi đừng căng thẳng Sếp ơi! Làm cốc Trà đá 3k hút thuốc lào cho tỉnh nhé 🍵",
+            "Đồ thị biểu diễn nhịp tim đấy Sếp, lúc lên lúc xuống mới khỏe! 💓"
+        ];
+        const FUNNY_CONVERSIONS = [
+            { label: "Bát Phở Thìn bò lăn 🍜", price: 70000 },
+            { label: "Tháng Netflix Premium 🍿", price: 260000 },
+            { label: "Đĩa Vịt Quay Bắc Kinh 🦆", price: 800000 },
+            { label: "Chỉ Vàng 9999 SJC 🪙", price: 8500000 },
+            { label: "Tháng Lương Dev Quèn 👨‍💻", price: 15000000 }
+        ];
+
+        async function init() {
             try {
-                const exResp = await fetch('https://open.er-api.com/v6/latest/USD');
-                if(exResp.ok) {
-                    const exData = await exResp.json();
-                    if(exData && exData.rates && exData.rates.VND) {
-                        currentVndRate = exData.rates.VND;
-                    }
-                }
-            } catch(ex) { console.error('Failed to load exchange rate', ex); }
+                // Lấy tỷ giá Real-time
+                // try {
+                //     const exResp = await fetch('https://open.er-api.com/v6/latest/USD');
+                //     if(exResp.ok) {
+                //         const exData = await exResp.json();
+                //         if(exData && exData.rates && exData.rates.VND) {
+                //             currentVndRate = exData.rates.VND;
+                //         }
+                //     }
+                // } catch(ex) { console.error('Failed to load exchange rate', ex); }
 
-            const resp = await fetch('/api/revenue');
-            historyData = await resp.json();
-            sortedDates = Object.keys(historyData).sort().reverse();
-            
-            if (sortedDates.length > 0) {
-                document.getElementById('lastUpdated').innerText = `🔄 Cập nhật: ${formatVNDate(sortedDates[0])} (Tỷ giá: 1$ = ${Math.round(currentVndRate).toLocaleString('vi-VN')}đ)`;
-            }
-            
-            // Tính tổng all-time để sort cho select
-            let allTimeAppRev = {};
-            for(let d in historyData) {
-                historyData[d].apps.forEach(a => {
-                    allApps.add(a.name);
-                    allTimeAppRev[a.name] = (allTimeAppRev[a.name] || 0) + a.rev;
+                const resp = await fetch('/api/revenue');
+                historyData = await resp.json();
+                sortedDates = Object.keys(historyData).sort().reverse();
+
+                if (sortedDates.length > 0) {
+                    document.getElementById('lastUpdated').innerText = `🔄 Cập nhật: ${formatVNDate(sortedDates[0])} (Tỷ giá: 1$ = ${Math.round(currentVndRate).toLocaleString('vi-VN')}đ)`;
+                }
+
+                // Tính tổng all-time để sort cho select
+                let allTimeAppRev = {};
+                for (let d in historyData) {
+                    historyData[d].apps.forEach(a => {
+                        allApps.add(a.name);
+                        allTimeAppRev[a.name] = (allTimeAppRev[a.name] || 0) + a.rev;
+                    });
+                }
+
+                const appSelect = document.getElementById('appFilter');
+                [...allApps].sort((a, b) => allTimeAppRev[b] - allTimeAppRev[a]).forEach(app => {
+                    const opt = document.createElement('option');
+                    opt.value = app; opt.text = app;
+                    appSelect.appendChild(opt);
                 });
-            }
-            
-            const appSelect = document.getElementById('appFilter');
-            [...allApps].sort((a,b) => allTimeAppRev[b] - allTimeAppRev[a]).forEach(app => {
-                const opt = document.createElement('option');
-                opt.value = app; opt.text = app;
-                appSelect.appendChild(opt);
-            });
 
-            // Tự động nhận diện Buổi Sáng thì mặc định Hôm Qua, Chiều/Tối mặc định Hôm Nay
-            const hr = new Date().getHours();
-            const timeFilterElem = document.getElementById('timeFilter');
-            // Check in case UI overrides this, but default DOM value is currently "7days"
-            if (hr < 12) {
-                timeFilterElem.value = 'yesterday';
-            } else {
-                timeFilterElem.value = 'today';
-            }
-
-            applyFilter();
-        } catch (e) {
-            console.error('Failed to load data', e);
-            document.getElementById('lastUpdated').innerText = `⚠️ Lỗi data`;
-        }
-    }
-
-    function triggerEasterEgg() {
-        clickCount++;
-        if(clickCount >= 3) {
-            clickCount = 0;
-            // Confetti Money Rain
-            const moneyShape = confetti.shapeFromText({ text: '💸', scalar: 2.5 });
-            confetti({
-                particleCount: 150,
-                spread: 100,
-                origin: { y: 0.6 },
-                shapes: [moneyShape, 'circle'],
-                colors: ['#10B981', '#FDE047']
-            });
-            
-            // Random fun quote even if you just click
-            document.getElementById('aiJokeBox').style.display = 'flex';
-            document.getElementById('aiJokeText').innerText = "Trời mưa lộc, rơi tiền rồi kìa nhặt đi Sếp ơiiiii !!! 🚀🚀🚀";
-        }
-    }
-
-    function formatSheetVal(val) {
-        if (val === undefined || val === null || val === '') return '--';
-        let num = parseFloat(val.toString().replace(/,/g, ''));
-        if (isNaN(num)) return val;
-        
-        // Nếu là 0, hiện nhãn Chưa cập nhật cho chuyên nghiệp
-        if (num === 0) return '<span style="font-weight:400; font-size:0.75rem; color:var(--color-text-muted); opacity:0.6;">Chưa cập nhật</span>';
-        
-        // Nếu là số nhỏ (triệu), thêm chữ Tr
-        if (Math.abs(num) < 1000) return num.toLocaleString('vi-VN') + ' Tr';
-        return num.toLocaleString('vi-VN');
-    }
-
-    function getFunnyConverterText(usdValue) {
-        if(usdValue <= 0) return "";
-        const vnd = usdValue * currentVndRate;
-        const mtb = FUNNY_CONVERSIONS[Math.floor(Math.random() * FUNNY_CONVERSIONS.length)];
-        const qty = Math.floor(vnd / mtb.price);
-        if (qty < 1) return `Mua được vài ly Trà Đá 🍵`;
-        return `Tương đương: ~${qty.toLocaleString('vi-VN')} ${mtb.label}`;
-    }
-
-    function formatVNDate(dateStr) {
-        if (!dateStr) return '';
-        const [y, m, d] = dateStr.split('-');
-        return `${d}/${m}`;
-    }
-
-    function formatVnd(usdValue, compact = true) {
-        const vnd = usdValue * currentVndRate;
-        if(compact) {
-            if(vnd >= 1000000000) {
-                return `${(vnd / 1000000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tỷ`;
-            }
-            if(vnd >= 1000000) {
-                return `${(vnd / 1000000).toLocaleString('vi-VN', {maximumFractionDigits: 1})} Tr`;
-            }
-        }
-        return `${Math.round(vnd).toLocaleString('vi-VN')} đ`;
-    }
-
-    function formatAmount(usdValue, compact = true) {
-        if (currentCurrency === 'VND') return formatVnd(usdValue, compact);
-        return '$' + usdValue.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
-    }
-
-    function setCurrency(val) {
-        currentCurrency = val;
-        applyFilter();
-    }
-
-    function getAppRev(dataObj, appFilter) {
-        if (!dataObj) return 0;
-        if (appFilter === 'all') return dataObj.total;
-        let sum = 0;
-        dataObj.apps.forEach(a => { if(a.name === appFilter) sum += a.rev; });
-        return sum;
-    }
-
-    function applyFilter() {
-        const timeFilter = document.getElementById('timeFilter').value;
-        const appSel = document.getElementById('appFilter').value;
-        if(sortedDates.length === 0) return;
-
-        curDates = []; prevDates = []; let lblHero = "Tổng Doanh Thu";
-
-        // Logic Date Range thông minh hơn
-        const todayStr = new Date().toISOString().split('T')[0]; 
-        
-        if (timeFilter === 'today') {
-            // Nếu ngày mới nhất là hôm nay, lấy nó. Nếu không, coi như chưa có data hôm nay.
-            if (sortedDates[0] === todayStr) {
-                curDates = [sortedDates[0]];
-                prevDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
-            } else {
-                curDates = []; // Chưa có data hôm nay
-                prevDates = [sortedDates[0]];
-            }
-            lblHero = "Doanh thu Hôm nay";
-        } else if (timeFilter === 'yesterday') {
-            // Nếu có data hôm nay, thì hôm qua là index 1. 
-            // Nếu chưa có data hôm nay, thì hôm qua chính là index 0 (vì bot thường chạy xong là có data hôm qua ngay).
-            if (sortedDates[0] === todayStr) {
-                curDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
-                prevDates = sortedDates.length > 2 ? [sortedDates[2]] : [];
-            } else {
-                curDates = [sortedDates[0]];
-                prevDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
-            }
-            lblHero = "Doanh thu Hôm qua";
-        } else if (timeFilter === '7days') {
-            curDates = sortedDates.slice(0, 7);
-            prevDates = sortedDates.slice(7, 14);
-            lblHero = "Tổng 7 Ngày Qua";
-        } else if (timeFilter === '30days') {
-            curDates = sortedDates.slice(0, 30);
-            prevDates = sortedDates.slice(30, 60);
-            lblHero = "Tổng 30 Ngày Qua";
-        } else if (timeFilter === 'thismonth') {
-            const currentMonthPrefix = sortedDates[0].substring(0, 7);
-            curDates = sortedDates.filter(d => d.startsWith(currentMonthPrefix));
-            prevDates = sortedDates.filter(d => !d.startsWith(currentMonthPrefix)).slice(0, curDates.length);
-            lblHero = "Tháng Này (MTD)";
-        }
-
-        // Dashboard Metrics Calculation
-        let curTotal = 0, prevTotal = 0, appAgg = {};
-        
-        curDates.forEach(d => {
-            const dObj = historyData[d];
-            curTotal += getAppRev(dObj, appSel);
-            dObj.apps.forEach(a => {
-                if (appSel === 'all' || a.name === appSel) {
-                    appAgg[a.name] = (appAgg[a.name] || 0) + a.rev;
+                // Tự động nhận diện Buổi Sáng thì mặc định Hôm Qua, Chiều/Tối mặc định Hôm Nay
+                const hr = new Date().getHours();
+                const timeFilterElem = document.getElementById('timeFilter');
+                // Check in case UI overrides this, but default DOM value is currently "7days"
+                if (hr < 12) {
+                    timeFilterElem.value = 'yesterday';
+                } else {
+                    timeFilterElem.value = 'today';
                 }
+
+                applyFilter();
+            } catch (e) {
+                console.error('Failed to load data', e);
+                document.getElementById('lastUpdated').innerText = `⚠️ Lỗi data`;
+            }
+        }
+
+        function triggerEasterEgg() {
+            clickCount++;
+            if (clickCount >= 3) {
+                clickCount = 0;
+                // Confetti Money Rain
+                const moneyShape = confetti.shapeFromText({ text: '💸', scalar: 2.5 });
+                confetti({
+                    particleCount: 150,
+                    spread: 100,
+                    origin: { y: 0.6 },
+                    shapes: [moneyShape, 'circle'],
+                    colors: ['#10B981', '#FDE047']
+                });
+
+                // Random fun quote even if you just click
+                document.getElementById('aiJokeBox').style.display = 'flex';
+                document.getElementById('aiJokeText').innerText = "Trời mưa lộc, rơi tiền rồi kìa nhặt đi Sếp ơiiiii !!! 🚀🚀🚀";
+            }
+        }
+
+        function formatSheetVal(val) {
+            if (val === undefined || val === null || val === '') return '--';
+            let num = parseFloat(val.toString().replace(/,/g, ''));
+            if (isNaN(num)) return val;
+
+            // Nếu là 0, hiện nhãn Chưa cập nhật cho chuyên nghiệp
+            if (num === 0) return '<span style="font-weight:400; font-size:0.75rem; color:var(--color-text-muted); opacity:0.6;">Chưa cập nhật</span>';
+
+            // Nếu là số nhỏ (triệu), thêm chữ Tr
+            if (Math.abs(num) < 1000) return num.toLocaleString('vi-VN') + ' Tr';
+            return num.toLocaleString('vi-VN');
+        }
+
+        function getFunnyConverterText(usdValue) {
+            if (usdValue <= 0) return "";
+            const vnd = usdValue * currentVndRate;
+            const mtb = FUNNY_CONVERSIONS[Math.floor(Math.random() * FUNNY_CONVERSIONS.length)];
+            const qty = Math.floor(vnd / mtb.price);
+            if (qty < 1) return `Mua được vài ly Trà Đá 🍵`;
+            return `Tương đương: ~${qty.toLocaleString('vi-VN')} ${mtb.label}`;
+        }
+
+        function formatVNDate(dateStr) {
+            if (!dateStr) return '';
+            const [y, m, d] = dateStr.split('-');
+            return `${d}/${m}`;
+        }
+
+        function formatVnd(usdValue, compact = true) {
+            const vnd = usdValue * currentVndRate;
+            if (compact) {
+                if (vnd >= 1000000000) {
+                    return `${(vnd / 1000000000).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} Tỷ`;
+                }
+                if (vnd >= 1000000) {
+                    return `${(vnd / 1000000).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} Tr`;
+                }
+            }
+            return `${Math.round(vnd).toLocaleString('vi-VN')} đ`;
+        }
+
+        function formatAmount(usdValue, compact = true) {
+            if (currentCurrency === 'VND') return formatVnd(usdValue, compact);
+            return '$' + usdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function setCurrency(val) {
+            currentCurrency = val;
+            applyFilter();
+        }
+
+        function getAppRev(dataObj, appFilter) {
+            if (!dataObj) return 0;
+            if (appFilter === 'all') return dataObj.total;
+            let sum = 0;
+            dataObj.apps.forEach(a => { if (a.name === appFilter) sum += a.rev; });
+            return sum;
+        }
+
+        function applyFilter() {
+            const timeFilter = document.getElementById('timeFilter').value;
+            const appSel = document.getElementById('appFilter').value;
+            if (sortedDates.length === 0) return;
+
+            curDates = []; prevDates = []; let lblHero = "Tổng Doanh Thu";
+
+            // Logic Date Range thông minh hơn
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            if (timeFilter === 'today') {
+                // Nếu ngày mới nhất là hôm nay, lấy nó. Nếu không, coi như chưa có data hôm nay.
+                if (sortedDates[0] === todayStr) {
+                    curDates = [sortedDates[0]];
+                    prevDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
+                } else {
+                    curDates = []; // Chưa có data hôm nay
+                    prevDates = [sortedDates[0]];
+                }
+                lblHero = "Doanh thu Hôm nay";
+            } else if (timeFilter === 'yesterday') {
+                // Nếu có data hôm nay, thì hôm qua là index 1. 
+                // Nếu chưa có data hôm nay, thì hôm qua chính là index 0 (vì bot thường chạy xong là có data hôm qua ngay).
+                if (sortedDates[0] === todayStr) {
+                    curDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
+                    prevDates = sortedDates.length > 2 ? [sortedDates[2]] : [];
+                } else {
+                    curDates = [sortedDates[0]];
+                    prevDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
+                }
+                lblHero = "Doanh thu Hôm qua";
+            } else if (timeFilter === '7days') {
+                curDates = sortedDates.slice(0, 7);
+                prevDates = sortedDates.slice(7, 14);
+                lblHero = "Tổng 7 Ngày Qua";
+            } else if (timeFilter === '30days') {
+                curDates = sortedDates.slice(0, 30);
+                prevDates = sortedDates.slice(30, 60);
+                lblHero = "Tổng 30 Ngày Qua";
+            } else if (timeFilter === 'thismonth') {
+                const currentMonthPrefix = sortedDates[0].substring(0, 7);
+                curDates = sortedDates.filter(d => d.startsWith(currentMonthPrefix));
+                prevDates = sortedDates.filter(d => !d.startsWith(currentMonthPrefix)).slice(0, curDates.length);
+                lblHero = "Tháng Này (MTD)";
+            }
+
+            // Dashboard Metrics Calculation
+            let curTotal = 0, prevTotal = 0, appAgg = {};
+
+            curDates.forEach(d => {
+                const dObj = historyData[d];
+                curTotal += getAppRev(dObj, appSel);
+                dObj.apps.forEach(a => {
+                    if (appSel === 'all' || a.name === appSel) {
+                        appAgg[a.name] = (appAgg[a.name] || 0) + a.rev;
+                    }
+                });
             });
-        });
-        
-        prevDates.forEach(d => {
-            prevTotal += getAppRev(historyData[d], appSel);
-        });
 
-        // 1. Hero Card & Fun Features
-        if (curDates.length > 0) {
-            let startD = formatVNDate(curDates[curDates.length - 1]);
-            let endD = formatVNDate(curDates[0]);
-            let rangeStr = startD === endD ? startD : `${startD} đến ${endD}`;
-            document.getElementById('heroDateRange').innerText = rangeStr;
-            document.getElementById('heroDateRange').style.display = 'block';
-        } else {
-            document.getElementById('heroDateRange').style.display = 'none';
-        }
-        
-        if (appSel !== 'all') lblHero += ` (${appSel})`;
-        
-        document.getElementById('lblHeroRev').innerText = lblHero;
-        document.getElementById('valHeroRev').innerHTML = `<div class="usd">${formatAmount(curTotal)}</div>`;
+            prevDates.forEach(d => {
+                prevTotal += getAppRev(historyData[d], appSel);
+            });
 
-        // The Converter Box
-        if (curTotal > 0) {
-            document.getElementById('converterBox').style.display = 'inline-block';
-            document.getElementById('converterBox').innerHTML = `<div class="converter-box">${getFunnyConverterText(curTotal)}</div>`;
-        } else {
-            document.getElementById('converterBox').style.display = 'none';
-        }
+            // 1. Hero Card & Fun Features
+            if (curDates.length > 0) {
+                let startD = formatVNDate(curDates[curDates.length - 1]);
+                let endD = formatVNDate(curDates[0]);
+                let rangeStr = startD === endD ? startD : `${startD} đến ${endD}`;
+                document.getElementById('heroDateRange').innerText = rangeStr;
+                document.getElementById('heroDateRange').style.display = 'block';
+            } else {
+                document.getElementById('heroDateRange').style.display = 'none';
+            }
 
-        const badgeObj = document.getElementById('trendHeroBadge');
-        if (prevTotal > 0) {
-            const pct = ((curTotal - prevTotal) / prevTotal) * 100;
-            badgeObj.className = 'trend-badge ' + (pct >= 0 ? 'positive' : 'negative');
-            badgeObj.innerText = (pct >= 0 ? '+' : '') + pct.toFixed(1) + (pct >= 0 ? '% ↗' : '% ↘');
-            document.getElementById('trendHeroText').innerText = `so với ${prevDates.length} ngày liền trước`;
-            
-            // Sarcastic Bot
-            document.getElementById('aiJokeBox').style.display = 'flex';
-            let quotes = pct >= 0 ? POSITIVE_QUOTES : NEGATIVE_QUOTES;
-            document.getElementById('aiJokeText').innerText = quotes[Math.floor(Math.random() * quotes.length)];
-        } else {
-            badgeObj.className = 'trend-badge neutral';
-            badgeObj.innerText = `N/A`;
-            document.getElementById('trendHeroText').innerText = `Thiếu dữ liệu`;
-            document.getElementById('aiJokeBox').style.display = 'none';
-        }
+            if (appSel !== 'all') lblHero += ` (${appSel})`;
 
-        // 2. Top App Ranking (Top 3)
-        const appArr = Object.entries(appAgg).sort((a,b) => b[1] - a[1]);
-        const top3ListContainer = document.getElementById('valTop3List');
-        
-        if (appArr.length > 0) {
-            let top3Html = '';
-            const medals = ['🥇', '🥈', '🥉'];
-            const top3 = appArr.slice(0, 3);
-            
-            top3.forEach((app, index) => {
-                const appName = app[0];
-                const appRev = app[1];
-                
-                // Tính TỔNG LÃI của app này trong kỳ
-                let totalProfit = 0;
-                let hasSheet = false;
-                curDates.forEach(d => {
-                    const dData = historyData[d];
-                    if (dData && dData.apps) {
-                        const aData = dData.apps.find(a => a.name === appName);
-                        if (aData && aData.sheet_data && aData.sheet_data.marketing_profit_vnd) {
-                            const pVal = parseFloat(aData.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
-                            if (!isNaN(pVal)) {
-                                totalProfit += pVal;
-                                hasSheet = true;
+            document.getElementById('lblHeroRev').innerText = lblHero;
+            document.getElementById('valHeroRev').innerHTML = `<div class="usd">${formatAmount(curTotal)}</div>`;
+
+            // The Converter Box
+            if (curTotal > 0) {
+                document.getElementById('converterBox').style.display = 'inline-block';
+                document.getElementById('converterBox').innerHTML = `<div class="converter-box">${getFunnyConverterText(curTotal)}</div>`;
+            } else {
+                document.getElementById('converterBox').style.display = 'none';
+            }
+
+            const badgeObj = document.getElementById('trendHeroBadge');
+            if (prevTotal > 0) {
+                const pct = ((curTotal - prevTotal) / prevTotal) * 100;
+                badgeObj.className = 'trend-badge ' + (pct >= 0 ? 'positive' : 'negative');
+                badgeObj.innerText = (pct >= 0 ? '+' : '') + pct.toFixed(1) + (pct >= 0 ? '% ↗' : '% ↘');
+                document.getElementById('trendHeroText').innerText = `so với ${prevDates.length} ngày liền trước`;
+
+                // Sarcastic Bot
+                document.getElementById('aiJokeBox').style.display = 'flex';
+                let quotes = pct >= 0 ? POSITIVE_QUOTES : NEGATIVE_QUOTES;
+                document.getElementById('aiJokeText').innerText = quotes[Math.floor(Math.random() * quotes.length)];
+            } else {
+                badgeObj.className = 'trend-badge neutral';
+                badgeObj.innerText = `N/A`;
+                document.getElementById('trendHeroText').innerText = `Thiếu dữ liệu`;
+                document.getElementById('aiJokeBox').style.display = 'none';
+            }
+
+            // 2. Top App Ranking (Top 3)
+            const appArr = Object.entries(appAgg).sort((a, b) => b[1] - a[1]);
+            const top3ListContainer = document.getElementById('valTop3List');
+
+            if (appArr.length > 0) {
+                let top3Html = '';
+                const medals = ['🥇', '🥈', '🥉'];
+                const top3 = appArr.slice(0, 3);
+
+                top3.forEach((app, index) => {
+                    const appName = app[0];
+                    const appRev = app[1];
+
+                    // Tính TỔNG LÃI của app này trong kỳ
+                    let totalProfit = 0;
+                    let hasSheet = false;
+                    curDates.forEach(d => {
+                        const dData = historyData[d];
+                        if (dData && dData.apps) {
+                            const aData = dData.apps.find(a => a.name === appName);
+                            if (aData && aData.sheet_data && aData.sheet_data.marketing_profit_vnd) {
+                                const pVal = parseFloat(aData.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                                if (!isNaN(pVal)) {
+                                    totalProfit += pVal;
+                                    hasSheet = true;
+                                }
                             }
                         }
-                    }
-                });
+                    });
 
-                const profitColor = totalProfit < 0 ? 'var(--color-danger)' : '#10b981';
-                const profitText = hasSheet ? `Lãi thực: ${formatSheetVal(totalProfit)}` : 'Lãi thực: --';
+                    const profitColor = totalProfit < 0 ? 'var(--color-danger)' : '#10b981';
+                    const profitText = hasSheet ? `Lãi thực: ${formatSheetVal(totalProfit)}` : 'Lãi thực: --';
 
-                top3Html += `
+                    top3Html += `
                     <div class="ranking-item" onclick="showAppDetail('${appName}')">
                         <div class="ranking-rank">${medals[index] || (index + 1)}</div>
                         <div class="ranking-info">
@@ -965,80 +965,80 @@
                         </div>
                     </div>
                 `;
-            });
-            top3ListContainer.innerHTML = top3Html;
-        } else {
-            top3ListContainer.innerHTML = '<div style="padding: 2rem 0; text-align: center; color: var(--color-text-muted); opacity: 0.5;">Không có dữ liệu xếp hạng</div>';
+                });
+                top3ListContainer.innerHTML = top3Html;
+            } else {
+                top3ListContainer.innerHTML = '<div style="padding: 2rem 0; text-align: center; color: var(--color-text-muted); opacity: 0.5;">Không có dữ liệu xếp hạng</div>';
+            }
+
+            // Render line charts
+            let chartDates = curDates;
+            if (chartDates.length < 7) {
+                chartDates = sortedDates.slice(0, Math.max(7, chartDates.length));
+            }
+
+            renderAppListUI(appArr);
+            renderCharts(chartDates.reverse(), appArr, appSel);
         }
 
-        // Render line charts
-        let chartDates = curDates;
-        if (chartDates.length < 7) {
-            chartDates = sortedDates.slice(0, Math.max(7, chartDates.length));
-        }
+        function setupFixedMTD(appSel) {
+            if (sortedDates.length === 0) return;
+            const latestInfo = sortedDates[0].split('-');
+            const currentMonthPrefix = `${latestInfo[0]}-${latestInfo[1]}`;
 
-        renderAppListUI(appArr);
-        renderCharts(chartDates.reverse(), appArr, appSel);
-    }
+            let monthIterRev = 0;
 
-    function setupFixedMTD(appSel) {
-        if(sortedDates.length === 0) return;
-        const latestInfo = sortedDates[0].split('-');
-        const currentMonthPrefix = `${latestInfo[0]}-${latestInfo[1]}`;
-        
-        let monthIterRev = 0;
-        
-        for (let d of sortedDates) {
-            if (d.startsWith(currentMonthPrefix)) {
-                monthIterRev += getAppRev(historyData[d], appSel);
+            for (let d of sortedDates) {
+                if (d.startsWith(currentMonthPrefix)) {
+                    monthIterRev += getAppRev(historyData[d], appSel);
+                }
+            }
+
+            document.getElementById('lblMonth').innerText = `Tháng ${latestInfo[1]} (MTD)`;
+            document.getElementById('valMonthRev').innerHTML = `<div class="usd">${formatAmount(monthIterRev)}</div>`;
+
+            const daysElapsed = parseInt(latestInfo[2], 10);
+            if (daysElapsed > 0) {
+                const tempDate = new Date(latestInfo[0], latestInfo[1], 0);
+                const daysInMonth = tempDate.getDate();
+                const projected = (monthIterRev / daysElapsed) * daysInMonth;
+                document.getElementById('valMonthProj').innerText = `Dự kiến: ${formatAmount(projected)}`;
             }
         }
-        
-        document.getElementById('lblMonth').innerText = `Tháng ${latestInfo[1]} (MTD)`;
-        document.getElementById('valMonthRev').innerHTML = `<div class="usd">${formatAmount(monthIterRev)}</div>`;
-        
-        const daysElapsed = parseInt(latestInfo[2], 10);
-        if (daysElapsed > 0) {
-            const tempDate = new Date(latestInfo[0], latestInfo[1], 0);
-            const daysInMonth = tempDate.getDate();
-            const projected = (monthIterRev / daysElapsed) * daysInMonth;
-            document.getElementById('valMonthProj').innerText = `Dự kiến: ${formatAmount(projected)}`;
-        }
-    }
 
-    function renderAppListUI(appArr) {
-        const container = document.getElementById('appListUI');
-        
-        container.innerHTML = appArr.map((app, i) => {
-            const appName = app[0];
-            const admobRev = app[1];
-            let totalSheetProfit = 0;
-            let hasSheetData = false;
-            
-            // Tính tổng lãi trong TOÀN BỘ khoảng ngày đang chọn (curDates)
-            curDates.forEach(d => {
-                const dayData = historyData[d];
-                if (dayData && dayData.apps) {
-                    const appData = dayData.apps.find(a => a.name === appName);
-                    if (appData && appData.sheet_data && appData.sheet_data.marketing_profit_vnd) {
-                        const prof = parseFloat(appData.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
-                        if (!isNaN(prof)) {
-                            totalSheetProfit += prof;
-                            hasSheetData = true;
+        function renderAppListUI(appArr) {
+            const container = document.getElementById('appListUI');
+
+            container.innerHTML = appArr.map((app, i) => {
+                const appName = app[0];
+                const admobRev = app[1];
+                let totalSheetProfit = 0;
+                let hasSheetData = false;
+
+                // Tính tổng lãi trong TOÀN BỘ khoảng ngày đang chọn (curDates)
+                curDates.forEach(d => {
+                    const dayData = historyData[d];
+                    if (dayData && dayData.apps) {
+                        const appData = dayData.apps.find(a => a.name === appName);
+                        if (appData && appData.sheet_data && appData.sheet_data.marketing_profit_vnd) {
+                            const prof = parseFloat(appData.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                            if (!isNaN(prof)) {
+                                totalSheetProfit += prof;
+                                hasSheetData = true;
+                            }
                         }
                     }
+                });
+
+                let sheetInfoHtml = '';
+                if (hasSheetData) {
+                    const pColor = totalSheetProfit < 0 ? 'var(--color-danger)' : '#10b981';
+                    sheetInfoHtml = `<div style="font-size: 0.75rem; color: ${pColor}; font-weight: 700; margin-top: 0.1rem;">Lãi thực: ${formatSheetVal(totalSheetProfit)}</div>`;
+                } else {
+                    sheetInfoHtml = `<div style="font-size: 0.75rem; color: var(--color-text-muted); opacity: 0.6; margin-top: 0.1rem;">Lãi: --</div>`;
                 }
-            });
 
-            let sheetInfoHtml = '';
-            if (hasSheetData) {
-                const pColor = totalSheetProfit < 0 ? 'var(--color-danger)' : '#10b981';
-                sheetInfoHtml = `<div style="font-size: 0.75rem; color: ${pColor}; font-weight: 700; margin-top: 0.1rem;">Lãi thực: ${formatSheetVal(totalSheetProfit)}</div>`;
-            } else {
-                sheetInfoHtml = `<div style="font-size: 0.75rem; color: var(--color-text-muted); opacity: 0.6; margin-top: 0.1rem;">Lãi: --</div>`;
-            }
-
-            return `
+                return `
             <div class="app-item" onclick="showAppDetail('${appName}')">
                 <div class="app-name-wrap">
                     <div class="app-dot" style="background-color: ${COLORS[i % COLORS.length]}"></div>
@@ -1050,97 +1050,97 @@
                 </div>
             </div>
             `;
-        }).join('');
-    }
+            }).join('');
+        }
 
-    function renderCharts(orderedDates, appArr, appSel) {
-        if (lineChartObj) lineChartObj.destroy();
-        if (pieChartObj) pieChartObj.destroy();
+        function renderCharts(orderedDates, appArr, appSel) {
+            if (lineChartObj) lineChartObj.destroy();
+            if (pieChartObj) pieChartObj.destroy();
 
-        // Line Chart
-        lineChartObj = new Chart(document.getElementById('revenueLineChart').getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: orderedDates.map(d => formatVNDate(d)),
-                datasets: [{
-                    label: currentCurrency === 'VND' ? 'Doanh thu (VND)' : 'Doanh thu ($)',
-                    data: orderedDates.map(d => getAppRev(historyData[d], appSel)),
-                    borderColor: '#3B82F6', backgroundColor: 'rgba(59, 130, 246, 0.12)',
-                    borderWidth: 3, tension: 0.4, fill: true,
-                    pointBackgroundColor: '#FFFFFF', pointBorderColor: '#3B82F6', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 7
-                }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false,
-                layout: { padding: { top: 25, left: 10, right: 15 } },
-                onClick: (e, elements) => {
-                    if (elements.length > 0) {
-                        const dateStr = orderedDates[elements[0].index];
-                        showDetail(dateStr, appSel);
-                    }
+            // Line Chart
+            lineChartObj = new Chart(document.getElementById('revenueLineChart').getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: orderedDates.map(d => formatVNDate(d)),
+                    datasets: [{
+                        label: currentCurrency === 'VND' ? 'Doanh thu (VND)' : 'Doanh thu ($)',
+                        data: orderedDates.map(d => getAppRev(historyData[d], appSel)),
+                        borderColor: '#3B82F6', backgroundColor: 'rgba(59, 130, 246, 0.12)',
+                        borderWidth: 3, tension: 0.4, fill: true,
+                        pointBackgroundColor: '#FFFFFF', pointBorderColor: '#3B82F6', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 7
+                    }]
                 },
-                plugins: { 
-                    datalabels: {
-                        align: 'top',
-                        anchor: 'end',
-                        color: '#3B82F6',
-                        font: { family: "'Inter', sans-serif", weight: 700, size: 10.5 },
-                        formatter: function(value) { return formatAmount(value); }
-                    },
-                    legend: { display: false },
-                    tooltip: { 
-                        displayColors: false, backgroundColor: '#0F172A', titleFont: { family: "'Inter', sans-serif" }, bodyFont: { family: "'Inter', sans-serif", size: 14 }, padding: 12, cornerRadius: 8,
-                        callbacks: {
-                            label: (ctx) => ` Doanh thu: ${formatAmount(ctx.parsed.y)}`
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    layout: { padding: { top: 25, left: 10, right: 15 } },
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            const dateStr = orderedDates[elements[0].index];
+                            showDetail(dateStr, appSel);
                         }
-                    }
-                },
-                scales: {
-                    y: { grid: { color: '#F1F5F9' }, border: { display: false }, ticks: { callback: v => formatAmount(v) } },
-                    x: { grid: { display: false }, border: { display: false } }
-                },
-                interaction: { intersect: false, mode: 'index' }
-            }
-        });
-
-        // Pie Chart
-        pieChartObj = new Chart(document.getElementById('appPieChart').getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: appArr.map(a => a[0]),
-                datasets: [{ data: appArr.map(a => a[1]), backgroundColor: COLORS.slice(0, appArr.length), borderWidth: 0 }]
-            },
-            options: {
-                responsive: true, maintainAspectRatio: false, cutout: '70%',
-                plugins: {
-                    datalabels: { display: false },
-                    legend: { display: false },
-                    tooltip: { backgroundColor: '#0F172A', callbacks: { label: c => ` ${c.label}: ${formatAmount(c.parsed)}` } }
+                    },
+                    plugins: {
+                        datalabels: {
+                            align: 'top',
+                            anchor: 'end',
+                            color: '#3B82F6',
+                            font: { family: "'Inter', sans-serif", weight: 700, size: 10.5 },
+                            formatter: function (value) { return formatAmount(value); }
+                        },
+                        legend: { display: false },
+                        tooltip: {
+                            displayColors: false, backgroundColor: '#0F172A', titleFont: { family: "'Inter', sans-serif" }, bodyFont: { family: "'Inter', sans-serif", size: 14 }, padding: 12, cornerRadius: 8,
+                            callbacks: {
+                                label: (ctx) => ` Doanh thu: ${formatAmount(ctx.parsed.y)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { grid: { color: '#F1F5F9' }, border: { display: false }, ticks: { callback: v => formatAmount(v) } },
+                        x: { grid: { display: false }, border: { display: false } }
+                    },
+                    interaction: { intersect: false, mode: 'index' }
                 }
-            }
-        });
-    }
+            });
 
-    function showDetail(dateStr, appSel) {
-        document.getElementById('detailDate').innerText = `Báo cáo Ngày ${formatVNDate(dateStr)}`;
-        let apps = historyData[dateStr].apps;
-        
-        apps.sort((a,b) => b.rev - a.rev);
-        
-        let html = '';
-        let totalModal = 0;
-        apps.forEach(a => {
-            if (appSel === 'all' || a.name === appSel) {
-                totalModal += a.rev;
-                html += `<div class="detail-row">
+            // Pie Chart
+            pieChartObj = new Chart(document.getElementById('appPieChart').getContext('2d'), {
+                type: 'doughnut',
+                data: {
+                    labels: appArr.map(a => a[0]),
+                    datasets: [{ data: appArr.map(a => a[1]), backgroundColor: COLORS.slice(0, appArr.length), borderWidth: 0 }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '70%',
+                    plugins: {
+                        datalabels: { display: false },
+                        legend: { display: false },
+                        tooltip: { backgroundColor: '#0F172A', callbacks: { label: c => ` ${c.label}: ${formatAmount(c.parsed)}` } }
+                    }
+                }
+            });
+        }
+
+        function showDetail(dateStr, appSel) {
+            document.getElementById('detailDate').innerText = `Báo cáo Ngày ${formatVNDate(dateStr)}`;
+            let apps = historyData[dateStr].apps;
+
+            apps.sort((a, b) => b.rev - a.rev);
+
+            let html = '';
+            let totalModal = 0;
+            apps.forEach(a => {
+                if (appSel === 'all' || a.name === appSel) {
+                    totalModal += a.rev;
+                    html += `<div class="detail-row">
                             <span class="detail-app" style="font-weight: 800; font-size: 1.1rem; color: var(--color-accent);">${a.name}</span>
                             <div style="text-align: right;">
                                 <div class="detail-rev" style="font-size: 1.2rem;">${formatAmount(a.rev, false)}</div>
                             </div>
                          </div>`;
-                         
+
                     if (!a.sheet_data || (!a.sheet_data.total_rev_vnd && !a.sheet_data.cost_vnd)) return;
-                    
+
                     const isVnd = currentCurrency === 'VND';
                     const s = a.sheet_data;
                     const sdRevStr = s.total_rev_vnd || '0';
@@ -1153,16 +1153,16 @@
                         let num = parseFloat(valStr.toString().replace(/[^0-9.-]/g, ''));
                         if (isNaN(num)) return valStr;
                         if (num === 0) return '<span style="font-weight:400; font-size:0.8rem; color:var(--color-text-muted); opacity:0.7;">Chưa cập nhật</span>';
-                        
+
                         // Chuyển đổi sang đơn vị tiền đồng (đ)
                         let realAmountVnd = num * 1000000;
-                        
+
                         if (isVnd) {
                             return realAmountVnd.toLocaleString('vi-VN') + ' đ';
                         } else {
                             // Quy đổi từ tiền đồng thực tế sang USD
                             let usdVal = realAmountVnd / currentVndRate;
-                            return '$' + usdVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+                            return '$' + usdVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                         }
                     };
 
@@ -1187,38 +1187,38 @@
                         </div>
                     </div>`;
                 }
-        });
-        html += `<div class="detail-row" style="margin-top: 0.5rem; border-top: 2px dashed var(--color-border); padding-top: 1rem;">
+            });
+            html += `<div class="detail-row" style="margin-top: 0.5rem; border-top: 2px dashed var(--color-border); padding-top: 1rem;">
                     <span class="detail-app" style="font-weight: 800;">TỔNG CỘNG</span>
                     <div style="text-align: right;">
                         <div class="detail-rev" style="font-size: 1.4rem; color: var(--color-text);">${formatAmount(totalModal, false)}</div>
                     </div>
                  </div>`;
-        
-        document.getElementById('detailList').innerHTML = html;
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('detailPanel').style.display = 'block';
-    }
 
-    function showAppDetail(appName) {
-        document.getElementById('detailDate').innerText = `Chi tiết: ${appName}`;
-        
-        let html = '';
-        let count = 0;
+            document.getElementById('detailList').innerHTML = html;
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('detailPanel').style.display = 'block';
+        }
 
-        // Ưu tiên hiện theo thứ tự ngày mới nhất
-        const sortedCurDates = [...curDates].sort((a,b) => b.localeCompare(a));
+        function showAppDetail(appName) {
+            document.getElementById('detailDate').innerText = `Chi tiết: ${appName}`;
 
-        sortedCurDates.forEach(d => {
-            const dayData = historyData[d];
-            if (!dayData || !dayData.apps) return;
-            
-            const aData = dayData.apps.find(a => a.name === appName);
-            if (!aData) return;
+            let html = '';
+            let count = 0;
 
-            count++;
+            // Ưu tiên hiện theo thứ tự ngày mới nhất
+            const sortedCurDates = [...curDates].sort((a, b) => b.localeCompare(a));
 
-            html += `<div class="detail-row" style="padding: 1rem 0; border-bottom: 2px solid var(--color-border); flex-direction: column; align-items: flex-start;">
+            sortedCurDates.forEach(d => {
+                const dayData = historyData[d];
+                if (!dayData || !dayData.apps) return;
+
+                const aData = dayData.apps.find(a => a.name === appName);
+                if (!aData) return;
+
+                count++;
+
+                html += `<div class="detail-row" style="padding: 1rem 0; border-bottom: 2px solid var(--color-border); flex-direction: column; align-items: flex-start;">
                         <div style="width: 100%; display: flex; justify-content: space-between; align-items: baseline;">
                             <div style="font-size: 0.85rem; color: var(--color-text-muted); font-weight: 700;">${formatVNDate(d)}</div>
                             <div class="detail-rev" style="font-size: 1.35rem; color: var(--color-accent); font-weight: 800;">${formatAmount(aData.rev)}</div>
@@ -1226,13 +1226,13 @@
                         <div style="font-size: 0.9rem; font-weight: 600; color: var(--color-text); margin-top: 0.2rem;">Doanh thu AdMob</div>
                     </div>`;
 
-            if (aData.sheet_data && (aData.sheet_data.marketing_profit_vnd !== undefined)) {
-                const s = aData.sheet_data;
-                const pVal = parseFloat(s.marketing_profit_vnd.toString().replace(/,/g, ''));
-                const pColor = pVal < 0 ? 'var(--color-danger)' : 'var(--color-success)';
-                const pPct = s.profit_pct_sheet || '0%';
-                
-                html += `<div style="background: rgba(59, 130, 246, 0.04); padding: 1rem; border-radius: 12px; margin-top: -0.5rem; margin-bottom: 1.5rem; border: 1px solid rgba(59, 130, 246, 0.1); font-size: 0.9rem;">
+                if (aData.sheet_data && (aData.sheet_data.marketing_profit_vnd !== undefined)) {
+                    const s = aData.sheet_data;
+                    const pVal = parseFloat(s.marketing_profit_vnd.toString().replace(/,/g, ''));
+                    const pColor = pVal < 0 ? 'var(--color-danger)' : 'var(--color-success)';
+                    const pPct = s.profit_pct_sheet || '0%';
+
+                    html += `<div style="background: rgba(59, 130, 246, 0.04); padding: 1rem; border-radius: 12px; margin-top: -0.5rem; margin-bottom: 1.5rem; border: 1px solid rgba(59, 130, 246, 0.1); font-size: 0.9rem;">
                             <div style="display:flex; justify-content:space-between; margin-bottom: 0.4rem; opacity: 0.8;">
                                 <span style="color:var(--color-text-muted);">Doanh thu tổng (VND)</span>
                                 <span style="font-weight:700; color:var(--color-accent);">${formatSheetValWithTime(s.total_rev_vnd)}</span>
@@ -1246,37 +1246,37 @@
                                 <span style="font-weight:800; color:${pColor};">${formatSheetValWithTime(s.marketing_profit_vnd)} <span style="font-size: 0.75rem; opacity: 0.8;">(${pPct})</span></span>
                             </div>
                         </div>`;
+                }
+            });
+
+            if (count === 0) {
+                html = '<div style="padding: 3rem 0; text-align: center; color: var(--color-text-muted); opacity: 0.6; font-style: italic;">Không tìm thấy dữ liệu ứng dụng này trong kỳ...</div>';
             }
-        });
 
-        if (count === 0) {
-            html = '<div style="padding: 3rem 0; text-align: center; color: var(--color-text-muted); opacity: 0.6; font-style: italic;">Không tìm thấy dữ liệu ứng dụng này trong kỳ...</div>';
+            document.getElementById('detailList').innerHTML = html;
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('detailPanel').style.display = 'block';
         }
 
-        document.getElementById('detailList').innerHTML = html;
-        document.getElementById('overlay').style.display = 'block';
-        document.getElementById('detailPanel').style.display = 'block';
-    }
+        function formatSheetValWithTime(valStr) {
+            let num = parseFloat(valStr.toString().replace(/[^0-9.-]/g, ''));
+            if (isNaN(num)) return valStr;
+            if (num === 0) return '<span style="font-weight:400; font-size:0.8rem; color:var(--color-text-muted); opacity:0.75;">Chưa cập nhật</span>';
 
-    function formatSheetValWithTime(valStr) {
-        let num = parseFloat(valStr.toString().replace(/[^0-9.-]/g, ''));
-        if (isNaN(num)) return valStr;
-        if (num === 0) return '<span style="font-weight:400; font-size:0.8rem; color:var(--color-text-muted); opacity:0.75;">Chưa cập nhật</span>';
-        
-        let realVnd = num * 1000000;
-        if (currentCurrency === 'VND') {
-            return realVnd.toLocaleString('vi-VN') + ' đ';
-        } else {
-            return '$' + (realVnd / currentVndRate).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            let realVnd = num * 1000000;
+            if (currentCurrency === 'VND') {
+                return realVnd.toLocaleString('vi-VN') + ' đ';
+            } else {
+                return '$' + (realVnd / currentVndRate).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
         }
-    }
 
-    function closeDetail() {
-        document.getElementById('overlay').style.display = 'none';
-        document.getElementById('detailPanel').style.display = 'none';
-    }
+        function closeDetail() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('detailPanel').style.display = 'none';
+        }
 
-    init();
+        init();
     </script>
 </body>
 
