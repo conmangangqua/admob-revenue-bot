@@ -100,7 +100,8 @@ class handler(BaseHTTPRequestHandler):
                                     try:
                                         total_rev_vnd_val = float(str(q_data['total_rev_vnd']).replace(',', '').strip())
                                         if total_rev_vnd_val > 0:
-                                            rev_usd = total_rev_vnd_val / 25400.0
+                                            real_vnd = total_rev_vnd_val * 1000000
+                                            rev_usd = real_vnd / 25400.0
                                             old_rev = app.get("rev", 0)
                                             app["rev"] = round(rev_usd, 2)
                                             if "total" in day_info:
