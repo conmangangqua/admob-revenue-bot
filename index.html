@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -20,21 +21,25 @@
             --color-success-bg: #D1FAE5;
             --color-danger: #EF4444;
             --color-danger-bg: #FEE2E2;
-            
+
             --hero-bg: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%);
             --hero-text: #FFFFFF;
-            
+
             --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.04);
             --shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.08);
             --radius-lg: 16px;
             --radius-md: 12px;
-            
+
             font-family: 'Inter', sans-serif;
             font-variant-numeric: tabular-nums;
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             background-color: var(--color-bg);
             color: var(--color-text);
@@ -43,7 +48,10 @@
             line-height: 1.5;
         }
 
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
 
         header {
             display: flex;
@@ -59,23 +67,45 @@
             align-items: center;
             gap: 0.75rem;
         }
-        
-        h1 { font-size: 1.5rem; font-weight: 800; color: var(--color-text); letter-spacing: -0.02em; }
-        
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--color-text);
+            letter-spacing: -0.02em;
+        }
+
         .status-badge {
-            font-size: 0.75rem; color: #047857; background: #A7F3D0;
-            padding: 0.2rem 0.6rem; border-radius: 999px; font-weight: 700;
+            font-size: 0.75rem;
+            color: #047857;
+            background: #A7F3D0;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-weight: 700;
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(167, 243, 208, 0.7); }
-            70% { box-shadow: 0 0 0 6px rgba(167, 243, 208, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(167, 243, 208, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(167, 243, 208, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 6px rgba(167, 243, 208, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(167, 243, 208, 0);
+            }
         }
 
-        .controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
-        
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
         select {
             padding: 0.6rem 1rem;
             border-radius: var(--radius-md);
@@ -87,19 +117,44 @@
             color: var(--color-text);
             cursor: pointer;
             outline: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
             transition: all 0.2s;
         }
-        select:hover { border-color: var(--color-accent); }
-        
+
+        select:hover {
+            border-color: var(--color-accent);
+        }
+
         /* Cà khịa Joke Box */
         .ai-joke-box {
-            background: rgba(139, 92, 246, 0.1); border-left: 4px solid #8B5CF6; border-radius: 4px 8px 8px 4px;
-            padding: 0.75rem 1.25rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 0.75rem;
+            background: rgba(139, 92, 246, 0.1);
+            border-left: 4px solid #8B5CF6;
+            border-radius: 4px 8px 8px 4px;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
             animation: fadeIn 0.5s ease;
         }
-        .ai-joke-text { color: #6D28D9; font-weight: 600; font-size: 0.95rem; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .ai-joke-text {
+            color: #6D28D9;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
         /* Summary Grid */
         .summary-grid {
@@ -109,8 +164,11 @@
             margin-bottom: 2rem;
             align-items: stretch;
         }
+
         @media (max-width: 900px) {
-            .summary-grid { grid-template-columns: 1fr; }
+            .summary-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         .stat-card {
@@ -125,40 +183,137 @@
             flex-direction: column;
             justify-content: space-between;
         }
-        .stat-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-hover); }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
 
         /* Hero Card Easter Egg Clickable styling */
-        .stat-card.hero { 
-            background: var(--hero-bg); color: var(--hero-text); box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
-            cursor: pointer; user-select: none;
+        .stat-card.hero {
+            background: var(--hero-bg);
+            color: var(--hero-text);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+            cursor: pointer;
+            user-select: none;
         }
-        .stat-card.hero:hover { transform: scale(1.02); }
-        .stat-card.hero .stat-label { color: rgba(255,255,255,0.9); text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .stat-card.hero .stat-value { color: #FFFFFF; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .stat-card.hero .trend-badge.positive { background: rgba(16, 185, 129, 0.25); color: #FFFFFF; }
-        .stat-card.hero .trend-badge.negative { background: rgba(239, 68, 68, 0.3); color: #FFFFFF; }
-        .stat-card.hero .trend-text { color: rgba(255,255,255,0.85); text-shadow: 0 1px 1px rgba(0,0,0,0.1); }
-        
+
+        .stat-card.hero:hover {
+            transform: scale(1.02);
+        }
+
+        .stat-card.hero .stat-label {
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card.hero .stat-value {
+            color: #FFFFFF;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card.hero .trend-badge.positive {
+            background: rgba(16, 185, 129, 0.25);
+            color: #FFFFFF;
+        }
+
+        .stat-card.hero .trend-badge.negative {
+            background: rgba(239, 68, 68, 0.3);
+            color: #FFFFFF;
+        }
+
+        .stat-card.hero .trend-text {
+            color: rgba(255, 255, 255, 0.85);
+            text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+        }
+
         .converter-box {
-            margin-top: 0.5rem; padding: 0.3rem 0.6rem; border-radius: 6px;
-            background: rgba(255,255,255,0.15); display: inline-block; font-size: 0.8rem;
-            font-weight: 500; color: #FFFFFF; letter-spacing: 0.02em; animation: pulse 3s infinite;
+            margin-top: 0.5rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.15);
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #FFFFFF;
+            letter-spacing: 0.02em;
+            animation: pulse 3s infinite;
         }
 
-        .stat-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.75rem; }
-        .stat-icon { font-size: 1.25rem; }
-        .stat-label { color: var(--color-text-muted); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
-        .stat-value { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 0.5rem; }
-        .stat-value .usd { font-size: 2.2rem; font-weight: 800; color: var(--color-text); line-height: 1; letter-spacing: -0.04em; }
-        /* .stat-value .vnd removed to avoid double currency display */
-        .stat-card.hero .stat-value .usd { color: #FFFFFF; font-size: 2.5rem; }
+        .stat-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+        }
 
-        .trend-wrap { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.75rem; }
-        .trend-badge { font-size: 0.75rem; font-weight: 700; padding: 0.25rem 0.5rem; border-radius: 6px; }
-        .trend-badge.positive { background: var(--color-success-bg); color: var(--color-success); }
-        .trend-badge.negative { background: var(--color-danger-bg); color: var(--color-danger); }
-        .trend-badge.neutral { background: #F1F5F9; color: #64748b; }
-        .trend-text { font-size: 0.75rem; color: var(--color-text-muted); font-weight: 500; }
+        .stat-icon {
+            font-size: 1.25rem;
+        }
+
+        .stat-label {
+            color: var(--color-text-muted);
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value .usd {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--color-text);
+            line-height: 1;
+            letter-spacing: -0.04em;
+        }
+
+        /* .stat-value .vnd removed to avoid double currency display */
+        .stat-card.hero .stat-value .usd {
+            color: #FFFFFF;
+            font-size: 2.5rem;
+        }
+
+        .trend-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .trend-badge {
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        .trend-badge.positive {
+            background: var(--color-success-bg);
+            color: var(--color-success);
+        }
+
+        .trend-badge.negative {
+            background: var(--color-danger-bg);
+            color: var(--color-danger);
+        }
+
+        .trend-badge.neutral {
+            background: #F1F5F9;
+            color: #64748b;
+        }
+
+        .trend-text {
+            font-size: 0.75rem;
+            color: var(--color-text-muted);
+            font-weight: 500;
+        }
 
         .top-app-rev-box {
             background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(147, 51, 234, 0.08) 100%);
@@ -170,6 +325,7 @@
             flex-direction: column;
             gap: 0.2rem;
         }
+
         /* Ranking Styles - Horizontal Podium */
         #valTop3List {
             display: grid;
@@ -177,148 +333,298 @@
             gap: 1rem;
             margin-top: 0.5rem;
         }
+
         .ranking-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
             padding: 1rem 0.5rem;
-            background: rgba(255,255,255,0.4);
+            background: rgba(255, 255, 255, 0.4);
             border-radius: 12px;
-            border: 1px solid rgba(0,0,0,0.03);
+            border: 1px solid rgba(0, 0, 0, 0.03);
             transition: all 0.2s;
-            min-width: 0; 
+            min-width: 0;
             cursor: pointer;
         }
-        .ranking-item:hover { background: #FFFFFF; transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--color-accent); }
-        
+
+        .ranking-item:hover {
+            background: #FFFFFF;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--color-accent);
+        }
+
         .ranking-rank {
             font-size: 2rem;
             margin-bottom: 0.5rem;
             line-height: 1;
         }
-        .ranking-info { width: 100%; min-width: 0; }
-        .ranking-name { font-weight: 800; font-size: 0.9rem; color: var(--color-text); margin-bottom: 0.4rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .ranking-stats { display: flex; flex-direction: column; align-items: center; gap: 0.1rem; }
+
+        .ranking-info {
+            width: 100%;
+            min-width: 0;
+        }
+
+        .ranking-name {
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: var(--color-text);
+            margin-bottom: 0.4rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .ranking-stats {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.1rem;
+        }
 
         /* Charts */
-        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem; align-items: stretch; }
-        @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+            align-items: stretch;
+        }
 
-        .card { background: var(--color-card); padding: 1.5rem; border-radius: var(--radius-lg); box-shadow: var(--shadow-soft); display: flex; flex-direction: column; }
-        .card-title { font-size: 1.1rem; font-weight: 700; color: var(--color-text); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0; }
+        @media (max-width: 900px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--color-card);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--color-text);
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex-shrink: 0;
+        }
 
         /* App List Grid */
-        .app-list { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); 
-            gap: 1rem; 
+        .app-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
         }
+
         .app-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 1rem; border-radius: var(--radius-md); background: var(--color-bg);
-            border: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            background: var(--color-bg);
+            border: 1px solid rgba(0, 0, 0, 0.05);
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
         }
-        .app-item:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); background: #FFFFFF; border-color: var(--color-accent); }
-        .app-name-wrap { display: flex; align-items: center; gap: 0.75rem; }
-        .app-dot { width: 12px; height: 12px; border-radius: 50%; }
-        .app-name { font-weight: 700; font-size: 0.95rem; color: var(--color-text); }
-        .app-rev { font-weight: 800; font-size: 1.1rem; color: var(--color-text); }
+
+        .app-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            background: #FFFFFF;
+            border-color: var(--color-accent);
+        }
+
+        .app-name-wrap {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .app-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .app-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--color-text);
+        }
+
+        .app-rev {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--color-text);
+        }
 
         /* Modal Popup */
         #detailPanel {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 90%; max-width: 450px; background: var(--color-card); border-radius: var(--radius-lg); padding: 1.75rem;
-            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25); z-index: 1000; display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 450px;
+            background: var(--color-card);
+            border-radius: var(--radius-lg);
+            padding: 1.75rem;
+            box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+            z-index: 1000;
+            display: none;
             border: 1px solid var(--color-border);
         }
-        .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(4px); z-index: 999; display: none; }
-        .btn-close { background: none; border: none; color: #64748b; font-size: 1.5rem; font-weight: bold; cursor: pointer; float: right; margin-top: -0.5rem; transition: color 0.2s; }
-        .btn-close:hover { color: var(--color-danger); }
-        
-        .detail-row { display:flex; justify-content:space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid var(--color-border); }
-        .detail-row:last-child { border-bottom: none; }
-        .detail-app { font-weight: 600; color: var(--color-text); font-size: 0.95rem; }
-        .detail-rev { color: var(--color-accent); font-weight: 700; font-size: 1.05rem; }
 
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 999;
+            display: none;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            color: #64748b;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            float: right;
+            margin-top: -0.5rem;
+            transition: color 0.2s;
+        }
+
+        .btn-close:hover {
+            color: var(--color-danger);
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-app {
+            font-weight: 600;
+            color: var(--color-text);
+            font-size: 0.95rem;
+        }
+
+        .detail-rev {
+            color: var(--color-accent);
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
     </style>
 </head>
+
 <body>
 
-<div class="overlay" id="overlay" onclick="closeDetail()"></div>
-<div id="detailPanel">
-    <button class="btn-close" onclick="closeDetail()">×</button>
-    <h3 id="detailDate" style="font-weight: 800; font-size: 1.25rem; margin-bottom: 1.5rem; color: var(--color-text);">Báo cáo Ngày</h3>
-    <div id="detailList" style="max-height: 400px; overflow-y: auto; padding-right: 0.5rem;"></div>
-</div>
-
-<div class="container">
-    <header>
-        <div class="header-title">
-            <h1>🚀 AdMob Dashboard</h1>
-            <div class="status-badge">LIVE</div>
-        </div>
-        <div class="controls">
-            <span id="lastUpdated" style="font-size: 0.8rem; color: var(--color-text-muted); font-weight: 500;">⏳ Syncing...</span>
-            <select id="appFilter" onchange="applyFilter()">
-                <option value="all">Tất cả Ứng dụng</option>
-                <!-- Injected via JS -->
-            </select>
-            <select id="timeFilter" onchange="applyFilter()">
-                <option value="today">Hôm nay (Today)</option>
-                <option value="yesterday">Hôm qua (Yesterday)</option>
-                <option value="7days" selected>7 Ngày Qua (Last 7D)</option>
-                <option value="30days">30 Ngày Qua (Last 30D)</option>
-                <option value="thismonth">Tháng Này (This Month)</option>
-            </select>
-            <select id="currencyFilter" onchange="setCurrency(this.value)">
-                <option value="VND" selected>VND (đ)</option>
-                <option value="USD">USD ($)</option>
-            </select>
-        </div>
-    </header>
-
-    <div class="ai-joke-box" id="aiJokeBox" style="display: none;">
-        <span style="font-size: 1.5rem;">🤖</span>
-        <span class="ai-joke-text" id="aiJokeText">Đang phân tích số...</span>
+    <div class="overlay" id="overlay" onclick="closeDetail()"></div>
+    <div id="detailPanel">
+        <button class="btn-close" onclick="closeDetail()">×</button>
+        <h3 id="detailDate"
+            style="font-weight: 800; font-size: 1.25rem; margin-bottom: 1.5rem; color: var(--color-text);">Báo cáo Ngày
+        </h3>
+        <div id="detailList" style="max-height: 400px; overflow-y: auto; padding-right: 0.5rem;"></div>
     </div>
 
-    <div class="summary-grid">
-        <!-- Add onclick to Hero Card for Easter Egg -->
-        <div class="stat-card hero" id="heroCard" onclick="triggerEasterEgg()">
-            <div class="stat-header" style="margin-bottom: 0.25rem;">
-                <span class="stat-icon">💰</span>
-                <span class="stat-label" id="lblHeroRev">Tổng Doanh thu</span>
-                <span style="font-size: 0.6rem; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; margin-left: auto;">Tap here 💸</span>
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <h1>🚀 AdMob Dashboard</h1>
+                <div class="status-badge">LIVE</div>
             </div>
-            <div id="heroDateRange" style="font-size: 1.15rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 0.5rem; letter-spacing: 0.5px;">--</div>
-            <div class="stat-value" id="valHeroRev">--</div>
-            <div class="trend-wrap">
-                <span class="trend-badge" id="trendHeroBadge">--</span>
-                <span class="trend-text" id="trendHeroText">so với kỳ trước</span>
+            <div class="controls">
+                <span id="lastUpdated" style="font-size: 0.8rem; color: var(--color-text-muted); font-weight: 500;">⏳
+                    Syncing...</span>
+                <select id="appFilter" onchange="applyFilter()">
+                    <option value="all">Tất cả Ứng dụng</option>
+                    <!-- Injected via JS -->
+                </select>
+                <select id="timeFilter" onchange="applyFilter()">
+                    <option value="today">Hôm nay (Today)</option>
+                    <option value="yesterday">Hôm qua (Yesterday)</option>
+                    <option value="7days" selected>7 Ngày Qua (Last 7D)</option>
+                    <option value="30days">30 Ngày Qua (Last 30D)</option>
+                    <option value="thismonth">Tháng Này (This Month)</option>
+                </select>
+                <select id="currencyFilter" onchange="setCurrency(this.value)">
+                    <option value="VND" selected>VND (đ)</option>
+                    <option value="USD">USD ($)</option>
+                </select>
             </div>
-            <div id="converterBox" style="display:none;"></div>
+        </header>
+
+        <div class="ai-joke-box" id="aiJokeBox" style="display: none;">
+            <span style="font-size: 1.5rem;">🤖</span>
+            <span class="ai-joke-text" id="aiJokeText">Đang phân tích số...</span>
         </div>
 
-        <div class="stat-card" style="padding-bottom: 0.5rem;">
-            <div class="stat-header" style="margin-bottom: 0.75rem;">
-                <span class="stat-icon">🏆</span>
-                <span class="stat-label">Top App Thần Tài</span>
-                <span style="font-size: 0.7rem; color: var(--color-text-muted); margin-left: auto; font-weight: 600;">Ranking 1-3</span>
+        <div class="summary-grid">
+            <!-- Add onclick to Hero Card for Easter Egg -->
+            <div class="stat-card hero" id="heroCard" onclick="triggerEasterEgg()">
+                <div class="stat-header" style="margin-bottom: 0.25rem;">
+                    <span class="stat-icon">💰</span>
+                    <span class="stat-label" id="lblHeroRev">Tổng Doanh thu</span>
+                    <span
+                        style="font-size: 0.6rem; background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; margin-left: auto;">Tap
+                        here 💸</span>
+                </div>
+                <div id="heroDateRange"
+                    style="font-size: 1.15rem; font-weight: 700; color: rgba(255,255,255,0.9); margin-bottom: 0.5rem; letter-spacing: 0.5px;">
+                    --</div>
+                <div class="stat-value" id="valHeroRev">--</div>
+                <div class="trend-wrap">
+                    <span class="trend-badge" id="trendHeroBadge">--</span>
+                    <span class="trend-text" id="trendHeroText">so với kỳ trước</span>
+                </div>
+                <div id="converterBox" style="display:none;"></div>
             </div>
-            <div id="valTop3List">
-                <!-- Injected via JS -->
-                <div style="padding: 2rem 0; text-align: center; color: var(--color-text-muted); opacity: 0.5;">Đang lọc siêu sao...</div>
+
+            <div class="stat-card" style="padding-bottom: 0.5rem;">
+                <div class="stat-header" style="margin-bottom: 0.75rem;">
+                    <span class="stat-icon">🏆</span>
+                    <span class="stat-label">Top App Thần Tài</span>
+                    <span
+                        style="font-size: 0.7rem; color: var(--color-text-muted); margin-left: auto; font-weight: 600;">Ranking
+                        1-3</span>
+                </div>
+                <div id="valTop3List">
+                    <!-- Injected via JS -->
+                    <div style="padding: 2rem 0; text-align: center; color: var(--color-text-muted); opacity: 0.5;">Đang
+                        lọc siêu sao...</div>
+                </div>
             </div>
-        </div>
         </div>
     </div>
 
     <div class="dashboard-grid">
         <div class="card">
-            <div class="card-title">📊 Xu hướng Biến động <span style="font-size: 0.8rem; font-weight: 500; color: var(--color-text-muted); background: var(--color-bg); padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: auto;">Chạm vào biểu đồ để xem chi tiết</span></div>
+            <div class="card-title">📊 Xu hướng Biến động <span
+                    style="font-size: 0.8rem; font-weight: 500; color: var(--color-text-muted); background: var(--color-bg); padding: 0.2rem 0.5rem; border-radius: 4px; margin-left: auto;">Chạm
+                    vào biểu đồ để xem chi tiết</span></div>
             <div style="flex: 1; min-height: 350px; width: 100%; position: relative;">
                 <canvas id="revenueLineChart"></canvas>
             </div>
@@ -336,9 +642,9 @@
         <div class="card-title">💎 Doanh thu chi tiết từng App</div>
         <div class="app-list" id="appListUI"></div>
     </div>
-</div>
+    </div>
 
-<script>
+    <script>
     let historyData = {};
     let sortedDates = [];
     let curDates = []; // Biến toàn cục lưu danh sách ngày đang lọc
@@ -516,14 +822,29 @@
 
         curDates = []; prevDates = []; let lblHero = "Tổng Doanh Thu";
 
-        // Logic Date Range
+        // Logic Date Range thông minh hơn
+        const todayStr = new Date().toISOString().split('T')[0]; 
+        
         if (timeFilter === 'today') {
-            curDates = [sortedDates[0]];
-            prevDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
+            // Nếu ngày mới nhất là hôm nay, lấy nó. Nếu không, coi như chưa có data hôm nay.
+            if (sortedDates[0] === todayStr) {
+                curDates = [sortedDates[0]];
+                prevDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
+            } else {
+                curDates = []; // Chưa có data hôm nay
+                prevDates = [sortedDates[0]];
+            }
             lblHero = "Doanh thu Hôm nay";
         } else if (timeFilter === 'yesterday') {
-            curDates = sortedDates.length > 1 ? [sortedDates[1]] : [sortedDates[0]];
-            prevDates = sortedDates.length > 2 ? [sortedDates[2]] : [];
+            // Nếu có data hôm nay, thì hôm qua là index 1. 
+            // Nếu chưa có data hôm nay, thì hôm qua chính là index 0 (vì bot thường chạy xong là có data hôm qua ngay).
+            if (sortedDates[0] === todayStr) {
+                curDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
+                prevDates = sortedDates.length > 2 ? [sortedDates[2]] : [];
+            } else {
+                curDates = [sortedDates[0]];
+                prevDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
+            }
             lblHero = "Doanh thu Hôm qua";
         } else if (timeFilter === '7days') {
             curDates = sortedDates.slice(0, 7);
@@ -956,6 +1277,7 @@
     }
 
     init();
-</script>
+    </script>
 </body>
+
 </html>
