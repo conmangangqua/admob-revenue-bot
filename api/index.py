@@ -180,3 +180,69 @@ class handler(BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(sorted_history).encode('utf-8'))
         return
 
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+        self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.end_headers()
+
+    def do_POST(self):
+        # Bắt route API
+        content_length = int(self.headers.get('Content-Length', 0))
+        post_data = self.rfile.read(content_length)
+        
+        # CORS
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.send_header('Access-Control-Allow-Origin', '*')
+        
+        try:
+            payload = json.loads(post_data.decode('utf-8'))
+            file_content_base64 = payload.get("file_content_base64")
+            if not file_content_base64:
+                self.end_headers()
+                self.wfile.write(b'{"error": "Missing file_content_base64 chunk"}')
+                return
+
+            github_token = os.environ.get("GITHUB_TOKEN", "")
+            if not github_token:
+                self.end_headers()
+                self.wfile.write(b'{"error": "Missing GITHUB_TOKEN environment variable in Vercel"}')
+                return
+
+            repo_url = "https://api.github.com/repos/conmangangqua/admob-revenue-bot/contents/Azura.csv"
+            headers = {
+                "Authorization": f"Bearer {github_token}",
+                "Accept": "application/vnd.github.v3+json",
+                "User-Agent": "Vercel-Backend"
+            }
+
+            req = urllib.request.Request(repo_url, headers=headers, method="GET")
+            sha = None
+            try:
+                with urllib.request.urlopen(req) as r:
+                    resp_data = json.loads(r.read())
+                    sha = resp_data.get("sha")
+            except Exception:
+                pass
+
+            update_data = {
+                "message": "feat: user uploaded Azura.csv via web dashboard",
+                "content": file_content_base64,
+                "branch": "main"
+            }
+            if sha:
+                update_data["sha"] = sha
+
+            req2 = urllib.request.Request(repo_url, data=json.dumps(update_data).encode(), headers=headers, method="PUT")
+            with urllib.request.urlopen(req2) as r2:
+                res2 = json.loads(r2.read())
+            
+            self.end_headers()
+            self.wfile.write(b'{"success": true, "message": "File uploaded to Github"}')
+        except Exception as ex:
+            self.end_headers()
+            self.wfile.write(json.dumps({"error": str(ex)}).encode())
+        return
+

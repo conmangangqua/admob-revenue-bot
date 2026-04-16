@@ -1,0 +1,35 @@
+name: Process CSV and Update JSON
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'Azura.csv'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Process CSV
+        run: python scripts/update_azura_csv.py
+
+      - name: Commit and Push changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/revenue_history.json
+          git commit -m "chore: auto-update JSON data from uploaded Azura.csv" || echo "No changes to commit"
+          git push

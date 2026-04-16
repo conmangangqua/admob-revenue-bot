@@ -574,6 +574,20 @@
                     <option value="VND" selected>VND (đ)</option>
                     <option value="USD">USD ($)</option>
                 </select>
+                <!-- Admin Upload CSV -->
+                <div
+                    style="display: flex; align-items: center; gap: 0.5rem; background: rgba(59,130,246,0.1); padding: 0.4rem 0.8rem; border-radius: var(--radius-md); border: 1px dashed var(--color-accent);">
+                    <input type="file" id="csvFileInput" accept=".csv" style="display: none;"
+                        onchange="handleFileSelect(event)">
+                    <button onclick="document.getElementById('csvFileInput').click()"
+                        style="background: var(--color-card); border: 1px solid var(--color-border); padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-weight: 600; color: var(--color-text); font-size: 0.85rem; transition: 0.2s;">📁
+                        Chọn Azura.csv</button>
+                    <button id="uploadBtn" onclick="uploadCsv()"
+                        style="background: var(--color-accent); border: none; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; color: white;     font-size: 0.85rem; transition: 0.2s; display: none;">🚀
+                        Upload Lên Cloud</button>
+                    <span id="uploadStatus"
+                        style="font-size: 0.8rem; font-weight: 600; color: var(--color-accent); display:none;"></span>
+                </div>
             </div>
         </header>
 
@@ -1307,6 +1321,66 @@
         function closeDetail() {
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('detailPanel').style.display = 'none';
+        }
+
+        let selectedCsvBase64 = null;
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const uploadBtn = document.getElementById('uploadBtn');
+            const uploadStatus = document.getElementById('uploadStatus');
+            uploadStatus.style.display = 'inline-block';
+            uploadStatus.innerText = file.name;
+            uploadStatus.style.color = "var(--color-text-muted)";
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const result = e.target.result;
+                const base64Str = result.split(',')[1];
+                if (base64Str) {
+                    selectedCsvBase64 = base64Str;
+                    uploadBtn.style.display = 'inline-block';
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function uploadCsv() {
+            if (!selectedCsvBase64) return;
+            const btn = document.getElementById('uploadBtn');
+            const status = document.getElementById('uploadStatus');
+            btn.disabled = true;
+            btn.innerText = "⏳ Đang đẩy...";
+            status.innerText = "";
+
+            try {
+                const protocol = window.location.protocol === 'file:' ? 'http:' : window.location.protocol;
+                const host = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' ? 'localhost:3000' : window.location.host;
+                const apiUrl = `${protocol}//${host}/api/upload_csv_azura`;
+
+                const res = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ file_content_base64: selectedCsvBase64 })
+                });
+
+                const data = await res.json();
+                if (data.success) {
+                    status.style.color = "var(--color-success)";
+                    status.innerText = "✅ Đẩy file thành công! Bạn đợi 3 phút nữa rồi hãy F5 (làm mới) lại web này nhé (Github Action đang gộp file ở Cloud).";
+                    btn.style.display = "none";
+                } else {
+                    status.style.color = "var(--color-danger)";
+                    status.innerText = "❌ Lỗi: " + (data.error || "Unknown");
+                    btn.innerText = "Thử Lại";
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                status.style.color = "var(--color-danger)";
+                status.innerText = "❌ Lỗi mạng: " + err.message;
+                btn.innerText = "Thử Lại";
+                btn.disabled = false;
+            }
         }
 
         init();
