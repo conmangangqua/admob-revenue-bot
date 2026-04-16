@@ -103,9 +103,9 @@ class handler(BaseHTTPRequestHandler):
                                             real_vnd = total_rev_vnd_val * 1000000
                                             rev_usd = real_vnd / 25400.0
                                             old_rev = app.get("rev", 0)
-                                            app["rev"] = round(rev_usd, 2)
+                                            app["rev"] = rev_usd
                                             if "total" in day_info:
-                                                day_info["total"] = round(day_info["total"] - old_rev + rev_usd, 2)
+                                                day_info["total"] = day_info["total"] - old_rev + rev_usd
                                     except Exception:
                                         pass
 
