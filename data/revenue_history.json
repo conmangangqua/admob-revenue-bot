@@ -1,33 +1,4 @@
 {
-  "2026-04-15": {
-    "total": 301.05,
-    "apps": [
-      {
-        "name": "Nova AI Art",
-        "rev": 145.5,
-        "imp": 12500,
-        "ecpm": 11.64
-      },
-      {
-        "name": "Momo AI Photo",
-        "rev": 98.2,
-        "imp": 8400,
-        "ecpm": 11.69
-      },
-      {
-        "name": "ChatMaster Pro",
-        "rev": 45.3,
-        "imp": 4100,
-        "ecpm": 11.05
-      },
-      {
-        "name": "Antigravity Hub",
-        "rev": 12.05,
-        "imp": 1100,
-        "ecpm": 10.95
-      }
-    ]
-  },
   "2026-04-14": {
     "total": 2762.19,
     "apps": [
