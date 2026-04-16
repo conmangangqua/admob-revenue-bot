@@ -111,7 +111,7 @@ class handler(BaseHTTPRequestHandler):
         try:
             lunaai_data = get_lunaai_sheet_data()
             if lunaai_data:
-                LUNAAI_NAME = "LunaAI Chat"
+                LUNAAI_NAME = "LunaAi-Chat"  # Khớp chính xác tên từ GA4
                 for date_str, day_info in history_data.items():
                     if date_str not in lunaai_data:
                         continue
