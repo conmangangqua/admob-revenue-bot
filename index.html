@@ -863,6 +863,7 @@
 
             // Dashboard Metrics Calculation
             let curTotal = 0, prevTotal = 0, appAgg = {}, profitAgg = {};
+            let curProfitVnd = 0, prevProfitVnd = 0;
 
             curDates.forEach(d => {
                 const dObj = historyData[d];
@@ -875,6 +876,7 @@
                             const pVal = parseFloat(a.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
                             if (!isNaN(pVal)) {
                                 profitAgg[a.name] = (profitAgg[a.name] || 0) + pVal;
+                                curProfitVnd += pVal;
                             }
                         }
                     }
@@ -883,6 +885,15 @@
 
             prevDates.forEach(d => {
                 prevTotal += getAppRev(historyData[d], appSel);
+                const dObj = historyData[d];
+                if (dObj && dObj.apps) {
+                    dObj.apps.forEach(a => {
+                        if ((appSel === 'all' || a.name === appSel) && a.sheet_data && a.sheet_data.marketing_profit_vnd) {
+                            const pVal = parseFloat(a.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                            if (!isNaN(pVal)) prevProfitVnd += pVal;
+                        }
+                    });
+                }
             });
 
             // 1. Hero Card & Fun Features
@@ -896,10 +907,16 @@
                 document.getElementById('heroDateRange').style.display = 'none';
             }
 
-            if (appSel !== 'all') lblHero += ` (${appSel})`;
+            // Đổi label thành "Lãi thực"
+            const heroLblText = lblHero.replace('Doanh thu', 'Lãi thực').replace('Tổng', 'Lãi thực').replace('Táng', 'Lãi thực');
+            document.getElementById('lblHeroRev').innerText = heroLblText + (appSel !== 'all' ? ` (${appSel})` : '');
 
-            document.getElementById('lblHeroRev').innerText = lblHero;
-            document.getElementById('valHeroRev').innerHTML = `<div class="usd">${formatAmount(curTotal)}</div>`;
+            // Hiển lãi thực VND (triệu), fallback sang revenue USD nếu chưa có data
+            if (curProfitVnd !== 0) {
+                document.getElementById('valHeroRev').innerHTML = `<div class="usd">${formatSheetVal(curProfitVnd)}</div>`;
+            } else {
+                document.getElementById('valHeroRev').innerHTML = `<div class="usd">${formatAmount(curTotal)}</div>`;
+            }
 
             // The Converter Box
             if (curTotal > 0) {
@@ -910,8 +927,11 @@
             }
 
             const badgeObj = document.getElementById('trendHeroBadge');
-            if (prevTotal > 0) {
-                const pct = ((curTotal - prevTotal) / prevTotal) * 100;
+            // Ưu tiên so sánh theo lãi thực, fallback theo revenue
+            const trendCur = curProfitVnd !== 0 ? curProfitVnd : curTotal;
+            const trendPrev = prevProfitVnd !== 0 ? prevProfitVnd : prevTotal;
+            if (trendPrev !== 0) {
+                const pct = ((trendCur - trendPrev) / Math.abs(trendPrev)) * 100;
                 badgeObj.className = 'trend-badge ' + (pct >= 0 ? 'positive' : 'negative');
                 badgeObj.innerText = (pct >= 0 ? '+' : '') + pct.toFixed(1) + (pct >= 0 ? '% ↗' : '% ↘');
                 document.getElementById('trendHeroText').innerText = `so với ${prevDates.length} ngày liền trước`;
