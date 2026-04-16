@@ -62,19 +62,31 @@ class handler(BaseHTTPRequestHandler):
                 
                 total_rev = sum(app["revenue"] for app in apps_today)
                 
-                # Ghi đè doanh thu hôm nay vào History Dictionary
-                history_data[date_str] = {
-                    "total": round(total_rev, 2),
-                    "apps": [
-                        {
-                            "name": app["app_name"],
+                # Gộp doanh thu hôm nay vào History Dictionary (không ghi đè để giữ các app external từ CSV)
+                if date_str not in history_data:
+                    history_data[date_str] = {"total": 0, "apps": []}
+                
+                existing_apps = history_data[date_str].get("apps", [])
+                existing_app_dict = {a["name"]: a for a in existing_apps}
+                
+                for app in apps_today:
+                    if app["revenue"] <= 0: continue
+                    name = app["app_name"]
+                    if name in existing_app_dict:
+                        existing_app_dict[name]["rev"] = round(app["revenue"], 2)
+                        existing_app_dict[name]["imp"] = app["impressions"]
+                        existing_app_dict[name]["ecpm"] = round(app["ecpm"], 2)
+                    else:
+                        existing_app_dict[name] = {
+                            "name": name,
                             "rev": round(app["revenue"], 2),
                             "imp": app["impressions"],
                             "ecpm": round(app["ecpm"], 2)
                         }
-                        for app in apps_today if app["revenue"] > 0
-                    ]
-                }
+                        
+                history_data[date_str]["apps"] = list(existing_app_dict.values())
+                # Tính lại Total
+                history_data[date_str]["total"] = round(sum(a.get("rev", 0) for a in history_data[date_str]["apps"]), 2)
             except Exception as e:
                 # Nếu API lỗi, bỏ qua và trả về dữ liệu lịch sử an toàn
                 print(f"Error fetching live data: {e}")
@@ -84,9 +96,9 @@ class handler(BaseHTTPRequestHandler):
         quicksave_sheet_data = get_sheet_data_for_app("Quicksave")
 
         if quicksave_sheet_data:
-            for date_str, day_info in history_data.items():
-                if date_str in quicksave_sheet_data:
-                    q_data = quicksave_sheet_data[date_str]
+            for d_str, day_info in history_data.items():
+                if d_str in quicksave_sheet_data:
+                    q_data = quicksave_sheet_data[d_str]
                     if "apps" in day_info:
                         for app in day_info["apps"]:
                             target_name = app["name"].strip().lower()
@@ -112,10 +124,10 @@ class handler(BaseHTTPRequestHandler):
             lunaai_data = get_lunaai_sheet_data()
             if lunaai_data:
                 LUNAAI_NAME = "LunaAi-Chat"  # Khớp chính xác tên từ GA4
-                for date_str, day_info in history_data.items():
-                    if date_str not in lunaai_data:
+                for d_str, day_info in history_data.items():
+                    if d_str not in lunaai_data:
                         continue
-                    l = lunaai_data[date_str]
+                    l = lunaai_data[d_str]
                     rev_usd = l.get("revenue_usd", 0.0)
                     cost_usd = l.get("cost_usd", 0.0)
                     profit_usd = l.get("profit_usd", 0.0)
@@ -123,12 +135,12 @@ class handler(BaseHTTPRequestHandler):
                     if rev_usd == 0:
                         continue
 
-                    # Quy đổi sang triệu VND để format giống Quicksave
+                    # Quy đổi sang triệu VND
                     VND_RATE = 25400.0
                     rev_vnd_mil    = (rev_usd    * VND_RATE) / 1_000_000
                     cost_vnd_mil   = (cost_usd   * VND_RATE) / 1_000_000
                     profit_vnd_mil = (profit_usd * VND_RATE) / 1_000_000
-                    profit_pct = round((profit_usd / rev_usd) * 100) if rev_usd else 0
+                    profit_pct = round((profit_usd / rev_usd) * 100) if rev_usd > 0 else 0
 
                     luna_sheet = {
                         "total_rev_vnd": str(round(rev_vnd_mil, 3)),
@@ -160,80 +172,6 @@ class handler(BaseHTTPRequestHandler):
                             day_info["total"] = round(day_info["total"] + rev_usd, 2)
         except Exception as e:
             print(f"Error fetching LunaAI sheet data: {e}")
-
-        # Bước 4: Nạp thêm thông tin từ Looker Studio cho các app không có quyền GA4
-        try:
-            from scripts.looker_reader import get_looker_data_grouped
-            looker_data = get_looker_data_grouped()
-            
-            LOOKER_APP_MAP = {
-                "APB972": "APB972 Genify AI Genarator",
-                "ChuaCoGi": "ChuaCoGi",
-                "B079": "B079 - Vpn 6",
-                "B081": "B081 - Video Downloader",
-                "B087": "B087 - Gba",
-                "B097": "B097 - Digital Cam",
-                "B098": "B098 - Ai Art",
-                "B117": "B117 - VolumeBooster",
-                "B122": "B122 - BeatMaker"
-            }
-
-            if looker_data:
-                for date_str, day_info in history_data.items():
-                    if date_str in looker_data:
-                        l_data_for_date = looker_data[date_str]
-                        
-                        if "apps" not in day_info:
-                            day_info["apps"] = []
-                            
-                        # Ghép thêm các app từ Looker vào cùng mảng apps
-                        for app_code, l_data in l_data_for_date.items():
-                            new_rev = l_data.get("admob_revenue", 0)
-                            
-                            # Tính chi phí & lãi
-                            g_spend = l_data.get("google_spend", 0)
-                            m_spend = l_data.get("mintegral_spend", 0)
-                            t_spend = l_data.get("tiktok_spend", 0)
-                            f_spend = l_data.get("facebook_spend", 0)
-                            
-                            total_spend_usd = g_spend + m_spend + t_spend + f_spend
-                            profit_usd = new_rev - total_spend_usd
-                            
-                            # Quy đổi ra Triệu VND (format giống Quicksave Google Sheet)
-                            total_rev_vnd_mil = (new_rev * 25400.0) / 1000000.0
-                            cost_vnd_mil = (total_spend_usd * 25400.0) / 1000000.0
-                            profit_vnd_mil = (profit_usd * 25400.0) / 1000000.0
-                            
-                            if new_rev > 0:
-                                profit_pct = round((profit_usd / new_rev) * 100)
-                            else:
-                                profit_pct = 0
-                                
-                            display_name = LOOKER_APP_MAP.get(app_code, f"{app_code} - {l_data.get('app_name', '').title()}")
-
-                            new_app = {
-                                "name": display_name,
-                                "rev": round(new_rev, 2),
-                                "imp": 0, # Looker không có imp, mặc định là 0
-                                "ecpm": 0, # Looker không có ecpm, mặc định là 0
-                                "google_spend": round(g_spend, 2),
-                                "mintegral_spend": round(m_spend, 2),
-                                "tiktok_spend": round(t_spend, 2),
-                                "facebook_spend": round(f_spend, 2),
-                                "sheet_data": {
-                                    "total_rev_vnd": str(round(total_rev_vnd_mil, 3)),
-                                    "cost_vnd": str(round(cost_vnd_mil, 3)),
-                                    "marketing_profit_vnd": str(round(profit_vnd_mil, 3)),
-                                    "profit_pct_sheet": f"{profit_pct}%"
-                                }
-                            }
-                            day_info["apps"].append(new_app)
-                            
-                            # Cộng dồn doanh thu của các app này vào Total của ngày
-                            if "total" in day_info:
-                                day_info["total"] = round(day_info["total"] + new_rev, 2)
-        except Exception as e:
-            print(f"Error fetching looker data in index.py: {e}")
 
         # Sắp xếp lại log theo ngày giảm dần chuẩn format Chart
         sorted_history = dict(sorted(history_data.items(), reverse=True))
