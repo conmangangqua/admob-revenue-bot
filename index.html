@@ -862,7 +862,7 @@
             }
 
             // Dashboard Metrics Calculation
-            let curTotal = 0, prevTotal = 0, appAgg = {};
+            let curTotal = 0, prevTotal = 0, appAgg = {}, profitAgg = {};
 
             curDates.forEach(d => {
                 const dObj = historyData[d];
@@ -870,6 +870,13 @@
                 dObj.apps.forEach(a => {
                     if (appSel === 'all' || a.name === appSel) {
                         appAgg[a.name] = (appAgg[a.name] || 0) + a.rev;
+                        // Gom lãi thực từ sheet_data
+                        if (a.sheet_data && a.sheet_data.marketing_profit_vnd) {
+                            const pVal = parseFloat(a.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                            if (!isNaN(pVal)) {
+                                profitAgg[a.name] = (profitAgg[a.name] || 0) + pVal;
+                            }
+                        }
                     }
                 });
             });
@@ -921,7 +928,13 @@
             }
 
             // 2. Top App Ranking (Top 3)
-            const appArr = Object.entries(appAgg).sort((a, b) => b[1] - a[1]);
+            // Sort theo lãi thực (profitAgg); nếu app chưa có sheet_data thì đứng sau
+            const appArr = Object.entries(appAgg).sort((a, b) => {
+                const pa = profitAgg[a[0]] !== undefined ? profitAgg[a[0]] : -Infinity;
+                const pb = profitAgg[b[0]] !== undefined ? profitAgg[b[0]] : -Infinity;
+                if (pa === -Infinity && pb === -Infinity) return b[1] - a[1]; // cùng chưa có profit thì sort theo rev
+                return pb - pa;
+            });
             const top3ListContainer = document.getElementById('valTop3List');
 
             if (appArr.length > 0) {
