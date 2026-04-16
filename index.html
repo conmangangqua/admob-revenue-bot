@@ -644,10 +644,10 @@
             </div>
         </div>
 
-        <div class="card" style="justify-content: center; padding-bottom: 2rem;">
-            <div class="card-title">📱 Cơ cấu Dòng tiền</div>
-            <div style="flex: 1; min-height: 250px; display: flex; justify-content: center; position: relative;">
-                <canvas id="appPieChart"></canvas>
+        <div class="card" style="padding-bottom: 2rem;">
+            <div class="card-title">📈 Lãi thực MKT (VND)</div>
+            <div style="flex: 1; min-height: 350px; width: 100%; position: relative;">
+                <canvas id="profitLineChart"></canvas>
             </div>
         </div>
     </div>
@@ -827,6 +827,22 @@
             let sum = 0;
             dataObj.apps.forEach(a => { if (a.name === appFilter) sum += a.rev; });
             return sum;
+        }
+
+        function getAppProfit(dataObj, appFilter) {
+            if (!dataObj) return 0;
+            let sum = 0;
+            dataObj.apps.forEach(a => {
+                if (appFilter === 'all' || a.name === appFilter) {
+                    if (a.sheet_data && a.sheet_data.marketing_profit_vnd) {
+                        let text = String(a.sheet_data.marketing_profit_vnd);
+                        let num = parseFloat(text.replace(/[^0-9.-]/g, ''));
+                        if (!isNaN(num)) sum += num * 1000000;
+                    }
+                }
+            });
+            // Convert to USD equivalent as formatAmount handles currency dynamically
+            return sum / currentVndRate;
         }
 
         function applyFilter() {
@@ -1102,9 +1118,9 @@
 
         function renderCharts(orderedDates, appArr, appSel) {
             if (lineChartObj) lineChartObj.destroy();
-            if (pieChartObj) pieChartObj.destroy();
+            if (profitLineChartObj) profitLineChartObj.destroy();
 
-            // Line Chart
+            // Line Chart (Doanh Thu)
             lineChartObj = new Chart(document.getElementById('revenueLineChart').getContext('2d'), {
                 type: 'line',
                 data: {
@@ -1150,20 +1166,55 @@
                 }
             });
 
-            // Pie Chart
-            pieChartObj = new Chart(document.getElementById('appPieChart').getContext('2d'), {
-                type: 'doughnut',
+            // Profit Chart
+            profitLineChartObj = new Chart(document.getElementById('profitLineChart').getContext('2d'), {
+                type: 'bar',
                 data: {
-                    labels: appArr.map(a => a[0]),
-                    datasets: [{ data: appArr.map(a => a[1]), backgroundColor: COLORS.slice(0, appArr.length), borderWidth: 0 }]
+                    labels: orderedDates.map(d => formatVNDate(d)),
+                    datasets: [{
+                        label: currentCurrency === 'VND' ? 'Lãi thực (VND)' : 'Lãi thực ($)',
+                        data: orderedDates.map(d => getAppProfit(historyData[d], appSel)),
+                        backgroundColor: (ctx) => {
+                            const value = ctx.raw || 0;
+                            return value < 0 ? 'rgba(239, 68, 68, 0.8)' : 'rgba(16, 185, 129, 0.8)'; // Red if negative, Green if pos
+                        },
+                        borderRadius: 4,
+                        borderWidth: 0,
+                    }]
                 },
                 options: {
-                    responsive: true, maintainAspectRatio: false, cutout: '70%',
+                    responsive: true, maintainAspectRatio: false,
+                    layout: { padding: { top: 25, left: 10, right: 15 } },
+                    onClick: (e, elements) => {
+                        if (elements.length > 0) {
+                            const dateStr = orderedDates[elements[0].index];
+                            showDetail(dateStr, appSel);
+                        }
+                    },
                     plugins: {
-                        datalabels: { display: false },
+                        datalabels: {
+                            align: 'top',
+                            anchor: 'end',
+                            color: (ctx) => {
+                                const value = ctx.dataset.data[ctx.dataIndex];
+                                return value < 0 ? '#EF4444' : '#10B981';
+                            },
+                            font: { family: "'Inter', sans-serif", weight: 700, size: 10.5 },
+                            formatter: function (value) { return formatAmount(value); }
+                        },
                         legend: { display: false },
-                        tooltip: { backgroundColor: '#0F172A', callbacks: { label: c => ` ${c.label}: ${formatAmount(c.parsed)}` } }
-                    }
+                        tooltip: {
+                            displayColors: false, backgroundColor: '#0F172A', titleFont: { family: "'Inter', sans-serif" }, bodyFont: { family: "'Inter', sans-serif", size: 14 }, padding: 12, cornerRadius: 8,
+                            callbacks: {
+                                label: (ctx) => ` Lãi thực: ${formatAmount(ctx.parsed.y)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: { grid: { color: '#F1F5F9' }, border: { display: false }, ticks: { callback: v => formatAmount(v) } },
+                        x: { grid: { display: false }, border: { display: false } }
+                    },
+                    interaction: { intersect: false, mode: 'index' }
                 }
             });
         }
