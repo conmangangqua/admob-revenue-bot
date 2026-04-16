@@ -100,35 +100,33 @@ def main():
 
     print("\n🔑 Đang kiểm tra quyền truy cập...")
     if not client_id or not client_secret or not refresh_token:
-        print("   💡 Chế độ: Dữ liệu mẫu (Do chưa có ADMOB_CLIENT_ID thật)")
-        access_token = "mock-token"
-    else:
-        try:
-            access_token = get_access_token_local(client_id, client_secret, refresh_token)
-            print("   ✅ Token OK")
-        except Exception as e:
-            print(f"   ❌ Lỗi lấy Token: {e}. Chuyển sang dữ liệu mẫu.")
-            access_token = "mock-token"
+        # Giữ lại mock data CHỈ KHI Sếp muốn test (thiếu biến môi trường hoàn toàn)
+        # Nhưng nếu Sếp đã khai báo mà lỗi thì phải STOP.
+        print("   ⚠️ Thiếu biến môi trường ADMOB_*. Vui lòng kiểm tra lại.")
+        return
 
-    if access_token == "mock-token":
-        print("\n📱 Đang tạo dữ liệu 'Platinum' cho Web Dashboard (Log Mode)...")
-        apps_today = [
-            {"app_name": "Nova AI Art", "revenue": 145.50, "impressions": 12500, "ecpm": 11.64},
-            {"app_name": "Momo AI Photo", "revenue": 98.20, "impressions": 8400, "ecpm": 11.69},
-            {"app_name": "ChatMaster Pro", "revenue": 45.30, "impressions": 4100, "ecpm": 11.05},
-            {"app_name": "Antigravity Hub", "revenue": 12.05, "impressions": 1100, "ecpm": 10.95},
-        ]
-        apps_prev = [
-            {"app_name": "Nova AI Art", "revenue": 120.00},
-            {"app_name": "Momo AI Photo", "revenue": 85.00},
-            {"app_name": "ChatMaster Pro", "revenue": 50.00},
-            {"app_name": "Antigravity Hub", "revenue": 10.00},
-        ]
-    else:
-        print(f"\n📱 Đang lấy revenue ngày {target_date.strftime('%d/%m/%Y')} (tất cả Firebase projects)...")
-        apps_today = get_all_projects_revenue(access_token, target_date)
-        print("\n📊 Đang lấy revenue hôm kia (để so sánh)...")
-        apps_prev  = get_all_projects_revenue(access_token, day_before)
+    try:
+        access_token = get_access_token_local(client_id, client_secret, refresh_token)
+        print("   ✅ Token OK")
+    except Exception as e:
+        # [BLOCKER] Không được bịa dữ liệu khi lỗi API
+        error_detail = str(e)
+        if "400" in error_detail:
+            print(f"   ❌ Lỗi OAuth 400: Refresh Token có thể đã hết hạn hoặc bị thu hồi.")
+            print(f"   💡 Gợi ý: Sếp hãy lấy lại Refresh Token mới từ Google Cloud Console.")
+        else:
+            print(f"   ❌ Lỗi lấy Token: {error_detail}")
+        
+        # Gửi thông báo lỗi lên Discord thay vì gửi report giả
+        if discord_webhook:
+            from discord_client import send_error_notification
+            send_error_notification(discord_webhook, f"Bot dừng do lỗi Auth: {error_detail}")
+        return
+
+    print(f"\n📱 Đang lấy revenue ngày {target_date.strftime('%d/%m/%Y')} (tất cả Firebase projects)...")
+    apps_today = get_all_projects_revenue(access_token, target_date)
+    print("\n📊 Đang lấy revenue hôm kia (để so sánh)...")
+    apps_prev  = get_all_projects_revenue(access_token, day_before)
     
     prev_total = sum(a["revenue"] for a in apps_prev)
     apps_prev_dict = {a["app_name"]: a["revenue"] for a in apps_prev}
