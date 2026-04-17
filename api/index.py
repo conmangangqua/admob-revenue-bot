@@ -73,9 +73,13 @@ class handler(BaseHTTPRequestHandler):
                     if app["revenue"] <= 0: continue
                     name = app["app_name"]
                     if name in existing_app_dict:
-                        existing_app_dict[name]["rev"] = round(app["revenue"], 2)
-                        existing_app_dict[name]["imp"] = app["impressions"]
-                        existing_app_dict[name]["ecpm"] = round(app["ecpm"], 2)
+                        # Chỉ ghi đè từ GA4 nếu CSV chưa có số (<= 0)
+                        if existing_app_dict[name].get("rev", 0) <= 0:
+                            existing_app_dict[name]["rev"] = round(app["revenue"], 2)
+                        
+                        # Impression và eCPM thì có thể lấy từ GA4 làm tham khảo 
+                        existing_app_dict[name]["imp"] = app.get("impressions", 0)
+                        existing_app_dict[name]["ecpm"] = round(app.get("ecpm", 0), 2)
                     else:
                         existing_app_dict[name] = {
                             "name": name,

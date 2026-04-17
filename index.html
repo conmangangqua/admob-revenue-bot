@@ -736,8 +736,14 @@
                 // Tự động nhận diện Buổi Sáng thì mặc định Hôm Qua, Chiều/Tối mặc định Hôm Nay
                 const hr = new Date().getHours();
                 const timeFilterElem = document.getElementById('timeFilter');
+
+                // Lấy ngày hôm nay theo format YYYY-MM-DD
+                const today = new Date();
+                const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+
                 // Check in case UI overrides this, but default DOM value is currently "7days"
-                if (hr < 12) {
+                // Nếu chưa qua 12h trưa HOẶC chưa có dữ liệu của ngày hôm nay, fallback về yesterday
+                if (hr < 12 || (sortedDates.length > 0 && sortedDates[0] !== todayStr)) {
                     timeFilterElem.value = 'yesterday';
                 } else {
                     timeFilterElem.value = 'today';
