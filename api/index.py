@@ -55,6 +55,10 @@ class handler(BaseHTTPRequestHandler):
         # Fallback date_str dùng múi giờ cơ bản
         date_str = today.strftime("%Y-%m-%d")
 
+        # Đảm bảo luôn tồn tại "hôm nay" trong kết quả dù GA4 có sập hoặc CSV chưa có số
+        if date_str not in history_data:
+            history_data[date_str] = {"total": 0, "apps": []}
+
         if client_id and client_secret and refresh_token:
             try:
                 access_token = get_access_token_local(client_id, client_secret, refresh_token)
