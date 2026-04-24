@@ -1413,7 +1413,7 @@
             try {
                 const protocol = window.location.protocol === 'file:' ? 'http:' : window.location.protocol;
                 const host = window.location.hostname === '127.0.0.1' || window.location.hostname === 'localhost' ? 'localhost:3000' : window.location.host;
-                const apiUrl = `${protocol}//${host}/api/upload_csv_azura`;
+                const apiUrl = `${protocol}//${host}/api/revenue`;
 
                 const res = await fetch(apiUrl, {
                     method: 'POST',
