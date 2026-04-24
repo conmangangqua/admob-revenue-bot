@@ -702,22 +702,19 @@
                 // try {
                 //     const exResp = await fetch('https://open.er-api.com/v6/latest/USD');
                 //     if(exResp.ok) {
-                //         const exData = await exResp.json();
-                //         if(exData && exData.rates && exData.rates.VND) {
-                //             currentVndRate = exData.rates.VND;
-                //         }
-                //     }
-                // } catch(ex) { console.error('Failed to load exchange rate', ex); }
-
+                debugStep = 'fetch API';
                 const resp = await fetch('/api/revenue');
+                debugStep = 'json API';
                 historyData = await resp.json();
+                debugStep = 'sort Dates';
                 sortedDates = Object.keys(historyData).sort().reverse();
 
+                debugStep = 'update UI Date';
                 if (sortedDates.length > 0) {
                     document.getElementById('lastUpdated').innerText = `🔄 Cập nhật: ${formatVNDate(sortedDates[0])} (Tỷ giá: 1$ = ${Math.round(currentVndRate).toLocaleString('vi-VN')}đ)`;
                 }
 
-                // Tính tổng all-time để sort cho select
+                debugStep = 'loop apps';
                 let allTimeAppRev = {};
                 for (let d in historyData) {
                     historyData[d].apps.forEach(a => {
@@ -726,6 +723,7 @@
                     });
                 }
 
+                debugStep = 'add options';
                 const appSelect = document.getElementById('appFilter');
                 [...allApps].sort((a, b) => allTimeAppRev[b] - allTimeAppRev[a]).forEach(app => {
                     const opt = document.createElement('option');
@@ -733,26 +731,25 @@
                     appSelect.appendChild(opt);
                 });
 
-                // Tự động nhận diện Buổi Sáng thì mặc định Hôm Qua, Chiều/Tối mặc định Hôm Nay
+                debugStep = 'date logic';
                 const hr = new Date().getHours();
                 const timeFilterElem = document.getElementById('timeFilter');
 
-                // Lấy ngày hôm nay theo format YYYY-MM-DD
                 const today = new Date();
                 const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
 
-                // Check in case UI overrides this, but default DOM value is currently "7days"
-                // Nếu chưa qua 12h trưa HOẶC chưa có dữ liệu của ngày hôm nay, fallback về yesterday
                 if (hr < 12 || (sortedDates.length > 0 && sortedDates[0] !== todayStr)) {
                     timeFilterElem.value = 'yesterday';
                 } else {
                     timeFilterElem.value = 'today';
                 }
 
+                debugStep = 'applyFilter()';
                 applyFilter();
             } catch (e) {
+                e.message = `[${debugStep}] ` + e.message;
                 console.error('Failed to load data', e);
-                document.getElementById('lastUpdated').innerText = `⚠️ Lỗi data: ` + (e.message || String(e));
+                document.getElementById('lastUpdated').innerText = `⚠️ Lỗi data: ` + (e.stack || e.message || String(e));
             }
         }
 
