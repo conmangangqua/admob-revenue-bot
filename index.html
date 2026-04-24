@@ -752,7 +752,7 @@
                 applyFilter();
             } catch (e) {
                 console.error('Failed to load data', e);
-                document.getElementById('lastUpdated').innerText = `⚠️ Lỗi data`;
+                document.getElementById('lastUpdated').innerText = `⚠️ Lỗi data: ` + (e.message || String(e));
             }
         }
 
