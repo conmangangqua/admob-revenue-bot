@@ -1,4 +1,33 @@
 {
+  "2026-05-01": {
+    "total": 334.37,
+    "apps": [
+      {
+        "name": "Aura-Recover",
+        "rev": 21.4,
+        "imp": 2229,
+        "ecpm": 9.6
+      },
+      {
+        "name": "LunaAi-Chat",
+        "rev": 0.88,
+        "imp": 199,
+        "ecpm": 4.4
+      },
+      {
+        "name": "Quicksave",
+        "rev": 274.48,
+        "imp": 61137,
+        "ecpm": 4.49
+      },
+      {
+        "name": "Herond Snapvid",
+        "rev": 37.61,
+        "imp": 12507,
+        "ecpm": 3.01
+      }
+    ]
+  },
   "2026-04-30": {
     "total": 455.5,
     "apps": [
