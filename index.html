@@ -786,9 +786,11 @@
             return num.toLocaleString('vi-VN');
         }
 
-        function getFunnyConverterText(usdValue) {
-            if (usdValue <= 0) return "";
-            const vnd = usdValue * currentVndRate;
+        function getFunnyConverterText(usdValue, vndMillionOverride) {
+            const vnd = (vndMillionOverride != null && vndMillionOverride > 0)
+                ? vndMillionOverride * 1_000_000
+                : usdValue * currentVndRate;
+            if (vnd <= 0) return "";
             const mtb = FUNNY_CONVERSIONS[Math.floor(Math.random() * FUNNY_CONVERSIONS.length)];
             const qty = Math.floor(vnd / mtb.price);
             if (qty < 1) return `Mua được vài ly Trà Đá 🍵`;
@@ -954,7 +956,7 @@
             // The Converter Box
             if (curTotal > 0) {
                 document.getElementById('converterBox').style.display = 'inline-block';
-                document.getElementById('converterBox').innerHTML = `<div class="converter-box">${getFunnyConverterText(curTotal)}</div>`;
+                document.getElementById('converterBox').innerHTML = `<div class="converter-box">${getFunnyConverterText(curTotal, curProfitVnd !== 0 ? curProfitVnd : null)}</div>`;
             } else {
                 document.getElementById('converterBox').style.display = 'none';
             }
