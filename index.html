@@ -1109,6 +1109,16 @@
                 document.getElementById('valHeroRev').innerHTML = `<div class="usd">${formatAmount(curTotal)}</div>`;
             }
 
+            // Đổi màu hero card theo lãi/lỗ
+            const heroCard = document.getElementById('heroCard');
+            if (curProfitVnd > 0) {
+                heroCard.style.background = 'linear-gradient(135deg, #065f46 0%, #10b981 100%)';
+            } else if (curProfitVnd < 0) {
+                heroCard.style.background = 'linear-gradient(135deg, #7f1d1d 0%, #ef4444 100%)';
+            } else {
+                heroCard.style.background = 'linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%)';
+            }
+
             // The Converter Box
             if (curTotal > 0) {
                 document.getElementById('converterBox').style.display = 'inline-block';
