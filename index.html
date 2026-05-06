@@ -1010,7 +1010,9 @@
 
             // Đổi label thành "Lãi thực"
             const heroLblText = lblHero.replace('Doanh thu', 'Lãi thực').replace('Tổng', 'Lãi thực').replace('Táng', 'Lãi thực');
-            document.getElementById('lblHeroRev').innerText = heroLblText + (appSel !== 'all' ? ` (${appSel})` : '');
+            const PARTNER_LABELS = { 'partner:azura': 'Azura', 'partner:bbl': 'BBL', 'partner:herond': 'Herond', 'partner:affica': 'Affica' };
+            const appSelLabel = PARTNER_LABELS[appSel] || (appSel !== 'all' ? appSel : '');
+            document.getElementById('lblHeroRev').innerText = heroLblText + (appSelLabel ? ` (${appSelLabel})` : '');
 
             // Hiển lãi thực VND (triệu), fallback sang revenue USD nếu chưa có data
             if (curProfitVnd !== 0) {
