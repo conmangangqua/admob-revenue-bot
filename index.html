@@ -840,10 +840,9 @@
             return 'unknown';
         }
 
-        function getAppTrendBadge(appName) {
-            // Lấy 5 ngày gần nhất có data (curDates[0] = mới nhất)
+        function getAppTrend(appName) {
             const recent = curDates.slice(0, 5);
-            if (recent.length < 5) return '';
+            if (recent.length < 5) return null;
 
             const profits = recent.map(d => {
                 const a = (historyData[d]?.apps || []).find(x => x.name === appName);
@@ -855,14 +854,11 @@
                 return null;
             }).filter(v => v !== null);
 
-            if (profits.length < 5) return '';
+            if (profits.length < 5) return null;
 
-            const allProfit = profits.every(v => v > 0);
-            const allLoss   = profits.every(v => v < 0);
-
-            if (allProfit) return '<span style="font-size:0.68rem;font-weight:700;color:#10b981;margin-left:4px;">↗ Tăng</span>';
-            if (allLoss)   return '<span style="font-size:0.68rem;font-weight:700;color:var(--color-danger);margin-left:4px;">↘ Giảm</span>';
-            return '<span style="font-size:0.68rem;font-weight:700;color:#f59e0b;margin-left:4px;">⚡ Biến động</span>';
+            if (profits.every(v => v > 0)) return { label: '↗ Tăng',     color: '#10b981', bg: 'rgba(16,185,129,0.08)',  border: 'rgba(16,185,129,0.3)'  };
+            if (profits.every(v => v < 0)) return { label: '↘ Giảm',     color: '#ef4444', bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.3)'   };
+            return                                { label: '⚡ Biến động', color: '#f59e0b', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.3)'  };
         }
 
         function isMatchApp(name, appFilter) {
@@ -1072,13 +1068,16 @@
 
                     const profitColor = totalProfit < 0 ? 'var(--color-danger)' : '#10b981';
                     const profitText = hasSheet ? `Lãi thực: ${formatSheetVal(totalProfit)}` : 'Lãi thực: --';
-                    const trendBadge = getAppTrendBadge(appName);
+                    const trend = getAppTrend(appName);
+                    const trendHtml = trend ? `<div style="font-size:0.8rem;font-weight:800;color:${trend.color};margin-top:0.2rem;">${trend.label}</div>` : '';
+                    const rankStyle = trend ? `background:${trend.bg};border-color:${trend.border};` : '';
 
                     top3Html += `
-                    <div class="ranking-item" onclick="showAppDetail('${appName}')">
+                    <div class="ranking-item" style="${rankStyle}" onclick="showAppDetail('${appName}')">
                         <div class="ranking-rank">${medals[index] || (index + 1)}</div>
                         <div class="ranking-info">
-                            <div class="ranking-name">${appName}${trendBadge}</div>
+                            <div class="ranking-name">${appName}</div>
+                            ${trendHtml}
                             <div class="ranking-stats">
                                 <div class="usd" style="font-size: 1.15rem; color: var(--color-accent); font-weight: 800; line-height: 1.1;">${formatAmount(appRev)}</div>
                                 <div style="font-size: 0.7rem; color: ${profitColor}; font-weight: 700; opacity: 0.9; margin-top: 0.2rem;">${profitText}</div>
@@ -1159,13 +1158,18 @@
                     sheetInfoHtml = `<div style="font-size: 0.75rem; color: var(--color-text-muted); opacity: 0.6; margin-top: 0.1rem;">Lãi: --</div>`;
                 }
 
-                const trendBadge = getAppTrendBadge(appName);
+                const trend = getAppTrend(appName);
+                const trendHtml = trend ? `<div style="font-size:0.8rem;font-weight:800;color:${trend.color};margin-top:0.2rem;line-height:1;">${trend.label}</div>` : '';
+                const itemStyle = trend ? `background:${trend.bg};border-color:${trend.border};` : '';
 
                 return `
-            <div class="app-item" onclick="showAppDetail('${appName}')">
+            <div class="app-item" style="${itemStyle}" onclick="showAppDetail('${appName}')">
                 <div class="app-name-wrap">
                     <div class="app-dot" style="background-color: ${COLORS[i % COLORS.length]}"></div>
-                    <div class="app-name">${appName}${trendBadge}</div>
+                    <div>
+                        <div class="app-name">${appName}</div>
+                        ${trendHtml}
+                    </div>
                 </div>
                 <div style="text-align: right;">
                     <div class="app-rev">${formatAmount(admobRev)}</div>
