@@ -859,10 +859,10 @@
         }
 
         function getAppTrend(appName) {
-            const recent = curDates.slice(0, 5);
-            if (recent.length < 5) return null;
+            const recent = curDates.slice(0, 7);
+            if (recent.length < 3) return null;
 
-            const profits = recent.map(d => {
+            const vals = recent.map(d => {
                 const a = (historyData[d]?.apps || []).find(x => x.name === appName);
                 if (!a) return null;
                 if (a.sheet_data?.marketing_profit_vnd) {
@@ -872,11 +872,28 @@
                 return null;
             }).filter(v => v !== null);
 
-            if (profits.length < 5) return null;
+            if (vals.length < 3) return null;
 
-            if (profits.every(v => v > 0)) return { label: '↗ Tăng',     color: '#10b981', bg: 'rgba(16,185,129,0.08)',  border: 'rgba(16,185,129,0.3)'  };
-            if (profits.every(v => v < 0)) return { label: '↘ Giảm',     color: '#ef4444', bg: 'rgba(239,68,68,0.08)',   border: 'rgba(239,68,68,0.3)'   };
-            return                                { label: '⚡ Biến động', color: '#f59e0b', bg: 'rgba(245,158,11,0.08)',  border: 'rgba(245,158,11,0.3)'  };
+            const n = vals.length;
+            const mean = vals.reduce((s, v) => s + v, 0) / n;
+
+            // SLOPE (linear regression)
+            const xs = vals.map((_, i) => i + 1);
+            const xMean = (n + 1) / 2;
+            const slope = vals.reduce((s, v, i) => s + (xs[i] - xMean) * (v - mean), 0)
+                        / xs.reduce((s, x) => s + (x - xMean) ** 2, 0);
+
+            // CV = STDEV / |AVERAGE|
+            const stdev = Math.sqrt(vals.reduce((s, v) => s + (v - mean) ** 2, 0) / n);
+            const cv = mean !== 0 ? stdev / Math.abs(mean) : Infinity;
+
+            const volatile = cv > 0.5;
+            const up = slope > 0;
+
+            if (up && !volatile)  return { label: '↗ Tăng đều',   color: '#10b981', bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.3)' };
+            if (up && volatile)   return { label: '↗ Phập phù',   color: '#34d399', bg: 'rgba(52,211,153,0.08)', border: 'rgba(52,211,153,0.3)' };
+            if (!up && !volatile) return { label: '↘ Giảm đều',   color: '#ef4444', bg: 'rgba(239,68,68,0.08)',  border: 'rgba(239,68,68,0.3)'  };
+            return                       { label: '⚡ Rủi ro cao', color: '#f59e0b', bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.3)' };
         }
 
         function isMatchApp(name, appFilter) {
