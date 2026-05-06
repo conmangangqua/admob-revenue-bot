@@ -787,7 +787,7 @@
         }
 
         function getFunnyConverterText(usdValue, vndMillionOverride) {
-            const vnd = (vndMillionOverride != null && vndMillionOverride > 0)
+            const vnd = (vndMillionOverride != null)
                 ? vndMillionOverride * 1_000_000
                 : usdValue * currentVndRate;
             if (vnd <= 0) return "";
