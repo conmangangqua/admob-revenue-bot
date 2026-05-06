@@ -159,11 +159,10 @@
         /* Summary Grid */
         .summary-grid {
             display: grid;
-            grid-template-columns: minmax(280px, 1fr) 2fr;
+            grid-template-columns: 380px 1fr;
             gap: 1.5rem;
             margin-bottom: 2rem;
             align-items: stretch;
-            width: 100%;
         }
 
         @media (max-width: 900px) {
@@ -335,43 +334,49 @@
             margin-top: 0.5rem;
         }
 
-        .ranking-item {
+        #valTop3List {
             display: flex;
             flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .ranking-item {
+            display: flex;
             align-items: center;
-            text-align: center;
-            padding: 1rem 0.5rem;
-            background: rgba(255, 255, 255, 0.4);
+            gap: 1rem;
+            padding: 0.85rem 1rem;
+            background: var(--color-bg);
             border-radius: 12px;
-            border: 1px solid rgba(0, 0, 0, 0.03);
-            transition: all 0.2s;
-            min-width: 0;
+            border: 1.5px solid rgba(0,0,0,0.05);
+            transition: all 0.18s;
             cursor: pointer;
+            min-width: 0;
         }
 
         .ranking-item:hover {
             background: #FFFFFF;
-            transform: translateY(-3px);
+            transform: translateX(4px);
             box-shadow: var(--shadow-md);
             border-color: var(--color-accent);
         }
 
         .ranking-rank {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.6rem;
             line-height: 1;
+            flex-shrink: 0;
+            width: 2rem;
+            text-align: center;
         }
 
         .ranking-info {
-            width: 100%;
+            flex: 1;
             min-width: 0;
         }
 
         .ranking-name {
-            font-weight: 800;
-            font-size: 0.9rem;
+            font-weight: 700;
+            font-size: 0.88rem;
             color: var(--color-text);
-            margin-bottom: 0.4rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -379,9 +384,9 @@
 
         .ranking-stats {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            gap: 0.1rem;
+            gap: 0.75rem;
+            margin-top: 0.2rem;
         }
 
         /* Charts */
@@ -1131,15 +1136,17 @@
                     const trendHtml = trend ? `<div style="font-size:0.8rem;font-weight:800;color:${trend.color};margin-top:0.2rem;">${trend.label}</div>` : '';
                     const rankStyle = trend ? `background:${trend.bg};border-color:${trend.border};` : '';
 
+                    const trendPill = trend ? `<span style="font-size:0.72rem;font-weight:800;color:${trend.color};background:${trend.bg};padding:0.15rem 0.5rem;border-radius:999px;">${trend.label}</span>` : '';
+
                     top3Html += `
                     <div class="ranking-item" style="${rankStyle}" onclick="showAppDetail('${appName}')">
                         <div class="ranking-rank">${medals[index] || (index + 1)}</div>
                         <div class="ranking-info">
                             <div class="ranking-name">${appName}</div>
-                            ${trendHtml}
                             <div class="ranking-stats">
-                                <div class="usd" style="font-size: 1.15rem; color: var(--color-accent); font-weight: 800; line-height: 1.1;">${formatAmount(appRev)}</div>
-                                <div style="font-size: 0.7rem; color: ${profitColor}; font-weight: 700; opacity: 0.9; margin-top: 0.2rem;">${profitText}</div>
+                                ${trendPill}
+                                <span style="font-size:1rem;color:var(--color-accent);font-weight:800;">${formatAmount(appRev)}</span>
+                                <span style="font-size:0.72rem;color:${profitColor};font-weight:700;">${profitText}</span>
                             </div>
                         </div>
                     </div>
