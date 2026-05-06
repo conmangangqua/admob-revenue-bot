@@ -1110,15 +1110,7 @@
                 document.getElementById('valHeroRev').innerHTML = `<div class="usd">${formatAmount(curTotal)}</div>`;
             }
 
-            // Đổi màu hero card theo lãi/lỗ
             const heroCard = document.getElementById('heroCard');
-            if (curProfitVnd > 0) {
-                heroCard.style.background = 'linear-gradient(135deg, #065f46 0%, #10b981 100%)';
-            } else if (curProfitVnd < 0) {
-                heroCard.style.background = 'linear-gradient(135deg, #7f1d1d 0%, #ef4444 100%)';
-            } else {
-                heroCard.style.background = 'linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%)';
-            }
 
             // The Converter Box
             if (curTotal > 0) {
@@ -1158,15 +1150,16 @@
                 const lossRatio  = lossDays / n;
                 const totalSum   = heroVals.reduce((s, v) => s + v, 0);
 
-                if (totalSum < 0 && lossRatio > 0.6)      heroTrend = { label: '💀 Lỗ sấp mặt', color: '#ef4444' };
-                else if (lossDays === 0)                   heroTrend = { label: '✅ Lãi đều',     color: '#10b981' };
-                else if (profitDays > 0 && lossDays > 0 && cv > 0.5) heroTrend = { label: '⚡ Phập phù', color: '#f59e0b' };
-                else if (totalSum < 0 && slope > 0)        heroTrend = { label: '🚀 Về bờ',       color: '#34d399' };
-                else if (totalSum > 0 && slope < 0)        heroTrend = { label: '⚠️ Xa bờ',       color: '#f97316' };
-                else                                       heroTrend = { label: '✅ Lãi đều',     color: '#10b981' };
+                if (totalSum < 0 && lossRatio > 0.6)                  heroTrend = { label: '💀 Lỗ sấp mặt', bg: 'linear-gradient(135deg,#7f1d1d,#ef4444)' };
+                else if (lossDays === 0)                               heroTrend = { label: '✅ Lãi đều',     bg: 'linear-gradient(135deg,#065f46,#10b981)' };
+                else if (profitDays > 0 && lossDays > 0 && cv > 0.5) heroTrend = { label: '⚡ Phập phù',    bg: 'linear-gradient(135deg,#78350f,#f59e0b)' };
+                else if (totalSum < 0 && slope > 0)                   heroTrend = { label: '🚀 Về bờ',       bg: 'linear-gradient(135deg,#065f46,#34d399)' };
+                else if (totalSum > 0 && slope < 0)                   heroTrend = { label: '⚠️ Xa bờ',       bg: 'linear-gradient(135deg,#7c2d12,#f97316)' };
+                else                                                   heroTrend = { label: '✅ Lãi đều',     bg: 'linear-gradient(135deg,#065f46,#10b981)' };
             }
 
             if (heroTrend) {
+                heroCard.style.background = heroTrend.bg;
                 badgeObj.className = 'trend-badge';
                 badgeObj.style.cssText = `background:rgba(255,255,255,0.2);color:#fff;font-size:0.85rem;font-weight:800;`;
                 badgeObj.innerText = heroTrend.label;
@@ -1182,6 +1175,9 @@
                 badgeObj.innerText = 'Chưa đủ data';
                 document.getElementById('trendHeroText').innerText = '';
                 document.getElementById('aiJokeBox').style.display = 'none';
+                heroCard.style.background = curProfitVnd >= 0
+                    ? 'linear-gradient(135deg,#1E3A8A,#3B82F6)'
+                    : 'linear-gradient(135deg,#7f1d1d,#ef4444)';
             }
 
             // 2. Top App Ranking (Top 3)
