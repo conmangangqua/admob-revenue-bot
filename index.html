@@ -115,6 +115,58 @@
 
         select:hover { border-color: var(--color-accent); }
 
+        .filter-group {
+            display: flex;
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .filter-group select {
+            border: none;
+            border-right: 1px solid var(--color-border);
+            border-radius: 0;
+            background: transparent;
+            padding: 0.45rem 0.75rem;
+            box-shadow: none;
+        }
+
+        .filter-group select:last-child { border-right: none; }
+        .filter-group select:hover { background: rgba(59,130,246,0.05); }
+
+        .upload-zone {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-upload {
+            background: var(--color-card);
+            border: 1px solid var(--color-border);
+            padding: 0.45rem 0.8rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--color-text);
+            font-size: 0.82rem;
+            transition: 0.2s;
+        }
+
+        .btn-upload:hover { border-color: var(--color-accent); background: rgba(59,130,246,0.05); }
+
+        .btn-upload-confirm {
+            background: var(--color-accent);
+            border: none;
+            padding: 0.45rem 0.9rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            color: white;
+            font-size: 0.82rem;
+            transition: 0.2s;
+        }
+
         /* Joke Box */
         .ai-joke-box {
             background: rgba(139,92,246,0.07);
@@ -564,40 +616,36 @@
                 <div class="status-badge">LIVE</div>
             </div>
             <div class="controls">
-                <span id="lastUpdated" style="font-size: 0.8rem; color: var(--color-text-muted); font-weight: 500;">⏳
-                    Syncing...</span>
-                <select id="appFilter" onchange="applyFilter()">
-                    <option value="all">Tất cả Ứng dụng</option>
-                    <option value="partner:azura">── Azura</option>
-                    <option value="partner:bbl">── BBL</option>
-                    <option value="partner:herond">── Herond</option>
-                    <option value="partner:affica">── Affica</option>
-                    <!-- Injected via JS -->
-                </select>
-                <select id="timeFilter" onchange="applyFilter()">
-                    <option value="today">Hôm nay (Today)</option>
-                    <option value="yesterday">Hôm qua (Yesterday)</option>
-                    <option value="7days" selected>7 Ngày Qua (Last 7D)</option>
-                    <option value="30days">30 Ngày Qua (Last 30D)</option>
-                    <option value="thismonth">Tháng Này (This Month)</option>
-                </select>
-                <select id="currencyFilter" onchange="setCurrency(this.value)">
-                    <option value="VND" selected>VND (đ)</option>
-                    <option value="USD">USD ($)</option>
-                </select>
-                <!-- Admin Upload CSV -->
-                <div
-                    style="display: flex; align-items: center; gap: 0.5rem; background: rgba(59,130,246,0.1); padding: 0.4rem 0.8rem; border-radius: var(--radius-md); border: 1px dashed var(--color-accent);">
-                    <input type="file" id="csvFileInput" accept=".csv" style="display: none;"
-                        onchange="handleFileSelect(event)">
-                    <button onclick="document.getElementById('csvFileInput').click()"
-                        style="background: var(--color-card); border: 1px solid var(--color-border); padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; font-weight: 600; color: var(--color-text); font-size: 0.85rem; transition: 0.2s;">📁
-                        Chọn Azura.csv</button>
-                    <button id="uploadBtn" onclick="uploadCsv()"
-                        style="background: var(--color-accent); border: none; padding: 0.4rem 1rem; border-radius: 6px; cursor: pointer; font-weight: 600; color: white;     font-size: 0.85rem; transition: 0.2s; display: none;">🚀
-                        Upload Lên Cloud</button>
-                    <span id="uploadStatus"
-                        style="font-size: 0.8rem; font-weight: 600; color: var(--color-accent); display:none;"></span>
+                <span id="lastUpdated" style="font-size:0.78rem;color:var(--color-text-muted);font-weight:500;">⏳ Syncing...</span>
+
+                <div class="filter-group">
+                    <select id="appFilter" onchange="applyFilter()">
+                        <option value="all">Tất cả</option>
+                        <option value="partner:azura">Azura</option>
+                        <option value="partner:bbl">BBL</option>
+                        <option value="partner:herond">Herond</option>
+                        <option value="partner:affica">Affica</option>
+                        <!-- Injected via JS -->
+                    </select>
+                    <select id="timeFilter" onchange="applyFilter()">
+                        <option value="today">Hôm nay</option>
+                        <option value="yesterday">Hôm qua</option>
+                        <option value="7days" selected>7 Ngày</option>
+                        <option value="30days">30 Ngày</option>
+                        <option value="thismonth">Tháng này</option>
+                    </select>
+                    <select id="currencyFilter" onchange="setCurrency(this.value)">
+                        <option value="VND" selected>VND</option>
+                        <option value="USD">USD</option>
+                    </select>
+                </div>
+
+                <!-- Upload CSV -->
+                <div class="upload-zone">
+                    <input type="file" id="csvFileInput" accept=".csv" style="display:none;" onchange="handleFileSelect(event)">
+                    <button onclick="document.getElementById('csvFileInput').click()" class="btn-upload">📁 Azura.csv</button>
+                    <button id="uploadBtn" onclick="uploadCsv()" class="btn-upload-confirm" style="display:none;">🚀 Upload</button>
+                    <span id="uploadStatus" style="font-size:0.8rem;font-weight:600;color:var(--color-accent);display:none;"></span>
                 </div>
             </div>
         </header>
