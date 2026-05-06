@@ -427,14 +427,17 @@
 
         .app-item {
             display: flex;
+            flex-direction: column;
             justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
+            gap: 0.6rem;
+            padding: 1rem 1rem 0.85rem;
             border-radius: var(--radius-md);
             background: var(--color-bg);
             border: 1px solid rgba(0, 0, 0, 0.05);
             transition: transform 0.2s, box-shadow 0.2s;
             cursor: pointer;
+            position: relative;
+            min-height: 110px;
         }
 
         .app-item:hover {
@@ -447,25 +450,37 @@
         .app-name-wrap {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
+            gap: 0.5rem;
         }
 
         .app-dot {
-            width: 12px;
-            height: 12px;
+            flex-shrink: 0;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
         }
 
         .app-name {
             font-weight: 700;
-            font-size: 0.95rem;
+            font-size: 0.82rem;
             color: var(--color-text);
+            line-height: 1.3;
         }
 
         .app-rev {
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: 1.35rem;
             color: var(--color-text);
+            line-height: 1.1;
+        }
+
+        .app-trend-pill {
+            display: inline-block;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            margin-top: 0.15rem;
         }
 
         /* Modal Popup */
@@ -1159,22 +1174,20 @@
                 }
 
                 const trend = getAppTrend(appName);
-                const trendHtml = trend ? `<div style="font-size:0.8rem;font-weight:800;color:${trend.color};margin-top:0.2rem;line-height:1;">${trend.label}</div>` : '';
+                const trendPill = trend ? `<span class="app-trend-pill" style="color:${trend.color};background:${trend.bg};">${trend.label}</span>` : '';
                 const itemStyle = trend ? `background:${trend.bg};border-color:${trend.border};` : '';
 
                 return `
             <div class="app-item" style="${itemStyle}" onclick="showAppDetail('${appName}')">
                 <div class="app-name-wrap">
-                    <div class="app-dot" style="background-color: ${COLORS[i % COLORS.length]}"></div>
-                    <div>
-                        <div class="app-name">${appName}</div>
-                        ${trendHtml}
-                    </div>
+                    <div class="app-dot" style="background-color:${COLORS[i % COLORS.length]}"></div>
+                    <div class="app-name">${appName}</div>
                 </div>
-                <div style="text-align: right;">
+                <div>
                     <div class="app-rev">${formatAmount(admobRev)}</div>
                     ${sheetInfoHtml}
                 </div>
+                ${trendPill}
             </div>
             `;
             }).join('');
