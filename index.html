@@ -1228,10 +1228,10 @@
                     <div class="ranking-item" style="${rankStyle}" onclick="showAppDetail('${appName}')">
                         <div class="ranking-rank">${medals[index] || (index + 1)}</div>
                         <div class="ranking-info">
-                            <div class="ranking-name">${appName}</div>
+                            <div class="ranking-name" style="color:${trend ? trend.color : 'var(--color-text)'};">${appName}</div>
                             <div class="ranking-stats">
                                 ${trendPill}
-                                <span style="font-size:1.1rem;color:var(--color-accent);font-weight:800;">${formatAmount(appRev)}</span>
+                                <span style="font-size:1.1rem;color:${trend ? trend.color : 'var(--color-accent)'};font-weight:800;">${formatAmount(appRev)}</span>
                                 <span style="font-size:0.72rem;color:${profitColor};font-weight:700;">${profitText}</span>
                             </div>
                         </div>
@@ -1314,14 +1314,15 @@
                 const trendPill = trend ? `<span class="app-trend-pill" style="color:${trend.color};background:${trend.bg};">${trend.label}</span>` : '';
                 const itemStyle = trend ? `background:${trend.bg};border-color:${trend.border};` : '';
 
+                const tColor = trend ? trend.color : 'var(--color-text)';
                 return `
             <div class="app-item" style="${itemStyle}" onclick="showAppDetail('${appName}')">
                 <div class="app-name-wrap">
                     <div class="app-dot" style="background-color:${COLORS[i % COLORS.length]}"></div>
-                    <div class="app-name">${appName}</div>
+                    <div class="app-name" style="color:${tColor};">${appName}</div>
                 </div>
                 <div style="margin-top:0.1rem;">
-                    <div class="app-rev">${formatAmount(admobRev)}</div>
+                    <div class="app-rev" style="color:${tColor};">${formatAmount(admobRev)}</div>
                     ${sheetInfoHtml}
                 </div>
                 ${trendPill}
