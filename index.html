@@ -1248,6 +1248,7 @@
                     </div>
                 `;
                 });
+                top3ListContainer.style.gridTemplateColumns = `repeat(${top3.length}, 1fr)`;
                 top3ListContainer.innerHTML = top3Html;
             } else {
                 top3ListContainer.innerHTML = '<div style="padding: 2rem 0; text-align: center; color: var(--color-text-muted); opacity: 0.5;">Không có dữ liệu xếp hạng</div>';
