@@ -159,10 +159,11 @@
         /* Summary Grid */
         .summary-grid {
             display: grid;
-            grid-template-columns: 1fr 1.5fr;
+            grid-template-columns: minmax(280px, 1fr) 2fr;
             gap: 1.5rem;
             margin-bottom: 2rem;
             align-items: stretch;
+            width: 100%;
         }
 
         @media (max-width: 900px) {
@@ -618,7 +619,8 @@
             <span class="ai-joke-text" id="aiJokeText">Đang phân tích số...</span>
         </div>
 
-        <div class="summary-grid">
+        </div><!-- close .container -->
+        <div class="summary-grid" style="padding: 0 2rem; box-sizing: border-box; margin-bottom: 2rem;">
             <!-- Add onclick to Hero Card for Easter Egg -->
             <div class="stat-card hero" id="heroCard" onclick="triggerEasterEgg()">
                 <div class="stat-header" style="margin-bottom: 0.25rem;">
@@ -654,7 +656,6 @@
                 </div>
             </div>
         </div>
-    </div>
 
     <div class="dashboard-grid">
         <div class="card">
