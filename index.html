@@ -503,17 +503,17 @@
 
         .app-name {
             font-weight: 600;
-            font-size: 0.8rem;
+            font-size: 0.6rem;
             color: var(--color-text-muted);
             line-height: 1.3;
-            opacity: 0.75;
+            opacity: 0.85;
         }
 
         .app-rev {
             font-weight: 900;
-            font-size: 1.6rem;
+            font-size: 1.1rem;
             color: var(--color-text);
-            line-height: 1;
+            line-height: 1.1;
             letter-spacing: -0.5px;
         }
 
@@ -521,9 +521,9 @@
             display: inline-flex;
             align-items: center;
             gap: 0.25rem;
-            font-size: 0.82rem;
+            font-size: 0.58rem;
             font-weight: 800;
-            padding: 0.25rem 0.65rem;
+            padding: 0.2rem 0.55rem;
             border-radius: 999px;
             margin-top: auto;
             width: fit-content;
@@ -1305,9 +1305,9 @@
                 let sheetInfoHtml = '';
                 if (hasSheetData) {
                     const pColor = totalSheetProfit < 0 ? 'var(--color-danger)' : '#10b981';
-                    sheetInfoHtml = `<div style="font-size:0.78rem;color:${pColor};font-weight:700;margin-top:0.15rem;">Lãi thực: ${formatSheetVal(totalSheetProfit)}</div>`;
+                    sheetInfoHtml = `<div style="font-size:0.6rem;color:${pColor};font-weight:700;margin-top:0.1rem;">Lãi thực: ${formatSheetVal(totalSheetProfit)}</div>`;
                 } else {
-                    sheetInfoHtml = `<div style="font-size:0.78rem;color:var(--color-text-muted);opacity:0.5;margin-top:0.15rem;">Lãi: --</div>`;
+                    sheetInfoHtml = `<div style="font-size:0.6rem;color:var(--color-text-muted);opacity:0.5;margin-top:0.1rem;">Lãi: --</div>`;
                 }
 
                 const trend = getAppTrend(appName);
