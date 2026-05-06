@@ -1097,7 +1097,8 @@
             }
 
             // Đổi label thành "Lãi thực"
-            const heroLblText = lblHero.replace('Doanh thu', 'Lãi thực').replace('Tổng', 'Lãi thực').replace('Táng', 'Lãi thực');
+            const profitLabel = curProfitVnd < 0 ? 'Lỗ thật' : 'Lãi thực';
+            const heroLblText = lblHero.replace('Doanh thu', profitLabel).replace('Tổng', profitLabel);
             const PARTNER_LABELS = { 'partner:azura': 'Azura', 'partner:bbl': 'BBL', 'partner:herond': 'Herond', 'partner:affica': 'Affica' };
             const appSelLabel = PARTNER_LABELS[appSel] || (appSel !== 'all' ? appSel : '');
             document.getElementById('lblHeroRev').innerText = heroLblText + (appSelLabel ? ` (${appSelLabel})` : '');
