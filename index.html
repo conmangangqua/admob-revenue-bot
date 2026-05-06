@@ -874,6 +874,8 @@
 
             if (vals.length < 3) return null;
 
+            vals.reverse(); // oldest → newest để SLOPE đúng chiều thời gian
+
             const n = vals.length;
             const mean = vals.reduce((s, v) => s + v, 0) / n;
 
