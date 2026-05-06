@@ -841,49 +841,27 @@
         }
 
         function getAppTrendBadge(appName) {
-            // Lấy giá trị từng ngày (oldest → newest) trong kỳ hiện tại
-            const days = [...curDates].reverse(); // curDates[0] = newest, reverse = oldest first
-            if (days.length < 2) return '';
+            // Lấy 5 ngày gần nhất có data (curDates[0] = mới nhất)
+            const recent = curDates.slice(0, 5);
+            if (recent.length < 5) return '';
 
-            const vals = days.map(d => {
-                const dObj = historyData[d];
-                if (!dObj || !dObj.apps) return null;
-                const a = dObj.apps.find(x => x.name === appName);
+            const profits = recent.map(d => {
+                const a = (historyData[d]?.apps || []).find(x => x.name === appName);
                 if (!a) return null;
-                if (a.sheet_data && a.sheet_data.marketing_profit_vnd) {
+                if (a.sheet_data?.marketing_profit_vnd) {
                     const v = parseFloat(a.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
                     if (!isNaN(v)) return v;
                 }
-                return a.rev ?? null;
+                return null;
             }).filter(v => v !== null);
 
-            if (vals.length < 2) return '';
+            if (profits.length < 5) return '';
 
-            // Đếm chiều thay đổi từng ngày liên tiếp
-            let ups = 0, downs = 0;
-            for (let i = 1; i < vals.length; i++) {
-                const diff = vals[i] - vals[i - 1];
-                if (diff > 0) ups++;
-                else if (diff < 0) downs++;
-            }
+            const allProfit = profits.every(v => v > 0);
+            const allLoss   = profits.every(v => v < 0);
 
-            const total = ups + downs;
-            if (total === 0) return '';
-
-            // Phát hiện zigzag: hướng đổi chiều nhiều lần
-            let flips = 0;
-            let lastDir = 0;
-            for (let i = 1; i < vals.length; i++) {
-                const dir = Math.sign(vals[i] - vals[i - 1]);
-                if (dir !== 0 && lastDir !== 0 && dir !== lastDir) flips++;
-                if (dir !== 0) lastDir = dir;
-            }
-
-            if (flips >= 2) return '<span style="font-size:0.68rem;font-weight:700;color:#f59e0b;margin-left:4px;">⚡ Biến động</span>';
-
-            const upRatio = ups / total;
-            if (upRatio >= 0.65) return '<span style="font-size:0.68rem;font-weight:700;color:#10b981;margin-left:4px;">↗ Tăng</span>';
-            if (upRatio <= 0.35) return '<span style="font-size:0.68rem;font-weight:700;color:var(--color-danger);margin-left:4px;">↘ Giảm</span>';
+            if (allProfit) return '<span style="font-size:0.68rem;font-weight:700;color:#10b981;margin-left:4px;">↗ Tăng</span>';
+            if (allLoss)   return '<span style="font-size:0.68rem;font-weight:700;color:var(--color-danger);margin-left:4px;">↘ Giảm</span>';
             return '<span style="font-size:0.68rem;font-weight:700;color:#f59e0b;margin-left:4px;">⚡ Biến động</span>';
         }
 
