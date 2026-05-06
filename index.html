@@ -666,6 +666,7 @@
         let historyData = {};
         let sortedDates = [];
         let curDates = []; // Biến toàn cục lưu danh sách ngày đang lọc
+        let appAgg = {}, profitAgg = {}, prevAppAgg = {}, prevProfitAppAgg = {};
         let allApps = new Set();
         let currentVndRate = 25400; // Tỷ giá dự phòng
         let clickCount = 0;
@@ -929,9 +930,9 @@
             }
 
             // Dashboard Metrics Calculation
-            let curTotal = 0, prevTotal = 0, appAgg = {}, profitAgg = {};
+            let curTotal = 0, prevTotal = 0;
             let curProfitVnd = 0, prevProfitVnd = 0;
-            let prevAppAgg = {}, prevProfitAppAgg = {};
+            appAgg = {}; profitAgg = {}; prevAppAgg = {}; prevProfitAppAgg = {};
 
             curDates.forEach(d => {
                 const dObj = historyData[d];
