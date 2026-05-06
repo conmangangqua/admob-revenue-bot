@@ -562,7 +562,9 @@
                 <select id="appFilter" onchange="applyFilter()">
                     <option value="all">Tất cả Ứng dụng</option>
                     <option value="partner:azura">── Azura</option>
-                    <option value="partner:internal">── Nội bộ</option>
+                    <option value="partner:bbl">── BBL</option>
+                    <option value="partner:herond">── Herond</option>
+                    <option value="partner:affica">── Affica</option>
                     <!-- Injected via JS -->
                 </select>
                 <select id="timeFilter" onchange="applyFilter()">
@@ -824,12 +826,22 @@
             applyFilter();
         }
 
-        function isAzuraApp(name) { return /^B\d+/.test(name); }
+        const PARTNER_MAP = {
+            'Quicksave':      'bbl',
+            'Aura-Recover':   'bbl',
+            'Herond Snapvid': 'herond',
+            'LunaAi-Chat':    'affica',
+        };
+
+        function getPartner(name) {
+            if (PARTNER_MAP[name]) return PARTNER_MAP[name];
+            if (/^B\d+/.test(name)) return 'azura';
+            return 'unknown';
+        }
 
         function isMatchApp(name, appFilter) {
             if (appFilter === 'all') return true;
-            if (appFilter === 'partner:azura') return isAzuraApp(name);
-            if (appFilter === 'partner:internal') return !isAzuraApp(name);
+            if (appFilter.startsWith('partner:')) return getPartner(name) === appFilter.slice(8);
             return name === appFilter;
         }
 
