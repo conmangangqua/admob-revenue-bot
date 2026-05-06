@@ -561,6 +561,8 @@
                     Syncing...</span>
                 <select id="appFilter" onchange="applyFilter()">
                     <option value="all">Tất cả Ứng dụng</option>
+                    <option value="partner:azura">── Azura</option>
+                    <option value="partner:internal">── Nội bộ</option>
                     <!-- Injected via JS -->
                 </select>
                 <select id="timeFilter" onchange="applyFilter()">
@@ -822,11 +824,20 @@
             applyFilter();
         }
 
+        function isAzuraApp(name) { return /^B\d+/.test(name); }
+
+        function isMatchApp(name, appFilter) {
+            if (appFilter === 'all') return true;
+            if (appFilter === 'partner:azura') return isAzuraApp(name);
+            if (appFilter === 'partner:internal') return !isAzuraApp(name);
+            return name === appFilter;
+        }
+
         function getAppRev(dataObj, appFilter) {
             if (!dataObj) return 0;
             if (appFilter === 'all') return dataObj.total;
             let sum = 0;
-            dataObj.apps.forEach(a => { if (a.name === appFilter) sum += a.rev; });
+            dataObj.apps.forEach(a => { if (isMatchApp(a.name, appFilter)) sum += a.rev; });
             return sum;
         }
 
@@ -834,7 +845,7 @@
             if (!dataObj) return 0;
             let sum = 0;
             dataObj.apps.forEach(a => {
-                if (appFilter === 'all' || a.name === appFilter) {
+                if (isMatchApp(a.name, appFilter)) {
                     if (a.sheet_data && a.sheet_data.marketing_profit_vnd) {
                         let text = String(a.sheet_data.marketing_profit_vnd);
                         let num = parseFloat(text.replace(/[^0-9.-]/g, ''));
@@ -900,7 +911,7 @@
                 const dObj = historyData[d];
                 curTotal += getAppRev(dObj, appSel);
                 dObj.apps.forEach(a => {
-                    if (appSel === 'all' || a.name === appSel) {
+                    if (isMatchApp(a.name, appSel)) {
                         appAgg[a.name] = (appAgg[a.name] || 0) + a.rev;
                         // Gom lãi thực từ sheet_data
                         if (a.sheet_data && a.sheet_data.marketing_profit_vnd) {
@@ -919,7 +930,7 @@
                 const dObj = historyData[d];
                 if (dObj && dObj.apps) {
                     dObj.apps.forEach(a => {
-                        if ((appSel === 'all' || a.name === appSel) && a.sheet_data && a.sheet_data.marketing_profit_vnd) {
+                        if (isMatchApp(a.name, appSel) && a.sheet_data && a.sheet_data.marketing_profit_vnd) {
                             const pVal = parseFloat(a.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
                             if (!isNaN(pVal)) prevProfitVnd += pVal;
                         }
@@ -1229,7 +1240,7 @@
             let html = '';
             let totalModal = 0;
             apps.forEach(a => {
-                if (appSel === 'all' || a.name === appSel) {
+                if (isMatchApp(a.name, appSel)) {
                     totalModal += a.rev;
                     html += `<div class="detail-row">
                             <span class="detail-app" style="font-weight: 800; font-size: 1.1rem; color: var(--color-accent);">${a.name}</span>
