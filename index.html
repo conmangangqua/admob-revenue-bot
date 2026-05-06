@@ -428,23 +428,21 @@
         .app-item {
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            gap: 0.6rem;
-            padding: 1rem 1rem 0.85rem;
-            border-radius: var(--radius-md);
+            gap: 0.5rem;
+            padding: 1.1rem 1.2rem 1rem;
+            border-radius: 16px;
             background: var(--color-bg);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1.5px solid rgba(0,0,0,0.06);
+            transition: transform 0.18s, box-shadow 0.18s;
             cursor: pointer;
             position: relative;
-            min-height: 110px;
+            min-height: 130px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
         }
 
         .app-item:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-md);
-            background: #FFFFFF;
-            border-color: var(--color-accent);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.10);
         }
 
         .app-name-wrap {
@@ -455,32 +453,37 @@
 
         .app-dot {
             flex-shrink: 0;
-            width: 8px;
-            height: 8px;
+            width: 9px;
+            height: 9px;
             border-radius: 50%;
         }
 
         .app-name {
-            font-weight: 700;
-            font-size: 0.82rem;
-            color: var(--color-text);
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
             line-height: 1.3;
+            opacity: 0.75;
         }
 
         .app-rev {
-            font-weight: 800;
-            font-size: 1.35rem;
+            font-weight: 900;
+            font-size: 1.6rem;
             color: var(--color-text);
-            line-height: 1.1;
+            line-height: 1;
+            letter-spacing: -0.5px;
         }
 
         .app-trend-pill {
-            display: inline-block;
-            font-size: 0.72rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.82rem;
             font-weight: 800;
-            padding: 0.15rem 0.5rem;
+            padding: 0.25rem 0.65rem;
             border-radius: 999px;
-            margin-top: 0.15rem;
+            margin-top: auto;
+            width: fit-content;
         }
 
         /* Modal Popup */
@@ -1168,9 +1171,9 @@
                 let sheetInfoHtml = '';
                 if (hasSheetData) {
                     const pColor = totalSheetProfit < 0 ? 'var(--color-danger)' : '#10b981';
-                    sheetInfoHtml = `<div style="font-size: 0.75rem; color: ${pColor}; font-weight: 700; margin-top: 0.1rem;">Lãi thực: ${formatSheetVal(totalSheetProfit)}</div>`;
+                    sheetInfoHtml = `<div style="font-size:0.78rem;color:${pColor};font-weight:700;margin-top:0.15rem;">Lãi thực: ${formatSheetVal(totalSheetProfit)}</div>`;
                 } else {
-                    sheetInfoHtml = `<div style="font-size: 0.75rem; color: var(--color-text-muted); opacity: 0.6; margin-top: 0.1rem;">Lãi: --</div>`;
+                    sheetInfoHtml = `<div style="font-size:0.78rem;color:var(--color-text-muted);opacity:0.5;margin-top:0.15rem;">Lãi: --</div>`;
                 }
 
                 const trend = getAppTrend(appName);
@@ -1183,7 +1186,7 @@
                     <div class="app-dot" style="background-color:${COLORS[i % COLORS.length]}"></div>
                     <div class="app-name">${appName}</div>
                 </div>
-                <div>
+                <div style="margin-top:0.1rem;">
                     <div class="app-rev">${formatAmount(admobRev)}</div>
                     ${sheetInfoHtml}
                 </div>
