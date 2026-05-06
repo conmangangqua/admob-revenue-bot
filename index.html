@@ -1053,17 +1053,23 @@
                 dObj.apps.forEach(a => {
                     if (isMatchApp(a.name, appSel)) {
                         appAgg[a.name] = (appAgg[a.name] || 0) + a.rev;
-                        // Gom lãi thực từ sheet_data
                         if (a.sheet_data && a.sheet_data.marketing_profit_vnd) {
                             const pVal = parseFloat(a.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
                             if (!isNaN(pVal)) {
                                 profitAgg[a.name] = (profitAgg[a.name] || 0) + pVal;
-                                curProfitVnd += pVal;
                             }
                         }
                     }
                 });
             });
+
+            // Gom lãi thực theo đối tác, chỉ cộng đối tác lãi (lỗ = 0)
+            const partnerProfitAgg = {};
+            Object.entries(profitAgg).forEach(([name, val]) => {
+                const p = getPartner(name);
+                partnerProfitAgg[p] = (partnerProfitAgg[p] || 0) + val;
+            });
+            curProfitVnd = Object.values(partnerProfitAgg).reduce((sum, val) => sum + Math.max(0, val), 0);
 
             prevDates.forEach(d => {
                 prevTotal += getAppRev(historyData[d], appSel);
