@@ -621,11 +621,15 @@
                 <div class="filter-group">
                     <select id="appFilter" onchange="applyFilter()">
                         <option value="all">Tất cả</option>
-                        <option value="partner:azura">Azura</option>
-                        <option value="partner:bbl">BBL</option>
-                        <option value="partner:herond">Herond</option>
-                        <option value="partner:affica">Affica</option>
+                        <optgroup label="Đối tác">
+                            <option value="partner:azura">Azura</option>
+                            <option value="partner:bbl">BBL</option>
+                            <option value="partner:herond">Herond</option>
+                            <option value="partner:affica">Affica</option>
+                        </optgroup>
+                        <optgroup label="App" id="appOptGroup">
                         <!-- Injected via JS -->
+                        </optgroup>
                     </select>
                     <select id="timeFilter" onchange="applyFilter()">
                         <option value="today">Hôm nay</option>
@@ -784,11 +788,11 @@
                 }
 
                 debugStep = 'add options';
-                const appSelect = document.getElementById('appFilter');
+                const appOptGroup = document.getElementById('appOptGroup');
                 [...allApps].sort((a, b) => allTimeAppRev[b] - allTimeAppRev[a]).forEach(app => {
                     const opt = document.createElement('option');
                     opt.value = app; opt.text = app;
-                    appSelect.appendChild(opt);
+                    appOptGroup.appendChild(opt);
                 });
 
                 debugStep = 'date logic';
