@@ -891,26 +891,30 @@
 
             const profitDays = vals.filter(v => v > 0).length;
             const lossDays   = vals.filter(v => v < 0).length;
-            const volatile   = cv > 0.5;
+            const lossRatio  = lossDays / n;
+            const totalSum   = vals.reduce((s, v) => s + v, 0);
 
-            // Phập phù: lãi lỗ xen kẽ liên tục
-            if (profitDays > 0 && lossDays > 0 && volatile)
-                return { label: '⚡ Phập phù',     color: '#f59e0b', bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.3)' };
+            // Lỗ sấp mặt: tổng âm + >60% ngày lỗ
+            if (totalSum < 0 && lossRatio > 0.6)
+                return { label: '💀 Lỗ sấp mặt',  color: '#ef4444', bg: 'rgba(239,68,68,0.10)',  border: 'rgba(239,68,68,0.35)' };
 
             // Toàn lãi
             if (lossDays === 0)
                 return { label: '✅ Lãi đều',      color: '#10b981', bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.3)' };
 
-            // Toàn lỗ, slope âm → lỗ sấp mặt
-            if (profitDays === 0 && slope <= 0)
-                return { label: '💀 Lỗ sấp mặt',  color: '#ef4444', bg: 'rgba(239,68,68,0.10)',  border: 'rgba(239,68,68,0.35)' };
+            // Phập phù: lãi lỗ xen kẽ, không rõ xu hướng
+            if (profitDays > 0 && lossDays > 0 && cv > 0.5)
+                return { label: '⚡ Phập phù',     color: '#f59e0b', bg: 'rgba(245,158,11,0.08)', border: 'rgba(245,158,11,0.3)' };
 
-            // Đang lỗ nhưng slope dương → đang cải thiện
-            if (slope > 0)
+            // Đang lỗ nhưng slope dương → về bờ
+            if (totalSum < 0 && slope > 0)
                 return { label: '🚀 Về bờ',        color: '#34d399', bg: 'rgba(52,211,153,0.08)', border: 'rgba(52,211,153,0.3)' };
 
-            // Đang lãi nhưng slope âm → đang xấu đi
-            return                { label: '⚠️ Xa bờ',        color: '#f97316', bg: 'rgba(249,115,22,0.08)', border: 'rgba(249,115,22,0.3)' };
+            // Đang lãi nhưng slope âm → xa bờ
+            if (totalSum > 0 && slope < 0)
+                return { label: '⚠️ Xa bờ',        color: '#f97316', bg: 'rgba(249,115,22,0.08)', border: 'rgba(249,115,22,0.3)' };
+
+            return { label: '✅ Lãi đều', color: '#10b981', bg: 'rgba(16,185,129,0.08)', border: 'rgba(16,185,129,0.3)' };
         }
 
         function isMatchApp(name, appFilter) {
