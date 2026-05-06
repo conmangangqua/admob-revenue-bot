@@ -723,7 +723,7 @@
         </div>
     </div>
 
-    <div class="card" style="margin-bottom: 2rem;">
+    <div class="card" id="appListSection" style="margin-bottom: 2rem;">
         <div class="card-title">💎 Doanh thu chi tiết từng App</div>
         <div class="app-list" id="appListUI"></div>
     </div>
@@ -1260,7 +1260,7 @@
                 chartDates = sortedDates.slice(0, Math.max(7, chartDates.length));
             }
 
-            renderAppListUI(appArr);
+            renderAppListUI(appArr, appSel);
             renderCharts(chartDates.reverse(), appArr, appSel);
         }
 
@@ -1289,8 +1289,15 @@
             }
         }
 
-        function renderAppListUI(appArr) {
+        function renderAppListUI(appArr, appSel) {
+            const section = document.getElementById('appListSection');
             const container = document.getElementById('appListUI');
+            // Ẩn khi filter theo app cụ thể (không phải all/partner)
+            const isSpecificApp = appSel && appSel !== 'all' && !appSel.startsWith('partner:');
+            section.style.display = isSpecificApp ? 'none' : '';
+            if (isSpecificApp) return;
+            // Grid tự động theo số app
+            container.style.gridTemplateColumns = appArr.length === 1 ? '1fr' : appArr.length === 2 ? 'repeat(2,1fr)' : '';
 
             container.innerHTML = appArr.map((app, i) => {
                 const appName = app[0];
