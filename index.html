@@ -839,6 +839,19 @@
             return 'unknown';
         }
 
+        function getAppTrendBadge(appName) {
+            const cur  = profitAgg[appName]  != null ? profitAgg[appName]  : (appAgg[appName]  || 0);
+            const prev = prevProfitAppAgg[appName] != null ? prevProfitAppAgg[appName] : (prevAppAgg[appName] || 0);
+            if (prev === 0 && cur === 0) return '';
+            if (prev === 0) return '<span style="font-size:0.68rem;font-weight:700;color:#f59e0b;margin-left:4px;">✨ Mới</span>';
+            const pct = ((cur - prev) / Math.abs(prev)) * 100;
+            if (Math.abs(pct) < 5) return `<span style="font-size:0.68rem;font-weight:700;color:#94a3b8;margin-left:4px;">↔ ${pct.toFixed(1)}%</span>`;
+            const up = pct > 0;
+            const color = up ? '#10b981' : 'var(--color-danger)';
+            const arrow = up ? '↗' : '↘';
+            return `<span style="font-size:0.68rem;font-weight:700;color:${color};margin-left:4px;">${arrow} ${up?'+':''}${pct.toFixed(1)}%</span>`;
+        }
+
         function isMatchApp(name, appFilter) {
             if (appFilter === 'all') return true;
             if (appFilter.startsWith('partner:')) return getPartner(name) === appFilter.slice(8);
@@ -918,6 +931,7 @@
             // Dashboard Metrics Calculation
             let curTotal = 0, prevTotal = 0, appAgg = {}, profitAgg = {};
             let curProfitVnd = 0, prevProfitVnd = 0;
+            let prevAppAgg = {}, prevProfitAppAgg = {};
 
             curDates.forEach(d => {
                 const dObj = historyData[d];
@@ -942,9 +956,15 @@
                 const dObj = historyData[d];
                 if (dObj && dObj.apps) {
                     dObj.apps.forEach(a => {
-                        if (isMatchApp(a.name, appSel) && a.sheet_data && a.sheet_data.marketing_profit_vnd) {
-                            const pVal = parseFloat(a.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
-                            if (!isNaN(pVal)) prevProfitVnd += pVal;
+                        if (isMatchApp(a.name, appSel)) {
+                            prevAppAgg[a.name] = (prevAppAgg[a.name] || 0) + a.rev;
+                            if (a.sheet_data && a.sheet_data.marketing_profit_vnd) {
+                                const pVal = parseFloat(a.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                                if (!isNaN(pVal)) {
+                                    prevProfitVnd += pVal;
+                                    prevProfitAppAgg[a.name] = (prevProfitAppAgg[a.name] || 0) + pVal;
+                                }
+                            }
                         }
                     });
                 }
@@ -1039,12 +1059,13 @@
 
                     const profitColor = totalProfit < 0 ? 'var(--color-danger)' : '#10b981';
                     const profitText = hasSheet ? `Lãi thực: ${formatSheetVal(totalProfit)}` : 'Lãi thực: --';
+                    const trendBadge = getAppTrendBadge(appName);
 
                     top3Html += `
                     <div class="ranking-item" onclick="showAppDetail('${appName}')">
                         <div class="ranking-rank">${medals[index] || (index + 1)}</div>
                         <div class="ranking-info">
-                            <div class="ranking-name">${appName}</div>
+                            <div class="ranking-name">${appName}${trendBadge}</div>
                             <div class="ranking-stats">
                                 <div class="usd" style="font-size: 1.15rem; color: var(--color-accent); font-weight: 800; line-height: 1.1;">${formatAmount(appRev)}</div>
                                 <div style="font-size: 0.7rem; color: ${profitColor}; font-weight: 700; opacity: 0.9; margin-top: 0.2rem;">${profitText}</div>
@@ -1125,11 +1146,13 @@
                     sheetInfoHtml = `<div style="font-size: 0.75rem; color: var(--color-text-muted); opacity: 0.6; margin-top: 0.1rem;">Lãi: --</div>`;
                 }
 
+                const trendBadge = getAppTrendBadge(appName);
+
                 return `
             <div class="app-item" onclick="showAppDetail('${appName}')">
                 <div class="app-name-wrap">
                     <div class="app-dot" style="background-color: ${COLORS[i % COLORS.length]}"></div>
-                    <div class="app-name">${appName}</div>
+                    <div class="app-name">${appName}${trendBadge}</div>
                 </div>
                 <div style="text-align: right;">
                     <div class="app-rev">${formatAmount(admobRev)}</div>
