@@ -441,6 +441,49 @@
             }
         }
 
+        @media (max-width: 768px) {
+            html { font-size: 16px; }
+
+            body { padding: 0.75rem; }
+
+            .app-list {
+                grid-template-columns: repeat(2, 1fr) !important;
+            }
+
+            #valTop3List {
+                grid-template-columns: 1fr !important;
+            }
+
+            .controls {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .filter-group {
+                flex-wrap: wrap;
+                width: 100%;
+            }
+
+            .filter-group select {
+                flex: 1;
+                min-width: 120px;
+            }
+
+            #detailPanel {
+                width: 96%;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            html { font-size: 14px; }
+
+            .app-list {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
         .card {
             background: var(--color-card);
             padding: 1.5rem;
