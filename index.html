@@ -1419,6 +1419,11 @@
         }
 
         function showAppDetail(appName) {
+            document.getElementById('appFilter').value = appName;
+            applyFilter();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            return;
+
             document.getElementById('detailDate').innerText = `Chi tiết: ${appName}`;
 
             let html = '';
