@@ -1128,23 +1128,58 @@
             }
 
             const badgeObj = document.getElementById('trendHeroBadge');
-            // Ưu tiên so sánh theo lãi thực, fallback theo revenue
-            const trendCur = curProfitVnd !== 0 ? curProfitVnd : curTotal;
-            const trendPrev = prevProfitVnd !== 0 ? prevProfitVnd : prevTotal;
-            if (trendPrev !== 0) {
-                const pct = ((trendCur - trendPrev) / Math.abs(trendPrev)) * 100;
-                badgeObj.className = 'trend-badge ' + (pct >= 0 ? 'positive' : 'negative');
-                badgeObj.innerText = (pct >= 0 ? '+' : '') + pct.toFixed(1) + (pct >= 0 ? '% ↗' : '% ↘');
-                document.getElementById('trendHeroText').innerText = `so với ${prevDates.length} ngày liền trước`;
 
+            // Tính trend tổng theo lãi thực từng ngày trong kỳ (giống app card)
+            const heroVals = [...curDates].reverse().map(d => {
+                let sum = 0, has = false;
+                (historyData[d]?.apps || []).forEach(a => {
+                    if (!isMatchApp(a.name, appSel)) return;
+                    if (a.sheet_data?.marketing_profit_vnd) {
+                        const v = parseFloat(a.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                        if (!isNaN(v)) { sum += v; has = true; }
+                    }
+                });
+                return has ? sum : null;
+            }).filter(v => v !== null);
+
+            let heroTrend = null;
+            if (heroVals.length >= 3) {
+                const n = heroVals.length;
+                const mean = heroVals.reduce((s, v) => s + v, 0) / n;
+                const xs = heroVals.map((_, i) => i + 1);
+                const xMean = (n + 1) / 2;
+                const slope = heroVals.reduce((s, v, i) => s + (xs[i] - xMean) * (v - mean), 0)
+                            / xs.reduce((s, x) => s + (x - xMean) ** 2, 0);
+                const stdev = Math.sqrt(heroVals.reduce((s, v) => s + (v - mean) ** 2, 0) / n);
+                const cv = mean !== 0 ? stdev / Math.abs(mean) : Infinity;
+                const profitDays = heroVals.filter(v => v > 0).length;
+                const lossDays   = heroVals.filter(v => v < 0).length;
+                const lossRatio  = lossDays / n;
+                const totalSum   = heroVals.reduce((s, v) => s + v, 0);
+
+                if (totalSum < 0 && lossRatio > 0.6)      heroTrend = { label: '💀 Lỗ sấp mặt', color: '#ef4444' };
+                else if (lossDays === 0)                   heroTrend = { label: '✅ Lãi đều',     color: '#10b981' };
+                else if (profitDays > 0 && lossDays > 0 && cv > 0.5) heroTrend = { label: '⚡ Phập phù', color: '#f59e0b' };
+                else if (totalSum < 0 && slope > 0)        heroTrend = { label: '🚀 Về bờ',       color: '#34d399' };
+                else if (totalSum > 0 && slope < 0)        heroTrend = { label: '⚠️ Xa bờ',       color: '#f97316' };
+                else                                       heroTrend = { label: '✅ Lãi đều',     color: '#10b981' };
+            }
+
+            if (heroTrend) {
+                badgeObj.className = 'trend-badge';
+                badgeObj.style.cssText = `background:rgba(255,255,255,0.2);color:#fff;font-size:0.85rem;font-weight:800;`;
+                badgeObj.innerText = heroTrend.label;
+                document.getElementById('trendHeroText').innerText = '';
                 // Sarcastic Bot
                 document.getElementById('aiJokeBox').style.display = 'flex';
-                let quotes = pct >= 0 ? POSITIVE_QUOTES : NEGATIVE_QUOTES;
+                const isGood = heroTrend.label.includes('✅') || heroTrend.label.includes('🚀');
+                let quotes = isGood ? POSITIVE_QUOTES : NEGATIVE_QUOTES;
                 document.getElementById('aiJokeText').innerText = quotes[Math.floor(Math.random() * quotes.length)];
             } else {
                 badgeObj.className = 'trend-badge neutral';
-                badgeObj.innerText = `N/A`;
-                document.getElementById('trendHeroText').innerText = `Thiếu dữ liệu`;
+                badgeObj.style.cssText = '';
+                badgeObj.innerText = 'Chưa đủ data';
+                document.getElementById('trendHeroText').innerText = '';
                 document.getElementById('aiJokeBox').style.display = 'none';
             }
 
