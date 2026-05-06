@@ -1063,13 +1063,18 @@
                 });
             });
 
-            // Gom lãi thực theo đối tác, chỉ cộng đối tác lãi (lỗ = 0)
-            const partnerProfitAgg = {};
-            Object.entries(profitAgg).forEach(([name, val]) => {
-                const p = getPartner(name);
-                partnerProfitAgg[p] = (partnerProfitAgg[p] || 0) + val;
-            });
-            curProfitVnd = Object.values(partnerProfitAgg).reduce((sum, val) => sum + Math.max(0, val), 0);
+            if (appSel === 'all') {
+                // Gom theo đối tác, chỉ cộng đối tác lãi (lỗ = 0)
+                const partnerProfitAgg = {};
+                Object.entries(profitAgg).forEach(([name, val]) => {
+                    const p = getPartner(name);
+                    partnerProfitAgg[p] = (partnerProfitAgg[p] || 0) + val;
+                });
+                curProfitVnd = Object.values(partnerProfitAgg).reduce((sum, val) => sum + Math.max(0, val), 0);
+            } else {
+                // Filter cụ thể (partner/app) → hiện thẳng lãi/lỗ thực
+                curProfitVnd = Object.values(profitAgg).reduce((sum, val) => sum + val, 0);
+            }
 
             prevDates.forEach(d => {
                 prevTotal += getAppRev(historyData[d], appSel);
