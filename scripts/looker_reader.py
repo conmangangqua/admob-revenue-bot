@@ -13,40 +13,48 @@ def fetch_looker_data():
     cookie = os.environ.get("LOOKER_COOKIE", DEFAULT_COOKIE)
     xsrf_token = os.environ.get("LOOKER_XSRF", DEFAULT_XSRF)
 
-    url = "https://datastudio.google.com/u/1/batchedDataV2?appVersion=20260407_0709"
-    headers = {
-        "Content-Type": "application/json",
-        "Sec-Fetch-Dest": "empty",
-        "Accept": "application/json, text/plain, */*",
-        "Sec-Fetch-Site": "same-origin",
-        "Accept-Language": "vi-VN,vi;q=0.9",
-        "Sec-Fetch-Mode": "cors",
-        "Host": "datastudio.google.com",
-        "Origin": "https://datastudio.google.com",
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15",
-        "Referer": "https://datastudio.google.com/u/1/reporting/2a3eaf2b-5c24-47e1-b447-eb33cd2c12bc/page/0TxaF",
-        "Connection": "keep-alive",
-        "Cookie": cookie,
-        "X-RAP-XSRF-TOKEN": xsrf_token,
-        "Priority": "u=3, i",
-        "encoding": "null"
-    }
+    # Cho phép override account index qua env, mặc định thử lần lượt 0,1,2.
+    forced_idx = os.environ.get("LOOKER_AUTHUSER")
+    indices = [forced_idx] if forced_idx else ["0", "1", "2"]
 
     import requests
-    try:
-        response = requests.post(url, headers=headers, data=LOOKER_PAYLOAD)
-        if response.status_code == 200:
-            response_data = response.text
-            if response_data.startswith(")]}'"):
-                response_data = response_data[4:].strip()
-            return json.loads(response_data)
-        else:
-            print(f"Looker Studio request failed: {response.status_code}")
-            print(f"Response: {response.text}")
-            return None
-    except Exception as e:
-        print(f"Error fetching looker data: {e}")
-        return None
+    last_err = None
+    for idx in indices:
+        url = f"https://datastudio.google.com/u/{idx}/batchedDataV2?appVersion=20260407_0709"
+        headers = {
+            "Content-Type": "application/json",
+            "Sec-Fetch-Dest": "empty",
+            "Accept": "application/json, text/plain, */*",
+            "Sec-Fetch-Site": "same-origin",
+            "Accept-Language": "vi-VN,vi;q=0.9",
+            "Sec-Fetch-Mode": "cors",
+            "Host": "datastudio.google.com",
+            "Origin": "https://datastudio.google.com",
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/26.2 Safari/605.1.15",
+            "Referer": f"https://datastudio.google.com/u/{idx}/reporting/2a3eaf2b-5c24-47e1-b447-eb33cd2c12bc/page/0TxaF",
+            "Connection": "keep-alive",
+            "Cookie": cookie,
+            "X-RAP-XSRF-TOKEN": xsrf_token,
+            "Priority": "u=3, i",
+            "encoding": "null"
+        }
+        try:
+            response = requests.post(url, headers=headers, data=LOOKER_PAYLOAD)
+            if response.status_code == 200:
+                response_data = response.text
+                if response_data.startswith(")]}'"):
+                    response_data = response_data[4:].strip()
+                print(f"[i] Looker authuser=/u/{idx}/ OK.")
+                return json.loads(response_data)
+            else:
+                last_err = f"/u/{idx}/ → HTTP {response.status_code}: {response.text[:200]}"
+                print(f"[!] Thử /u/{idx}/ fail: {response.status_code}")
+        except Exception as e:
+            last_err = f"/u/{idx}/ → {e}"
+            print(f"[!] Thử /u/{idx}/ exception: {e}")
+
+    print(f"Looker Studio request failed cả 3 account index. Last: {last_err}")
+    return None
 
 def parse_looker_data(data):
     if not data or "dataResponse" not in data:

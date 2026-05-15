@@ -2,3 +2,9 @@
 credentials.json
 __pycache__/
 *.pyc
+storage_state.json
+looker_cookies.json
+launchd/*.log
+launchd/com.conmangangqua.looker-sync.plist
+.venv/
+chrome_profile/
