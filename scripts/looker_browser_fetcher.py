@@ -94,25 +94,54 @@ def looks_like_revenue_table(rows: list) -> bool:
     return False
 
 
+ROWS_LIMIT = 5000  # bump rowsCount để lấy đủ (mặc định report chỉ 250)
+
+
+def _bump_rows_count(post_data: str) -> str:
+    """Sửa paginateInfo.rowsCount trong payload batchedDataV2 → ROWS_LIMIT."""
+    body = json.loads(post_data)
+    for dr in body.get("dataRequest", []):
+        ds = dr.get("datasetSpec", {})
+        pg = ds.get("paginateInfo")
+        if pg is not None:
+            pg["startRow"] = 1
+            pg["rowsCount"] = ROWS_LIMIT
+    return json.dumps(body, separators=(",", ":"))
+
+
+def _is_revenue_request(post_data: str) -> bool:
+    return "_app_code_" in post_data and "_admob_revenue_" in post_data
+
+
 def fetch(login_mode: bool = False, headless: bool = False, timeout_ms: int = 60_000) -> list:
     from playwright.sync_api import sync_playwright
 
     PROFILE_DIR.mkdir(parents=True, exist_ok=True)
 
-    captured = []  # list[dict] — raw responses
+    captured_resp = []   # raw response dicts (fallback)
+    rev_request = {}     # {url, headers, post_data} của request bảng revenue
+
+    def on_request(request):
+        try:
+            if API_PATTERN not in request.url or request.method != "POST":
+                return
+            pd = request.post_data or ""
+            if _is_revenue_request(pd) and "url" not in rev_request:
+                rev_request["url"] = request.url
+                rev_request["headers"] = request.headers
+                rev_request["post_data"] = pd
+        except Exception as e:
+            print(f"[!] on_request error: {e}", file=sys.stderr)
 
     def on_response(response):
         try:
             if API_PATTERN not in response.url or response.request.method != "POST":
                 return
             if response.status != 200:
-                print(f"[!] {API_PATTERN} HTTP {response.status}", file=sys.stderr)
                 return
-            text = response.text()
-            data = parse_response_text(text)
-            captured.append(data)
-        except Exception as e:
-            print(f"[!] on_response error: {e}", file=sys.stderr)
+            captured_resp.append(parse_response_text(response.text()))
+        except Exception:
+            pass
 
     with sync_playwright() as p:
         context = p.chromium.launch_persistent_context(
@@ -128,6 +157,7 @@ def fetch(login_mode: bool = False, headless: bool = False, timeout_ms: int = 60
         )
 
         page = context.pages[0] if context.pages else context.new_page()
+        page.on("request", on_request)
         page.on("response", on_response)
 
         print(f"[i] Mở report…", file=sys.stderr)
@@ -140,34 +170,48 @@ def fetch(login_mode: bool = False, headless: bool = False, timeout_ms: int = 60
                 file=sys.stderr,
             )
             input()
-        else:
-            # Đợi đến khi intercept được response chính (table revenue có nhiều rows).
-            # Headless render chậm hơn headed nên không thể chỉ dựa vào networkidle.
-            deadline = time.time() + timeout_ms / 1000
-            while time.time() < deadline:
-                got_full = False
-                for resp in captured:
-                    rows = parse_rows(resp)
-                    if looks_like_revenue_table(rows) and len(rows) >= 50:
-                        got_full = True
-                        break
-                if got_full:
-                    page.wait_for_timeout(2_000)  # buffer phòng response sau
-                    break
-                page.wait_for_timeout(1_000)
-            else:
-                print(
-                    "[!] Hết timeout chưa thấy response đủ rows — sẽ thử parse những gì có.",
-                    file=sys.stderr,
+            context.close()
+            return []
+
+        # Đợi bắt được request bảng revenue
+        deadline = time.time() + timeout_ms / 1000
+        while time.time() < deadline and "url" not in rev_request:
+            page.wait_for_timeout(1_000)
+
+        full_rows = []
+        if "url" in rev_request:
+            # Replay request với rowsCount lớn — dùng chính context Chrome (auth OK)
+            try:
+                bumped = _bump_rows_count(rev_request["post_data"])
+                resp = context.request.post(
+                    rev_request["url"],
+                    headers=rev_request["headers"],
+                    data=bumped,
+                    timeout=60_000,
                 )
+                if resp.ok:
+                    data = parse_response_text(resp.text())
+                    full_rows = parse_rows(data)
+                    print(
+                        f"[i] Replay rowsCount={ROWS_LIMIT} → {len(full_rows)} rows.",
+                        file=sys.stderr,
+                    )
+                else:
+                    print(f"[!] Replay HTTP {resp.status}", file=sys.stderr)
+            except Exception as e:
+                print(f"[!] Replay lỗi: {e}", file=sys.stderr)
+        else:
+            print("[!] Không bắt được request bảng revenue.", file=sys.stderr)
 
         context.close()
 
-    print(f"[i] Intercepted {len(captured)} responses.", file=sys.stderr)
+    if looks_like_revenue_table(full_rows):
+        return full_rows
 
-    # Tìm response chứa bảng revenue (app_code 'B...'), ưu tiên cái nhiều rows nhất
+    # Fallback: response browser tự render (giới hạn 250)
+    print("[!] Replay fail → fallback response gốc (có thể thiếu rows).", file=sys.stderr)
     best = []
-    for resp in captured:
+    for resp in captured_resp:
         rows = parse_rows(resp)
         if looks_like_revenue_table(rows) and len(rows) > len(best):
             best = rows
@@ -175,8 +219,7 @@ def fetch(login_mode: bool = False, headless: bool = False, timeout_ms: int = 60
         return best
 
     raise RuntimeError(
-        f"Không tìm thấy bảng revenue trong {len(captured)} response. "
-        "Session có thể đã hết hạn → chạy lại với --login."
+        "Không lấy được bảng revenue. Session có thể hết hạn → chạy lại với --login."
     )
 
 
