@@ -1156,19 +1156,19 @@
             const appSelLabel = PARTNER_LABELS[appSel] || (appSel !== 'all' ? appSel : '');
             document.getElementById('lblHeroRev').innerText = heroLblText + (appSelLabel ? ` (${appSelLabel})` : '');
 
-            // Hiển lãi thực VND (triệu), fallback sang revenue USD nếu chưa có data
+            // Chỉ hiển lãi thực VND. KHÔNG fallback về total revenue khi chưa có data.
             if (curProfitVnd !== 0) {
                 document.getElementById('valHeroRev').innerHTML = `<div class="usd">${formatSheetVal(curProfitVnd)}</div>`;
             } else {
-                document.getElementById('valHeroRev').innerHTML = `<div class="usd">${formatAmount(curTotal)}</div>`;
+                document.getElementById('valHeroRev').innerHTML = `<div class="usd" style="opacity:0.5;">--</div>`;
             }
 
             const heroCard = document.getElementById('heroCard');
 
             // The Converter Box
-            if (curTotal > 0) {
+            if (curProfitVnd !== 0 && curTotal > 0) {
                 document.getElementById('converterBox').style.display = 'inline-block';
-                document.getElementById('converterBox').innerHTML = `<div class="converter-box">${getFunnyConverterText(curTotal, curProfitVnd !== 0 ? curProfitVnd : null)}</div>`;
+                document.getElementById('converterBox').innerHTML = `<div class="converter-box">${getFunnyConverterText(curTotal, curProfitVnd)}</div>`;
             } else {
                 document.getElementById('converterBox').style.display = 'none';
             }
