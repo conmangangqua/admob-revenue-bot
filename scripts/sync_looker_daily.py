@@ -56,6 +56,23 @@ def merge_rows(history: dict, rows: list) -> int:
         tiktok_sp = float(row.get("tiktok_spend") or 0)
         fb_sp = float(row.get("facebook_spend") or 0)
 
+        # Dựng sheet_data từ cột VND. %PL2 = profit_vnd/rev_vnd*100
+        # (verify EXACT với Azura.csv; KHÔNG dùng col3 Looker vì nó là calc khác).
+        rev_vnd = float(row.get("rev_vnd") or 0)
+        cost_vnd = float(row.get("cost_vnd") or 0)
+        profit_vnd = float(row.get("profit_vnd") or 0)
+
+        profit_pct = "0%"
+        if rev_vnd != 0:
+            profit_pct = f"{round((profit_vnd / rev_vnd) * 100)}%"
+
+        sheet_data = {
+            "total_rev_vnd": str(round(rev_vnd / 1_000_000.0, 3)),
+            "cost_vnd": str(round(cost_vnd / 1_000_000.0, 3)),
+            "marketing_profit_vnd": str(round(profit_vnd / 1_000_000.0, 3)),
+            "profit_pct_sheet": profit_pct,
+        }
+
         day_entry = history.setdefault(date_key, {"total": 0, "apps": []})
         apps = day_entry.setdefault("apps", [])
 
@@ -78,9 +95,8 @@ def merge_rows(history: dict, rows: list) -> int:
             "mintegral_spend": round(mint_sp, 2),
             "tiktok_spend": round(tiktok_sp, 2),
             "facebook_spend": round(fb_sp, 2),
+            "sheet_data": sheet_data,
         }
-        if existing and "sheet_data" in existing:
-            new_data["sheet_data"] = existing["sheet_data"]
 
         if existing:
             existing.update(new_data)

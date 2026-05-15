@@ -57,6 +57,11 @@ def parse_rows(raw: dict) -> list:
     if not cols or not cols[0]:
         return []
 
+    # Mapping 13 cột (xác minh EXACT bằng đối chiếu Azura.csv ngày đã finalized):
+    # 0 app_code | 1 app_name | 2 date | 3 calc-KHÔNG-DÙNG (không phải %PL2)
+    # 4 Rev(VND) | 5 Cost MKT(VND) | 6 MKT Profit(VND) | 7 Ads Rev(USD)
+    # 8 Google | 9 Mintegral | 10 Tiktok | 11 Facebook | 12 Exchange Rate
+    # %PL2 thật = profit_vnd/rev_vnd*100 (tính ở merge), KHÔNG lấy col3.
     n = len(cols[0])
     rows = []
     for i in range(n):
@@ -66,6 +71,9 @@ def parse_rows(raw: dict) -> list:
             "app_code": cell(0),
             "app_name": cell(1),
             "date": cell(2),
+            "rev_vnd": cell(4, 0.0),
+            "cost_vnd": cell(5, 0.0),
+            "profit_vnd": cell(6, 0.0),
             "admob_revenue": cell(7, 0.0),
             "google_spend": cell(8, 0.0),
             "mintegral_spend": cell(9, 0.0),

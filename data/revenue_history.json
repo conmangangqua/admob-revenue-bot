@@ -34,7 +34,13 @@
         "google_spend": 0.0,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
-        "facebook_spend": 36.74
+        "facebook_spend": 36.74,
+        "sheet_data": {
+          "total_rev_vnd": "1.024",
+          "cost_vnd": "0.955",
+          "marketing_profit_vnd": "0.069",
+          "profit_pct_sheet": "7%"
+        }
       },
       {
         "name": "B117 - SonicBooster: Volume Booster",
@@ -44,7 +50,13 @@
         "google_spend": 264.62,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
-        "facebook_spend": 48.79
+        "facebook_spend": 48.79,
+        "sheet_data": {
+          "total_rev_vnd": "9.524",
+          "cost_vnd": "8.149",
+          "marketing_profit_vnd": "1.375",
+          "profit_pct_sheet": "14%"
+        }
       },
       {
         "name": "B098 - AI Art",
@@ -54,7 +66,13 @@
         "google_spend": 64.17,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
-        "facebook_spend": 80.49
+        "facebook_spend": 80.49,
+        "sheet_data": {
+          "total_rev_vnd": "4.732",
+          "cost_vnd": "3.761",
+          "marketing_profit_vnd": "0.971",
+          "profit_pct_sheet": "21%"
+        }
       },
       {
         "name": "B097 - Digital Cam",
@@ -64,7 +82,13 @@
         "google_spend": 0.0,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
-        "facebook_spend": 157.99
+        "facebook_spend": 157.99,
+        "sheet_data": {
+          "total_rev_vnd": "4.789",
+          "cost_vnd": "4.108",
+          "marketing_profit_vnd": "0.681",
+          "profit_pct_sheet": "14%"
+        }
       }
     ]
   },
@@ -123,7 +147,7 @@
         "sheet_data": {
           "total_rev_vnd": "7.998",
           "cost_vnd": "6.41",
-          "marketing_profit_vnd": "1.587",
+          "marketing_profit_vnd": "1.588",
           "profit_pct_sheet": "20%"
         }
       },
@@ -138,8 +162,8 @@
         "facebook_spend": 34.22,
         "sheet_data": {
           "total_rev_vnd": "2.431",
-          "cost_vnd": "3.309",
-          "marketing_profit_vnd": "-0.878",
+          "cost_vnd": "3.306",
+          "marketing_profit_vnd": "-0.875",
           "profit_pct_sheet": "-36%"
         }
       },
@@ -154,8 +178,8 @@
         "facebook_spend": 218.75,
         "sheet_data": {
           "total_rev_vnd": "6.266",
-          "cost_vnd": "5.678",
-          "marketing_profit_vnd": "0.588",
+          "cost_vnd": "5.688",
+          "marketing_profit_vnd": "0.579",
           "profit_pct_sheet": "9%"
         }
       },
@@ -246,8 +270,8 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 9.15,
         "sheet_data": {
-          "total_rev_vnd": "7.779",
-          "cost_vnd": "5.411",
+          "total_rev_vnd": "7.774",
+          "cost_vnd": "5.406",
           "marketing_profit_vnd": "2.368",
           "profit_pct_sheet": "30%"
         }
@@ -262,9 +286,9 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 38.48,
         "sheet_data": {
-          "total_rev_vnd": "2.395",
-          "cost_vnd": "3.271",
-          "marketing_profit_vnd": "-0.876",
+          "total_rev_vnd": "2.387",
+          "cost_vnd": "3.268",
+          "marketing_profit_vnd": "-0.881",
           "profit_pct_sheet": "-37%"
         }
       },
@@ -371,9 +395,9 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "15.426",
-          "cost_vnd": "14.503",
-          "marketing_profit_vnd": "0.923",
+          "total_rev_vnd": "15.41",
+          "cost_vnd": "14.499",
+          "marketing_profit_vnd": "0.911",
           "profit_pct_sheet": "6%"
         }
       },
@@ -387,9 +411,9 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 39.37,
         "sheet_data": {
-          "total_rev_vnd": "2.285",
-          "cost_vnd": "2.592",
-          "marketing_profit_vnd": "-0.307",
+          "total_rev_vnd": "2.283",
+          "cost_vnd": "2.588",
+          "marketing_profit_vnd": "-0.305",
           "profit_pct_sheet": "-13%"
         }
       },
@@ -496,10 +520,10 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 79.72,
         "sheet_data": {
-          "total_rev_vnd": "21.949",
-          "cost_vnd": "25.346",
-          "marketing_profit_vnd": "-3.397",
-          "profit_pct_sheet": "-15%"
+          "total_rev_vnd": "21.934",
+          "cost_vnd": "25.344",
+          "marketing_profit_vnd": "-3.41",
+          "profit_pct_sheet": "-16%"
         }
       },
       {
@@ -513,8 +537,8 @@
         "facebook_spend": 45.78,
         "sheet_data": {
           "total_rev_vnd": "2.558",
-          "cost_vnd": "3.044",
-          "marketing_profit_vnd": "-0.485",
+          "cost_vnd": "3.036",
+          "marketing_profit_vnd": "-0.478",
           "profit_pct_sheet": "-19%"
         }
       },
@@ -622,8 +646,8 @@
         "facebook_spend": 200.83,
         "sheet_data": {
           "total_rev_vnd": "19.383",
-          "cost_vnd": "24.137",
-          "marketing_profit_vnd": "-4.754",
+          "cost_vnd": "24.136",
+          "marketing_profit_vnd": "-4.753",
           "profit_pct_sheet": "-25%"
         }
       },
@@ -638,8 +662,8 @@
         "facebook_spend": 126.4,
         "sheet_data": {
           "total_rev_vnd": "4.261",
-          "cost_vnd": "4.57",
-          "marketing_profit_vnd": "-0.309",
+          "cost_vnd": "4.566",
+          "marketing_profit_vnd": "-0.305",
           "profit_pct_sheet": "-7%"
         }
       },
@@ -747,8 +771,8 @@
         "facebook_spend": 241.14,
         "sheet_data": {
           "total_rev_vnd": "20.8",
-          "cost_vnd": "20.046",
-          "marketing_profit_vnd": "0.754",
+          "cost_vnd": "20.042",
+          "marketing_profit_vnd": "0.758",
           "profit_pct_sheet": "4%"
         }
       },
@@ -763,8 +787,8 @@
         "facebook_spend": 128.35,
         "sheet_data": {
           "total_rev_vnd": "4.937",
-          "cost_vnd": "4.946",
-          "marketing_profit_vnd": "-0.009",
+          "cost_vnd": "4.945",
+          "marketing_profit_vnd": "-0.008",
           "profit_pct_sheet": "0%"
         }
       },
@@ -856,8 +880,8 @@
         "facebook_spend": 149.97,
         "sheet_data": {
           "total_rev_vnd": "14.095",
-          "cost_vnd": "12.211",
-          "marketing_profit_vnd": "1.884",
+          "cost_vnd": "12.205",
+          "marketing_profit_vnd": "1.89",
           "profit_pct_sheet": "13%"
         }
       },
@@ -904,8 +928,8 @@
         "facebook_spend": 49.58,
         "sheet_data": {
           "total_rev_vnd": "2.961",
-          "cost_vnd": "3.399",
-          "marketing_profit_vnd": "-0.437",
+          "cost_vnd": "3.396",
+          "marketing_profit_vnd": "-0.434",
           "profit_pct_sheet": "-15%"
         }
       },
@@ -997,8 +1021,8 @@
         "facebook_spend": 61.79,
         "sheet_data": {
           "total_rev_vnd": "9.178",
-          "cost_vnd": "7.869",
-          "marketing_profit_vnd": "1.309",
+          "cost_vnd": "7.868",
+          "marketing_profit_vnd": "1.31",
           "profit_pct_sheet": "14%"
         }
       },
@@ -9177,7 +9201,13 @@
         "google_spend": 0.0,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
-        "facebook_spend": 13.53
+        "facebook_spend": 13.53,
+        "sheet_data": {
+          "total_rev_vnd": "0.372",
+          "cost_vnd": "0.352",
+          "marketing_profit_vnd": "0.02",
+          "profit_pct_sheet": "5%"
+        }
       },
       {
         "name": "B117 - SonicBooster: Volume Booster",
@@ -9187,7 +9217,13 @@
         "google_spend": 121.09,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
-        "facebook_spend": 24.84
+        "facebook_spend": 24.84,
+        "sheet_data": {
+          "total_rev_vnd": "4.04",
+          "cost_vnd": "3.794",
+          "marketing_profit_vnd": "0.246",
+          "profit_pct_sheet": "6%"
+        }
       },
       {
         "name": "B098 - AI Art",
@@ -9197,7 +9233,13 @@
         "google_spend": 15.25,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
-        "facebook_spend": 38.03
+        "facebook_spend": 38.03,
+        "sheet_data": {
+          "total_rev_vnd": "2.041",
+          "cost_vnd": "1.385",
+          "marketing_profit_vnd": "0.656",
+          "profit_pct_sheet": "32%"
+        }
       },
       {
         "name": "B097 - Digital Cam",
@@ -9207,7 +9249,13 @@
         "google_spend": 0.0,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
-        "facebook_spend": 97.26
+        "facebook_spend": 97.26,
+        "sheet_data": {
+          "total_rev_vnd": "2.213",
+          "cost_vnd": "2.529",
+          "marketing_profit_vnd": "-0.316",
+          "profit_pct_sheet": "-14%"
+        }
       }
     ]
   }
