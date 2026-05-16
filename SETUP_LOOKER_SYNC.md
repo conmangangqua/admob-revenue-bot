@@ -74,9 +74,15 @@ Hoàn toàn được. Có 2 lưu ý:
 
 ### Xem log
 ```bash
+# Repo nằm trên ổ internal:
 tail -100 launchd/sync.out.log    # success
 tail -100 launchd/sync.err.log    # error / progress
+
+# Repo nằm trên external volume (/Volumes/...) — install.sh tự redirect:
+tail -100 ~/Library/Logs/com.conmangangqua.looker-sync/sync.out.log
+tail -100 ~/Library/Logs/com.conmangangqua.looker-sync/sync.err.log
 ```
+> launchd trên macOS Sequoia (15.x) chặn ghi stdout/stderr trên external volume → EX_CONFIG 78. `install.sh` tự phát hiện và fallback sang `~/Library/Logs/<label>/`. In ra path thật ở cuối lệnh `install.sh`.
 
 ### Trigger thủ công
 ```bash
@@ -135,4 +141,5 @@ launchctl list | grep looker-sync
 | `chrome_profile/` | Chrome profile + cookies Google session | ❌ |
 | `looker_cookies.json` | Legacy, có thể xoá | ❌ |
 | `.venv/` | Python venv | ❌ |
-| `launchd/sync.{out,err}.log` | Cron logs | ❌ |
+| `launchd/sync.{out,err}.log` | Cron logs (khi repo trên ổ internal) | ❌ |
+| `~/Library/Logs/com.conmangangqua.looker-sync/sync.{out,err}.log` | Cron logs (khi repo trên external volume) | ❌ |

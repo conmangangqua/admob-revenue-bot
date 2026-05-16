@@ -23,10 +23,10 @@
     </dict>
 
     <key>StandardOutPath</key>
-    <string>__WORKDIR__/launchd/sync.out.log</string>
+    <string>__LOG_DIR__/sync.out.log</string>
 
     <key>StandardErrorPath</key>
-    <string>__WORKDIR__/launchd/sync.err.log</string>
+    <string>__LOG_DIR__/sync.err.log</string>
 
     <key>EnvironmentVariables</key>
     <dict>

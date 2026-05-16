@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Render plist từ template với path động + load vào launchd.
+# Render plist từ template với path động + bootstrap vào launchd (macOS modern API).
 #
 # Usage:
 #   ./launchd/install.sh              # mặc định 08:00
@@ -11,10 +11,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(dirname "$SCRIPT_DIR")"
 LABEL="com.conmangangqua.looker-sync"
 TARGET_PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
+UID_NUM="$(id -u)"
+DOMAIN="gui/$UID_NUM"
 
 if [[ "${1:-}" == "--uninstall" ]]; then
     if [[ -f "$TARGET_PLIST" ]]; then
-        launchctl unload "$TARGET_PLIST" 2>/dev/null || true
+        launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
         rm "$TARGET_PLIST"
         echo "[✓] Đã gỡ $LABEL."
     else
@@ -41,27 +43,41 @@ fi
 PYTHON_DIR="$(dirname "$PYTHON_BIN")"
 FULL_PATH="$PYTHON_DIR:/usr/local/bin:/usr/bin:/bin"
 
+# Log directory: external volume (/Volumes/...) bị launchd chặn ghi stdout/stderr trên
+# macOS Sequoia (TCC) → EX_CONFIG 78. Fallback sang ~/Library/Logs/<label>/ luôn an toàn.
+if [[ "$REPO_DIR" == /Volumes/* ]]; then
+    LOG_DIR="$HOME/Library/Logs/$LABEL"
+    echo "[i] Workdir nằm trên external volume → log → $LOG_DIR"
+else
+    LOG_DIR="$REPO_DIR/launchd"
+fi
+mkdir -p "$LOG_DIR"
+
 TEMPLATE="$SCRIPT_DIR/$LABEL.plist.template"
 RENDERED="$SCRIPT_DIR/$LABEL.plist"
 
 sed \
     -e "s|__PYTHON_BIN__|$PYTHON_BIN|g" \
     -e "s|__WORKDIR__|$REPO_DIR|g" \
+    -e "s|__LOG_DIR__|$LOG_DIR|g" \
     -e "s|__HOUR__|$HOUR|g" \
     -e "s|__MINUTE__|$MINUTE|g" \
     -e "s|__PATH__|$FULL_PATH|g" \
     "$TEMPLATE" > "$RENDERED"
 
 mkdir -p "$HOME/Library/LaunchAgents"
-ln -sf "$RENDERED" "$TARGET_PLIST"
 
-launchctl unload "$TARGET_PLIST" 2>/dev/null || true
-launchctl load "$TARGET_PLIST"
+# Modern launchctl: bootstrap thay vì load. Plist BẮT BUỘC là file thật, KHÔNG symlink
+# (bootstrap reject symlink với "Input/output error" trên macOS Sequoia).
+launchctl bootout "$DOMAIN/$LABEL" 2>/dev/null || true
+cp "$RENDERED" "$TARGET_PLIST"
+chmod 644 "$TARGET_PLIST"
+launchctl bootstrap "$DOMAIN" "$TARGET_PLIST"
 
 echo "[✓] Đã cài $LABEL"
 echo "    Python:  $PYTHON_BIN"
 echo "    Workdir: $REPO_DIR"
 echo "    Time:    $(printf '%02d:%02d' "$HOUR" "$MINUTE") hằng ngày"
-echo "    Logs:    $REPO_DIR/launchd/sync.{out,err}.log"
+echo "    Logs:    $LOG_DIR/sync.{out,err}.log"
 echo ""
 echo "Test ngay: launchctl start $LABEL"
