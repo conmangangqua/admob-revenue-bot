@@ -45,8 +45,10 @@ def get_sheet_data_for_app(app_name="Quicksave"):
         gc = gspread.authorize(credentials)
         workspace = gc.open_by_key(sheet_id).sheet1
         
-        # Dùng format default để có các key Date dạng "4/8"
-        records = workspace.get_all_records()
+        # Dùng format default để có các key Date dạng "4/8".
+        # numericise_ignore=['all']: GIỮ NGUYÊN chuỗi hiển thị, KHÔNG cho gspread
+        # tự ép số — nếu không "49.660" (49.660 nghìn) bị đọc thành 49.66.
+        records = workspace.get_all_records(numericise_ignore=['all'])
         
         if not records:
             return {}
@@ -126,9 +128,17 @@ def get_sheet_data_for_app(app_name="Quicksave"):
                                 continue
         
         def safe_float(v):
+            # Sheet ghi số nguyên đơn vị NGHÌN ĐỒNG, '.' = phân tách hàng nghìn.
+            # Phải bỏ '.' để lấy đúng số nguyên (vd "7.072" -> 7072, "677" -> 677),
+            # nếu không sẽ trộn scale khi tự tính Chi phí.
             try:
                 if not v: return 0.0
-                return float(str(v).replace(',', '').strip())
+                s = str(v).strip()
+                neg = s.startswith('-')
+                digits = ''.join(ch for ch in s if ch.isdigit())
+                if not digits: return 0.0
+                n = float(digits)
+                return -n if neg else n
             except:
                 return 0.0
 
@@ -140,7 +150,9 @@ def get_sheet_data_for_app(app_name="Quicksave"):
             
             # Nếu có doanh thu và lãi nhưng chi phí lại bằng 0 -> Tự tính chi phí
             if rev > 0 and cost == 0 and profit != 0:
-                m_data['cost_vnd'] = str(round(rev - profit, 3))
+                # rev/profit là số nguyên NGHÌN -> cost cũng NGHÌN, lưu dạng
+                # số nguyên (không ".0") để frontend sheetNum không hiểu nhầm.
+                m_data['cost_vnd'] = str(int(round(rev - profit)))
                 
         return metrics_map
         
