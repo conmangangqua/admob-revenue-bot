@@ -688,7 +688,14 @@
                         <option value="7days" selected>7 Ngày</option>
                         <option value="30days">30 Ngày</option>
                         <option value="thismonth">Tháng này</option>
+                        <option value="lastmonth">Tháng trước</option>
+                        <option value="custom">Tùy chọn…</option>
                     </select>
+                    <span id="customRange" style="display:none; align-items:center; gap:6px;">
+                        <input type="date" id="fromDate" onchange="applyFilter()" style="font:inherit; padding:4px 6px; border:1px solid var(--color-border); border-radius:6px; background:var(--color-bg); color:var(--color-text);">
+                        <span style="color:var(--color-text-muted);">→</span>
+                        <input type="date" id="toDate" onchange="applyFilter()" style="font:inherit; padding:4px 6px; border:1px solid var(--color-border); border-radius:6px; background:var(--color-bg); color:var(--color-text);">
+                    </span>
                     <select id="currencyFilter" onchange="setCurrency(this.value)">
                         <option value="VND" selected>VND</option>
                         <option value="USD">USD</option>
@@ -1056,6 +1063,8 @@
         function applyFilter() {
             const timeFilter = document.getElementById('timeFilter').value;
             const appSel = document.getElementById('appFilter').value;
+            const customEl = document.getElementById('customRange');
+            if (customEl) customEl.style.display = (timeFilter === 'custom') ? 'inline-flex' : 'none';
             if (sortedDates.length === 0) return;
 
             curDates = []; prevDates = []; let lblHero = "Tổng Doanh Thu";
@@ -1097,6 +1106,30 @@
                 curDates = sortedDates.filter(d => d.startsWith(currentMonthPrefix));
                 prevDates = sortedDates.filter(d => !d.startsWith(currentMonthPrefix)).slice(0, curDates.length);
                 lblHero = "Tháng Này (MTD)";
+            } else if (timeFilter === 'lastmonth') {
+                // Tháng liền trước (theo tháng của ngày data mới nhất)
+                const [ny, nm] = sortedDates[0].split('-').map(Number);
+                const lm = new Date(ny, nm - 2, 1); // nm 1-based -> tháng trước
+                const lmPrefix = lm.getFullYear() + '-' + String(lm.getMonth() + 1).padStart(2, '0');
+                const pm = new Date(ny, nm - 3, 1); // tháng trước nữa (để so sánh)
+                const pmPrefix = pm.getFullYear() + '-' + String(pm.getMonth() + 1).padStart(2, '0');
+                curDates = sortedDates.filter(d => d.startsWith(lmPrefix));
+                prevDates = sortedDates.filter(d => d.startsWith(pmPrefix));
+                lblHero = "Tháng Trước";
+            } else if (timeFilter === 'custom') {
+                const fromEl = document.getElementById('fromDate');
+                const toEl = document.getElementById('toDate');
+                const oldest = sortedDates[sortedDates.length - 1];
+                const newest = sortedDates[0];
+                // Giới hạn & mặc định theo khoảng data có thật
+                [fromEl, toEl].forEach(el => { el.min = oldest; el.max = newest; });
+                if (!toEl.value) toEl.value = newest;
+                if (!fromEl.value) fromEl.value = sortedDates[Math.min(6, sortedDates.length - 1)];
+                let from = fromEl.value, to = toEl.value;
+                if (from > to) { const t = from; from = to; to = t; }
+                curDates = sortedDates.filter(d => d >= from && d <= to);
+                prevDates = sortedDates.filter(d => d < from).slice(0, curDates.length);
+                lblHero = `Từ ${formatVNDate(from)} đến ${formatVNDate(to)}`;
             }
 
             // Dashboard Metrics Calculation
