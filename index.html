@@ -884,6 +884,21 @@
             }
         }
 
+        // Sheet ghi SỐ NGUYÊN, đơn vị NGHÌN ĐỒNG, '.' = phân tách hàng nghìn
+        // (vd ô "677" = 677.000đ ; "7.072" = 7.072.000đ ; "1.761.595" = 1.761.595.000đ).
+        // Trả về giá trị quy theo TRIỆU ĐỒNG để khớp các chỗ *1e6 và nhãn "Tr" sẵn có.
+        function sheetNum(raw) {
+            if (raw === undefined || raw === null || raw === '') return NaN;
+            let s = String(raw).trim();
+            const neg = s.indexOf('-') !== -1;
+            s = s.replace(/[^0-9,]/g, ''); // bỏ '.', '-', '%', khoảng trắng
+            s = s.replace(',', '.');        // ',' = thập phân kiểu vi-VN (hiếm ở cột tiền)
+            let n = parseFloat(s);
+            if (isNaN(n)) return NaN;
+            if (neg) n = -n;
+            return n / 1000;                // nghìn -> triệu
+        }
+
         function formatSheetVal(val) {
             if (val === undefined || val === null || val === '') return '--';
             let num = parseFloat(val.toString().replace(/,/g, ''));
@@ -958,7 +973,7 @@
                 const a = (historyData[d]?.apps || []).find(x => x.name === appName);
                 if (!a) return null;
                 if (a.sheet_data?.marketing_profit_vnd) {
-                    const v = parseFloat(a.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                    const v = sheetNum(a.sheet_data.marketing_profit_vnd);
                     if (!isNaN(v)) return v;
                 }
                 return null;
@@ -1029,8 +1044,7 @@
             dataObj.apps.forEach(a => {
                 if (isMatchApp(a.name, appFilter)) {
                     if (a.sheet_data && a.sheet_data.marketing_profit_vnd) {
-                        let text = String(a.sheet_data.marketing_profit_vnd);
-                        let num = parseFloat(text.replace(/[^0-9.-]/g, ''));
+                        let num = sheetNum(a.sheet_data.marketing_profit_vnd);
                         if (!isNaN(num)) sum += num * 1000000;
                     }
                 }
@@ -1097,7 +1111,7 @@
                     if (isMatchApp(a.name, appSel)) {
                         appAgg[a.name] = (appAgg[a.name] || 0) + a.rev;
                         if (a.sheet_data && a.sheet_data.marketing_profit_vnd) {
-                            const pVal = parseFloat(a.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                            const pVal = sheetNum(a.sheet_data.marketing_profit_vnd);
                             if (!isNaN(pVal)) {
                                 profitAgg[a.name] = (profitAgg[a.name] || 0) + pVal;
                             }
@@ -1127,7 +1141,7 @@
                         if (isMatchApp(a.name, appSel)) {
                             prevAppAgg[a.name] = (prevAppAgg[a.name] || 0) + a.rev;
                             if (a.sheet_data && a.sheet_data.marketing_profit_vnd) {
-                                const pVal = parseFloat(a.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                                const pVal = sheetNum(a.sheet_data.marketing_profit_vnd);
                                 if (!isNaN(pVal)) {
                                     prevProfitVnd += pVal;
                                     prevProfitAppAgg[a.name] = (prevProfitAppAgg[a.name] || 0) + pVal;
@@ -1181,7 +1195,7 @@
                 (historyData[d]?.apps || []).forEach(a => {
                     if (!isMatchApp(a.name, appSel)) return;
                     if (a.sheet_data?.marketing_profit_vnd) {
-                        const v = parseFloat(a.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                        const v = sheetNum(a.sheet_data.marketing_profit_vnd);
                         if (!isNaN(v)) { sum += v; has = true; }
                     }
                 });
@@ -1260,7 +1274,7 @@
                         if (dData && dData.apps) {
                             const aData = dData.apps.find(a => a.name === appName);
                             if (aData && aData.sheet_data && aData.sheet_data.marketing_profit_vnd) {
-                                const pVal = parseFloat(aData.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                                const pVal = sheetNum(aData.sheet_data.marketing_profit_vnd);
                                 if (!isNaN(pVal)) {
                                     totalProfit += pVal;
                                     hasSheet = true;
@@ -1354,7 +1368,7 @@
                     if (dayData && dayData.apps) {
                         const appData = dayData.apps.find(a => a.name === appName);
                         if (appData && appData.sheet_data && appData.sheet_data.marketing_profit_vnd) {
-                            const prof = parseFloat(appData.sheet_data.marketing_profit_vnd.toString().replace(/,/g, ''));
+                            const prof = sheetNum(appData.sheet_data.marketing_profit_vnd);
                             if (!isNaN(prof)) {
                                 totalSheetProfit += prof;
                                 hasSheetData = true;
@@ -1523,7 +1537,7 @@
 
                     // Hàm format tiền: Giá trị file là triệu đồng -> nhân 1.000.000
                     const formatSheetVal = (valStr) => {
-                        let num = parseFloat(valStr.toString().replace(/[^0-9.-]/g, ''));
+                        let num = sheetNum(valStr);
                         if (isNaN(num)) return valStr;
                         if (num === 0) return '<span style="font-weight:400; font-size:0.8rem; color:var(--color-text-muted); opacity:0.7;">Chưa cập nhật</span>';
 
@@ -1606,7 +1620,7 @@
 
                 if (aData.sheet_data && (aData.sheet_data.marketing_profit_vnd !== undefined)) {
                     const s = aData.sheet_data;
-                    const pVal = parseFloat(s.marketing_profit_vnd.toString().replace(/,/g, ''));
+                    const pVal = sheetNum(s.marketing_profit_vnd);
                     const pColor = pVal < 0 ? 'var(--color-danger)' : 'var(--color-success)';
                     const pPct = s.profit_pct_sheet || '0%';
 
@@ -1637,7 +1651,7 @@
         }
 
         function formatSheetValWithTime(valStr) {
-            let num = parseFloat(valStr.toString().replace(/[^0-9.-]/g, ''));
+            let num = sheetNum(valStr);
             if (isNaN(num)) return valStr;
             if (num === 0) return '<span style="font-weight:400; font-size:0.8rem; color:var(--color-text-muted); opacity:0.75;">Chưa cập nhật</span>';
 

@@ -119,9 +119,8 @@ def get_sheet_data_for_app(app_name="Quicksave"):
                                 if date_str not in metrics_map:
                                     metrics_map[date_str] = {}
                                 
-                                # Sheet dùng locale vi-VN: dấu phẩy LÀ dấu thập phân
-                                # (vd "0,677" = 0.677 triệu). Phải đổi ',' -> '.', KHÔNG xóa.
-                                val_clean = str(val).replace(',', '.').strip()
+                                # Vệ sinh con số: loại bỏ dấu phẩy/chấm để parse chuẩn
+                                val_clean = str(val).replace(',', '').strip()
                                 metrics_map[date_str][code_id] = val_clean
                             except:
                                 continue
@@ -129,7 +128,7 @@ def get_sheet_data_for_app(app_name="Quicksave"):
         def safe_float(v):
             try:
                 if not v: return 0.0
-                return float(str(v).replace(',', '.').strip())
+                return float(str(v).replace(',', '').strip())
             except:
                 return 0.0
 
