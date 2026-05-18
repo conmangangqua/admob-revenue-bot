@@ -41,11 +41,13 @@ python3 -m playwright install chromium
 
 # 4. Test pipeline trước khi cài cron
 .venv/bin/python3 scripts/sync_looker_daily.py --no-commit
-# ↑ Phải thấy "→ 250 rows nhận về" và merge OK. Nếu < 50 rows → session lỗi, chạy lại bước 3.
+# ↑ Phải thấy "→ 4xx rows nhận về" (replay rowsCount=5000) và merge OK.
+#   Nếu < 50 rows → session lỗi, chạy lại bước 3.
 
-# 5. Cài cron launchd (mặc định 08:00, sửa giờ tùy ý)
-./launchd/install.sh 14 0    # → chạy 14:00 hằng ngày
-# Hoặc: ./launchd/install.sh        # → mặc định 08:00
+# 5. Cài cron launchd (mặc định 3 mốc/ngày: 08:30, 13:30, 20:30 + chạy khi load)
+./launchd/install.sh              # → 3 mốc/ngày (KHUYẾN NGHỊ - chống máy ngủ)
+# Hoặc: ./launchd/install.sh 14 0          # 1 mốc 14:00
+# Hoặc: ./launchd/install.sh "8 0,14 0,21 0"  # mốc tùy chỉnh
 
 # 6. Test cron chạy ngay
 launchctl start com.conmangangqua.looker-sync
@@ -117,8 +119,14 @@ launchctl list | grep looker-sync
 .venv/bin/python3 scripts/cookie_refresher.py --login
 ```
 
-### Triệu chứng: chỉ fetch được 6 rows thay vì 250
-→ Headless Chrome chưa kịp load full table. Đã fix bằng cách đợi đến khi response có ≥50 rows. Nếu vẫn lặp lại → tăng `timeout_ms` trong `looker_browser_fetcher.py:fetch()`.
+### Triệu chứng: chỉ fetch được 6 rows / thiếu app (B087, B081…)
+→ Đã fix: replay request với `rowsCount=5000` (mặc định report chỉ 250 → cắt mất app cuối). Giờ lấy đủ ~4xx rows.
+
+### Triệu chứng: data ngày hôm qua chưa có app Azura
+→ **Bình thường**. Azura/Looker finalize data trễ 1-2 ngày. Cron chạy nhiều mốc/ngày + merge tự backfill ngày cũ khi data về. Sáng xem "hôm qua" có thể chưa đủ — đợi 1-2 hôm sẽ tự đầy.
+
+### Triệu chứng: launchd không chạy (log mtime đứng yên nhiều ngày)
+→ Mac ngủ vào giờ cron → user-agent job không fire. Đã giảm thiểu bằng 3 mốc/ngày + `RunAtLoad` (chạy ngay khi login/wake). Nếu cần chắc 100%: giữ Mac không sleep, hoặc `sudo pmset repeat wakeorpoweron MTWRFSU 08:25:00`.
 
 ### Triệu chứng: `pip install` báo `externally-managed-environment`
 → Đang dùng Homebrew Python system-wide. BẮT BUỘC dùng venv (xem QUICKSTART bước 2).

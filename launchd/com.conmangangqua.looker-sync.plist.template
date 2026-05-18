@@ -15,12 +15,9 @@
     <string>__WORKDIR__</string>
 
     <key>StartCalendarInterval</key>
-    <dict>
-        <key>Hour</key>
-        <integer>__HOUR__</integer>
-        <key>Minute</key>
-        <integer>__MINUTE__</integer>
-    </dict>
+    <array>
+__CAL_INTERVALS__
+    </array>
 
     <key>StandardOutPath</key>
     <string>__LOG_DIR__/sync.out.log</string>
@@ -35,6 +32,6 @@
     </dict>
 
     <key>RunAtLoad</key>
-    <false/>
+    <true/>
 </dict>
 </plist>
