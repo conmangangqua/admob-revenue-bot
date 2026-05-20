@@ -766,6 +766,11 @@
         </div>
     </div>
 
+    <div class="card" id="partnerListSection" style="margin-bottom: 2rem;">
+        <div class="card-title">🤝 Doanh thu chi tiết từng đối tác</div>
+        <div class="app-list" id="partnerListUI"></div>
+    </div>
+
     <div class="card" id="appListSection" style="margin-bottom: 2rem;">
         <div class="card-title">💎 Doanh thu chi tiết từng App</div>
         <div class="app-list" id="appListUI"></div>
@@ -1343,6 +1348,7 @@
                 chartDates = sortedDates.slice(0, Math.max(7, chartDates.length));
             }
 
+            renderPartnerListUI(appArr, appSel);
             renderAppListUI(appArr, appSel);
             renderCharts(chartDates.reverse(), appArr, appSel);
         }
@@ -1370,6 +1376,68 @@
                 const projected = (monthIterRev / daysElapsed) * daysInMonth;
                 document.getElementById('valMonthProj').innerText = `Dự kiến: ${formatAmount(projected)}`;
             }
+        }
+
+        const PARTNER_DISPLAY = {
+            azura:  { label: 'Azura',  emoji: '🅰️' },
+            bbl:    { label: 'BBL',    emoji: '🅱️' },
+            herond: { label: 'Herond', emoji: '🐝' },
+            affica: { label: 'Affica', emoji: '🌍' },
+            unknown:{ label: 'Khác',   emoji: '❓' },
+        };
+
+        function renderPartnerListUI(appArr, appSel) {
+            const section = document.getElementById('partnerListSection');
+            const container = document.getElementById('partnerListUI');
+            // Ẩn khi đã filter theo app/partner cụ thể
+            const isSpecific = appSel && appSel !== 'all';
+            section.style.display = isSpecific ? 'none' : '';
+            if (isSpecific) return;
+
+            // Gom theo partner
+            const agg = {};  // {partner: {rev, profit, hasSheet, appCount}}
+            appArr.forEach(([name, rev]) => {
+                const p = getPartner(name);
+                const entry = agg[p] || (agg[p] = { rev: 0, profit: 0, hasSheet: false, appCount: 0 });
+                entry.rev += rev;
+                entry.appCount += 1;
+                curDates.forEach(d => {
+                    const day = historyData[d];
+                    const a = day && day.apps && day.apps.find(x => x.name === name);
+                    const sd = a && a.sheet_data;
+                    if (sd && sd.marketing_profit_vnd != null) {
+                        const v = sheetNum(sd.marketing_profit_vnd);
+                        if (!isNaN(v)) { entry.profit += v; entry.hasSheet = true; }
+                    }
+                });
+            });
+
+            const items = Object.entries(agg).sort((a, b) => b[1].rev - a[1].rev);
+            container.style.gridTemplateColumns = items.length === 1 ? '1fr' : items.length === 2 ? 'repeat(2,1fr)' : '';
+
+            container.innerHTML = items.map(([partner, e], i) => {
+                const meta = PARTNER_DISPLAY[partner] || { label: partner, emoji: '🏷️' };
+                let profitHtml;
+                if (e.hasSheet) {
+                    const pColor = e.profit < 0 ? 'var(--color-danger)' : '#10b981';
+                    profitHtml = `<div style="font-size:0.68rem;color:${pColor};font-weight:700;margin-top:0.1rem;">Lãi thực: ${formatSheetVal(e.profit)}</div>`;
+                } else {
+                    profitHtml = `<div style="font-size:0.68rem;color:var(--color-text-muted);opacity:0.5;margin-top:0.1rem;">Lãi: --</div>`;
+                }
+                const filterValue = `partner:${partner}`;
+                return `
+                <div class="app-item" onclick="document.getElementById('appFilter').value='${filterValue}'; applyFilter();">
+                    <div class="app-name-wrap">
+                        <div class="app-dot" style="background-color:${COLORS[i % COLORS.length]}"></div>
+                        <div class="app-name">${meta.emoji} ${meta.label} <span style="font-size:0.7rem;color:var(--color-text-muted);font-weight:600;">(${e.appCount} app)</span></div>
+                    </div>
+                    <div style="margin-top:0.1rem;">
+                        <div class="app-rev">${formatAmount(e.rev)}</div>
+                        ${profitHtml}
+                    </div>
+                </div>
+                `;
+            }).join('');
         }
 
         function renderAppListUI(appArr, appSel) {
