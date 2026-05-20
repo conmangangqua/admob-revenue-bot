@@ -685,9 +685,9 @@
                     <select id="timeFilter" onchange="applyFilter()">
                         <option value="today">Hôm nay</option>
                         <option value="yesterday">Hôm qua</option>
-                        <option value="7days" selected>7 Ngày</option>
+                        <option value="7days">7 Ngày</option>
                         <option value="30days">30 Ngày</option>
-                        <option value="thismonth">Tháng này</option>
+                        <option value="thismonth" selected>Tháng này</option>
                         <option value="lastmonth">Tháng trước</option>
                         <option value="custom">Tùy chọn…</option>
                     </select>
@@ -860,7 +860,7 @@
                 const today = new Date();
                 const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
 
-                timeFilterElem.value = '7days';
+                timeFilterElem.value = 'thismonth';
 
                 debugStep = 'applyFilter()';
                 applyFilter();
