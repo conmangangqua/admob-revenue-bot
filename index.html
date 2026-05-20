@@ -689,6 +689,7 @@
                         <option value="30days">30 Ngày</option>
                         <option value="thismonth" selected>Tháng này</option>
                         <option value="lastmonth">Tháng trước</option>
+                        <option value="alltime">Tất cả (từ 01/01/2026)</option>
                         <option value="custom">Tùy chọn…</option>
                     </select>
                     <span id="customRange" style="display:none; align-items:center; gap:6px;">
@@ -1114,6 +1115,10 @@
                 curDates = sortedDates.filter(d => d.startsWith(lmPrefix));
                 prevDates = sortedDates.filter(d => d.startsWith(pmPrefix));
                 lblHero = "Tháng Trước";
+            } else if (timeFilter === 'alltime') {
+                curDates = sortedDates.filter(d => d >= '2026-01-01');
+                prevDates = [];
+                lblHero = "Toàn Bộ (từ 01/01/2026)";
             } else if (timeFilter === 'custom') {
                 const fromEl = document.getElementById('fromDate');
                 const toEl = document.getElementById('toDate');
