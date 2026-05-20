@@ -1389,10 +1389,11 @@
         function renderPartnerListUI(appArr, appSel) {
             const section = document.getElementById('partnerListSection');
             const container = document.getElementById('partnerListUI');
-            // Ẩn khi đã filter theo app/partner cụ thể
-            const isSpecific = appSel && appSel !== 'all';
-            section.style.display = isSpecific ? 'none' : '';
-            if (isSpecific) return;
+            // Chỉ ẩn khi đã filter theo partner (vì hero đã thể hiện partner đó rồi).
+            // Khi filter theo app cụ thể → vẫn hiện để thấy đối tác chứa app.
+            const isPartnerFilter = appSel && appSel.startsWith('partner:');
+            section.style.display = isPartnerFilter ? 'none' : '';
+            if (isPartnerFilter) return;
 
             // Gom theo partner
             const agg = {};  // {partner: {rev, profit, hasSheet, appCount}}
