@@ -1395,17 +1395,18 @@
             section.style.display = isPartnerFilter ? 'none' : '';
             if (isPartnerFilter) return;
 
-            // Gom theo partner
-            const agg = {};  // {partner: {rev, profit, hasSheet, appCount}}
-            appArr.forEach(([name, rev]) => {
-                const p = getPartner(name);
-                const entry = agg[p] || (agg[p] = { rev: 0, profit: 0, hasSheet: false, appCount: 0 });
-                entry.rev += rev;
-                entry.appCount += 1;
-                curDates.forEach(d => {
-                    const day = historyData[d];
-                    const a = day && day.apps && day.apps.find(x => x.name === name);
-                    const sd = a && a.sheet_data;
+            // Gom theo partner từ TOÀN BỘ apps trong khoảng ngày (độc lập filter app)
+            // → khi filter 1 app cụ thể vẫn thấy đầy đủ doanh thu của đối tác chứa app đó.
+            const agg = {};  // {partner: {rev, profit, hasSheet, appSet}}
+            curDates.forEach(d => {
+                const day = historyData[d];
+                if (!day || !day.apps) return;
+                day.apps.forEach(a => {
+                    const p = getPartner(a.name);
+                    const entry = agg[p] || (agg[p] = { rev: 0, profit: 0, hasSheet: false, appSet: new Set() });
+                    entry.rev += (a.rev || 0);
+                    entry.appSet.add(a.name);
+                    const sd = a.sheet_data;
                     if (sd && sd.marketing_profit_vnd != null) {
                         const v = sheetNum(sd.marketing_profit_vnd);
                         if (!isNaN(v)) { entry.profit += v; entry.hasSheet = true; }
@@ -1430,7 +1431,7 @@
                 <div class="app-item" onclick="document.getElementById('appFilter').value='${filterValue}'; applyFilter();">
                     <div class="app-name-wrap">
                         <div class="app-dot" style="background-color:${COLORS[i % COLORS.length]}"></div>
-                        <div class="app-name">${meta.emoji} ${meta.label} <span style="font-size:0.7rem;color:var(--color-text-muted);font-weight:600;">(${e.appCount} app)</span></div>
+                        <div class="app-name">${meta.emoji} ${meta.label} <span style="font-size:0.7rem;color:var(--color-text-muted);font-weight:600;">(${e.appSet.size} app)</span></div>
                     </div>
                     <div style="margin-top:0.1rem;">
                         <div class="app-rev">${formatAmount(e.rev)}</div>
