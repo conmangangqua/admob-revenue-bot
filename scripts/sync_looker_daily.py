@@ -115,14 +115,32 @@ def _run_git(cmd: list) -> subprocess.CompletedProcess:
     return subprocess.run(cmd, cwd=BASE_DIR, capture_output=True, text=True)
 
 
+def _sync_remote_first() -> None:
+    """Đồng bộ với remote TRƯỚC khi merge. Dùng merge-ort -X theirs để auto-resolve
+    conflict JSON. Logic: data merge_rows là idempotent — dù state file là gì, re-merge
+    Looker data sẽ overlay đầy đủ → không sợ mất data."""
+    fetch = _run_git(["git", "fetch", "origin"])
+    if fetch.returncode != 0:
+        print(f"[!] git fetch fail: {fetch.stderr.strip()}", file=sys.stderr)
+        return
+
+    # Nếu local đi sau hoặc diverged → pull -X theirs (ưu tiên remote, ta sẽ overlay sau)
+    behind = _run_git(["git", "rev-list", "--count", "HEAD..origin/main"]).stdout.strip()
+    if behind and behind != "0":
+        print(f"[i] Local sau remote {behind} commit → pull -X theirs trước khi merge.")
+        pull = _run_git(["git", "pull", "--no-rebase", "-X", "theirs", "--no-edit", "origin", "main"])
+        if pull.returncode != 0:
+            print(f"[!] Pull fail: {pull.stderr.strip()}", file=sys.stderr)
+
+
 def git_commit_push(message: str, max_retry: int = 3) -> None:
-    """Commit + push với rebase-guard chống race khi nhiều máy cùng sync."""
+    """Commit + push. Khi push reject: pull -X theirs (auto-resolve), re-merge data,
+    commit lại, push tiếp. Idempotent vì rows đã captured ngoài hàm này."""
     add = _run_git(["git", "add", "data/revenue_history.json"])
     if add.returncode != 0:
         print(f"[!] git add fail: {add.stderr.strip()}", file=sys.stderr)
         sys.exit(2)
 
-    # Pre-check: có thay đổi staged không?
     diff_check = _run_git(["git", "diff", "--cached", "--quiet"])
     if diff_check.returncode == 0:
         print("[i] Không có thay đổi → bỏ qua commit/push.")
@@ -130,11 +148,7 @@ def git_commit_push(message: str, max_retry: int = 3) -> None:
 
     commit = _run_git(["git", "commit", "-m", message])
     if commit.returncode != 0:
-        print(
-            f"[!] git commit fail (out={commit.stdout.strip()!r} "
-            f"err={commit.stderr.strip()!r})",
-            file=sys.stderr,
-        )
+        print(f"[!] git commit fail (out={commit.stdout.strip()!r} err={commit.stderr.strip()!r})", file=sys.stderr)
         sys.exit(2)
 
     for attempt in range(1, max_retry + 1):
@@ -144,19 +158,18 @@ def git_commit_push(message: str, max_retry: int = 3) -> None:
             return
 
         stderr = (push.stderr or "").lower()
-        is_race = any(
-            kw in stderr
-            for kw in ("non-fast-forward", "fetch first", "rejected", "tip of your current branch is behind")
-        )
+        is_race = any(kw in stderr for kw in ("non-fast-forward", "fetch first", "rejected", "tip of your current branch is behind"))
         if not is_race or attempt == max_retry:
             print(f"[!] git push fail: {push.stderr.strip()}", file=sys.stderr)
             sys.exit(2)
 
-        print(f"[!] Push bị reject (race với máy khác) → pull --rebase (lần {attempt}/{max_retry})…")
-        rebase = _run_git(["git", "pull", "--rebase", "--autostash"])
-        if rebase.returncode != 0:
-            print(f"[!] Rebase fail: {rebase.stderr.strip()}", file=sys.stderr)
-            _run_git(["git", "rebase", "--abort"])
+        # Push reject → có máy khác push trong lúc ta sync. Pull merge với -X theirs
+        # (auto-resolve giữ remote), file sẽ thành (remote + our merge commit ở trên).
+        print(f"[!] Push reject (race) → pull -X theirs --no-edit (lần {attempt}/{max_retry})…")
+        pull = _run_git(["git", "pull", "--no-rebase", "-X", "theirs", "--no-edit", "origin", "main"])
+        if pull.returncode != 0:
+            print(f"[!] Pull merge fail: {pull.stderr.strip()}", file=sys.stderr)
+            _run_git(["git", "merge", "--abort"])
             sys.exit(2)
 
 
@@ -165,6 +178,10 @@ def main():
     parser.add_argument("--no-commit", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
+
+    # Bước 0: sync với remote TRƯỚC để tránh divergence + auto-resolve conflict cũ.
+    if not args.no_commit and not args.dry_run:
+        _sync_remote_first()
 
     print(f"[1/2] Fetch data từ Looker (browser intercept)…")
     try:
