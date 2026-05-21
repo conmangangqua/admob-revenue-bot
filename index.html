@@ -897,37 +897,35 @@
         // Sheet ghi SỐ NGUYÊN, đơn vị NGHÌN ĐỒNG, '.' = phân tách hàng nghìn
         // (vd ô "677" = 677.000đ ; "7.072" = 7.072.000đ ; "1.761.595" = 1.761.595.000đ).
         // Trả về giá trị quy theo TRIỆU ĐỒNG để khớp các chỗ *1e6 và nhãn "Tr" sẵn có.
-        // Scale per-app: data từ 2 nguồn, đơn vị KHÁC NHAU.
-        //   - Quicksave (Google Sheets via sheet_reader): NGHÌN VND, dot=thousand-sep
-        //     "64.814" = 64814 nghìn = 64.814 triệu; "48780" = 48780 nghìn = 48.78 triệu.
-        //   - Azura B-code (Looker) + LunaAi-Chat: TRIỆU VND, English decimal
-        //     "0.367" = 0.367 triệu; "-19.453" = -19.453 triệu.
-        function _isNghin(appName) {
-            // Chỉ Quicksave dùng NGHÌN format (sheet_reader auto-calc).
-            return appName === 'Quicksave';
+        // Scale per-app:
+        //   - App B-code Azura (Looker): TRIỆU VND English decimal ("0.367", "-19.453", "0.2").
+        //   - Còn lại (Quicksave, LunaAi-Chat, Herond, ...): logic CŨ (strip dot + /1000)
+        //     vì sheet_reader/luna lưu dạng NGHÌN hoặc 3-decimal coincide.
+        function _isAzuraBcode(appName) {
+            return /^B\d+/.test(appName || '');
         }
 
         function sheetNum(raw, appName) {
             if (raw === undefined || raw === null || raw === '') return NaN;
             let s = String(raw).trim();
 
-            if (_isNghin(appName)) {
-                // Logic CŨ cho Quicksave: bỏ '.', '-', '%'... rồi /1000
-                const neg = s.indexOf('-') !== -1;
-                s = s.replace(/[^0-9,]/g, '');
-                s = s.replace(',', '.');
-                let n = parseFloat(s);
-                if (isNaN(n)) return NaN;
-                if (neg) n = -n;
-                return n / 1000;
+            if (_isAzuraBcode(appName)) {
+                // CÔNG THỨC MỚI cho B-code: parseFloat trực tiếp (triệu)
+                if (s.indexOf(',') !== -1 && s.indexOf('.') === -1) {
+                    s = s.replace(',', '.');
+                }
+                const n = parseFloat(s);
+                return isNaN(n) ? NaN : n;
             }
 
-            // Mặc định: TRIỆU VND English decimal (Azura B-code + Luna + còn lại)
-            if (s.indexOf(',') !== -1 && s.indexOf('.') === -1) {
-                s = s.replace(',', '.');  // vi-VN comma-decimal
-            }
-            const n = parseFloat(s);
-            return isNaN(n) ? NaN : n;
+            // CÔNG THỨC CŨ cho phần còn lại: strip non-digit, /1000 (nghìn → triệu)
+            const neg = s.indexOf('-') !== -1;
+            s = s.replace(/[^0-9,]/g, '');
+            s = s.replace(',', '.');
+            let n = parseFloat(s);
+            if (isNaN(n)) return NaN;
+            if (neg) n = -n;
+            return n / 1000;
         }
 
         function formatSheetVal(val) {
