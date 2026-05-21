@@ -894,15 +894,22 @@
         // (vd ô "677" = 677.000đ ; "7.072" = 7.072.000đ ; "1.761.595" = 1.761.595.000đ).
         // Trả về giá trị quy theo TRIỆU ĐỒNG để khớp các chỗ *1e6 và nhãn "Tr" sẵn có.
         function sheetNum(raw) {
+            // Data đã lưu sẵn đơn vị triệu VND, format English ("-0.367", "0.23").
+            // KHÔNG strip '.' rồi /1000 như cũ (sai 10-100x cho value <3 decimals).
             if (raw === undefined || raw === null || raw === '') return NaN;
             let s = String(raw).trim();
-            const neg = s.indexOf('-') !== -1;
-            s = s.replace(/[^0-9,]/g, ''); // bỏ '.', '-', '%', khoảng trắng
-            s = s.replace(',', '.');        // ',' = thập phân kiểu vi-VN (hiếm ở cột tiền)
-            let n = parseFloat(s);
-            if (isNaN(n)) return NaN;
-            if (neg) n = -n;
-            return n / 1000;                // nghìn -> triệu
+            const hasDot = s.indexOf('.') !== -1;
+            const hasComma = s.indexOf(',') !== -1;
+            if (hasComma && !hasDot) {
+                // vi-VN: ',' là thập phân
+                s = s.replace(',', '.');
+            } else if (hasComma && hasDot) {
+                // vi-VN format: '.' thousand, ',' decimal → bỏ '.', đổi ','→'.'
+                s = s.replace(/\./g, '').replace(',', '.');
+            }
+            // else: English ("0.367") parseFloat trực tiếp
+            const n = parseFloat(s);
+            return isNaN(n) ? NaN : n;
         }
 
         function formatSheetVal(val) {
