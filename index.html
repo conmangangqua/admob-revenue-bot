@@ -824,7 +824,11 @@
                 //     const exResp = await fetch('https://open.er-api.com/v6/latest/USD');
                 //     if(exResp.ok) {
                 debugStep = 'fetch API';
-                const resp = await fetch('/api/revenue');
+                let resp = await fetch('/api/revenue').catch(() => null);
+                if (!resp || !resp.ok) {
+                    // Fallback cho GitHub Pages (không có serverless): đọc file tĩnh
+                    resp = await fetch('data/revenue_history.json');
+                }
                 debugStep = 'json API';
                 historyData = await resp.json();
                 debugStep = 'sort Dates';
