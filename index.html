@@ -936,9 +936,13 @@
             // Nếu là 0, hiện nhãn Chưa cập nhật cho chuyên nghiệp
             if (num === 0) return '<span style="font-weight:400; font-size:0.75rem; color:var(--color-text-muted); opacity:0.6;">Chưa cập nhật</span>';
 
-            // Nếu là số nhỏ (triệu), thêm chữ Tr
-            if (Math.abs(num) < 1000) return num.toLocaleString('vi-VN') + ' Tr';
-            return num.toLocaleString('vi-VN');
+            const abs = Math.abs(num);
+            // num đang ở đơn vị triệu VND
+            // < 1.000 triệu (1 tỷ) → "X.XX Tr"
+            // ≥ 1.000 triệu → quy sang tỷ "X.XX Tỷ"
+            if (abs < 1000) return num.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) + ' Tr';
+            const tyVal = num / 1000;
+            return tyVal.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Tỷ';
         }
 
         function getFunnyConverterText(usdValue, vndMillionOverride) {
