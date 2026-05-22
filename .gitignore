@@ -8,3 +8,5 @@ launchd/*.log
 launchd/com.conmangangqua.looker-sync.plist
 .venv/
 chrome_profile/
+.vercel
+.env*.local
