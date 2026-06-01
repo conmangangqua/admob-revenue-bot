@@ -172,86 +172,52 @@ def _build_embed(history: dict, target_date: date) -> dict:
     d = datetime.fromisoformat(target).date()
     fields = []
 
-    # Per-partner cards (in revenue desc), skip empty
-    order = sorted(partners.keys(), key=lambda p: (partners[p]["rev"], partners[p]["profit_trvnd"]), reverse=True)
+    def _pl(profit: float) -> str:
+        return (f"💚 LÃI `{_fmt_trvnd(profit)}`" if profit >= 0
+                else f"🔻 LỖ `{_fmt_trvnd(profit)}`")
+
+    # --- Lãi/Lỗ HÔM NAY (chỉ partner có đủ data lãi/lỗ) ---
+    order = sorted(partners.keys(), key=lambda p: partners[p]["profit_trvnd"], reverse=True)
+    today_lines = []
     for p in order:
         e = partners[p]
-        if (e["rev"] or 0) <= 0 and (e["spend"] or 0) <= 0 and (e["profit_trvnd"] or 0) == 0:
+        if not e["has_profit"]:
             continue
         meta = PARTNER_DISPLAY[p]
-        prev_e = prev_partners.get(p, {"rev": 0, "profit_trvnd": 0})
-
-        active = [a for a in e["apps"] if (float(a.get("rev") or 0) > 0 or _app_profit_trvnd(a) is not None)]
-
-        header_parts = []
-        rev_pct = ""
-        if prev_e["rev"] > 0:
-            d2 = (e["rev"] - prev_e["rev"]) / prev_e["rev"] * 100
-            rev_pct = f" {'📈' if d2 >= 0 else '📉'} {d2:+.1f}%"
-        if e["rev"] > 0:
-            header_parts.append(f"💰 Rev `{_fmt_vnd_from_usd(e['rev'])}`{rev_pct}")
-        if e["spend"] > 0:
-            header_parts.append(f"💸 Spend `{_fmt_vnd_from_usd(e['spend'])}`")
-        if e["has_profit"]:
-            if e["profit_trvnd"] > 0:
-                header_parts.append(f"💚 LÃI `{_fmt_trvnd(e['profit_trvnd'])}`")
-            elif e["profit_trvnd"] < 0:
-                header_parts.append(f"🔻 LỖ `{_fmt_trvnd(e['profit_trvnd'])}`")
-
-        body_lines = ["  ·  ".join(header_parts)]
-        for a in sorted(active, key=lambda x: float(x.get("rev") or 0), reverse=True):
-            ar = float(a.get("rev") or 0)
-            ap = _app_profit_trvnd(a)
-            row = f"   • `{a.get('name','?')[:32]}` — Rev {_fmt_vnd_from_usd(ar)}"
-            if ap is not None:
-                if ap > 0:
-                    row += f"  ·  💚 LÃI {_fmt_trvnd(ap)}"
-                elif ap < 0:
-                    row += f"  ·  🔻 LỖ {_fmt_trvnd(ap)}"
-            body_lines.append(row)
-
+        today_lines.append(f"{meta['emoji']} **{meta['label']}** — {_pl(e['profit_trvnd'])}")
+    if today_lines:
+        value = (f"**Tổng:** {_pl(total_profit)}\n" + "\n".join(today_lines))
         fields.append({
-            "name": f"{meta['emoji']} {meta['label']} — {len(active)} {'app' if len(active) == 1 else 'apps'}",
-            "value": "\n".join(body_lines)[:1024],
+            "name": "💹 Hôm nay",
+            "value": value[:1024],
             "inline": False,
         })
 
-    # Aggregate summary
+    # --- Lãi/Lỗ LŨY KẾ (chỉ partner có đủ data lãi/lỗ) ---
     month_start = d.replace(day=1).isoformat()
-    azura_start = "2026-01-01"
     summary_partners = [
-        ("azura",  azura_start,  f"từ 01/01/2026 → {d.strftime('%d/%m')}"),
-        ("bbl",    month_start,  f"tháng {d.strftime('%m/%Y')}"),
-        ("herond", month_start,  f"tháng {d.strftime('%m/%Y')}"),
-        ("affica", month_start,  f"tháng {d.strftime('%m/%Y')}"),
+        ("azura",  month_start,  f"tháng {d.strftime('%m')}"),
+        ("bbl",    month_start,  f"tháng {d.strftime('%m')}"),
+        ("herond", month_start,  f"tháng {d.strftime('%m')}"),
+        ("affica", month_start,  f"tháng {d.strftime('%m')}"),
     ]
-    summary_lines = []
+    sum_lines = []
     for p, start_iso, label in summary_partners:
         rev, spend, profit, has_profit, days = _sum_range(history, p, start_iso, target)
-        if rev == 0 and not has_profit:
+        if not has_profit:
             continue
         meta = PARTNER_DISPLAY[p]
-        chunks = [f"💰 Rev `{_fmt_vnd_from_usd(rev)}`"]
-        if spend > 0:
-            chunks.append(f"💸 Spend `{_fmt_vnd_from_usd(spend)}`")
-        if has_profit:
-            if profit > 0:
-                chunks.append(f"💚 LÃI `{_fmt_trvnd(profit)}`")
-            elif profit < 0:
-                chunks.append(f"🔻 LỖ `{_fmt_trvnd(profit)}`")
-        summary_lines.append(f"{meta['emoji']} **{meta['label']}** ({label}, {days}d)")
-        summary_lines.append("   " + "  ·  ".join(chunks))
-
-    if summary_lines:
+        sum_lines.append(f"{meta['emoji']} **{meta['label']}** ({label}) — {_pl(profit)}")
+    if sum_lines:
         fields.append({
-            "name": "📅 Thống kê tổng",
-            "value": "\n".join(summary_lines)[:1024],
+            "name": "📅 Lãi / Lỗ lũy kế",
+            "value": "\n".join(sum_lines)[:1024],
             "inline": False,
         })
 
     fields.append({
-        "name": "🔗 Dashboard",
-        "value": "👉 [Xem chi tiết trên Web App](https://admob-revenue-bot.vercel.app/)",
+        "name": "🔗 Chi tiết",
+        "value": "👉 [Doanh thu & từng app trên Web App](https://admob-revenue-bot.vercel.app/)",
         "inline": False,
     })
 
