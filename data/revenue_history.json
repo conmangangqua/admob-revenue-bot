@@ -1,4 +1,63 @@
 {
+  "2026-06-06": {
+    "total": 205.79,
+    "apps": [
+      {
+        "name": "TurboVid",
+        "rev": 0.22,
+        "imp": 60,
+        "ecpm": 3.61
+      },
+      {
+        "name": "Aura-Recover",
+        "rev": 0.46,
+        "imp": 220,
+        "ecpm": 2.09
+      },
+      {
+        "name": "BBL Genify AI Genarator",
+        "rev": 0.22,
+        "imp": 126,
+        "ecpm": 1.75
+      },
+      {
+        "name": "LunaAi-Chat",
+        "rev": 29.6,
+        "imp": 8103,
+        "ecpm": 3.65
+      },
+      {
+        "name": "Quicksave",
+        "rev": 53.39,
+        "imp": 9793,
+        "ecpm": 5.45
+      },
+      {
+        "name": "Sonic - Speaker cleaner",
+        "rev": 22.84,
+        "imp": 3633,
+        "ecpm": 6.29
+      },
+      {
+        "name": "StickerLab",
+        "rev": 85.25,
+        "imp": 28494,
+        "ecpm": 2.99
+      },
+      {
+        "name": "VaultixBrowser",
+        "rev": 13.79,
+        "imp": 2488,
+        "ecpm": 5.54
+      },
+      {
+        "name": "Herond Snapvid",
+        "rev": 0.04,
+        "imp": 60,
+        "ecpm": 0.59
+      }
+    ]
+  },
   "2026-06-05": {
     "total": 1132.19,
     "apps": [
@@ -12153,107 +12212,6 @@
           "total_rev_vnd": "0.003",
           "cost_vnd": "0.0",
           "marketing_profit_vnd": "0.003",
-          "profit_pct_sheet": "100%"
-        }
-      }
-    ]
-  },
-  "2026-06-06": {
-    "total": 702.3,
-    "apps": [
-      {
-        "name": "B122 - RhythmLab Beat Maker Pro",
-        "rev": 21.5,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 24.79,
-        "sheet_data": {
-          "total_rev_vnd": "0.559",
-          "cost_vnd": "0.645",
-          "marketing_profit_vnd": "-0.086",
-          "profit_pct_sheet": "-15%"
-        }
-      },
-      {
-        "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 194.1,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 119.19,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 32.69,
-        "sheet_data": {
-          "total_rev_vnd": "5.047",
-          "cost_vnd": "3.949",
-          "marketing_profit_vnd": "1.098",
-          "profit_pct_sheet": "22%"
-        }
-      },
-      {
-        "name": "B098 - AI Art",
-        "rev": 61.9,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 52.29,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 30.58,
-        "sheet_data": {
-          "total_rev_vnd": "1.609",
-          "cost_vnd": "2.155",
-          "marketing_profit_vnd": "-0.545",
-          "profit_pct_sheet": "-34%"
-        }
-      },
-      {
-        "name": "B097 - Digital Cam",
-        "rev": 97.3,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 49.96,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 73.52,
-        "sheet_data": {
-          "total_rev_vnd": "2.53",
-          "cost_vnd": "3.21",
-          "marketing_profit_vnd": "-0.681",
-          "profit_pct_sheet": "-27%"
-        }
-      },
-      {
-        "name": "B087 - GBA",
-        "rev": 325.9,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 232.39,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 12.57,
-        "sheet_data": {
-          "total_rev_vnd": "8.473",
-          "cost_vnd": "6.369",
-          "marketing_profit_vnd": "2.104",
-          "profit_pct_sheet": "25%"
-        }
-      },
-      {
-        "name": "B081 - Video downloader 3",
-        "rev": 1.6,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.042",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.042",
           "profit_pct_sheet": "100%"
         }
       }
