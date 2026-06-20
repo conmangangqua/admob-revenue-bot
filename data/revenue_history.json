@@ -1,4 +1,69 @@
 {
+  "2026-06-19": {
+    "total": 4277.79,
+    "apps": [
+      {
+        "name": "TurboVid",
+        "rev": 0.8,
+        "imp": 128,
+        "ecpm": 6.26
+      },
+      {
+        "name": "Aura-Recover",
+        "rev": 20.03,
+        "imp": 1355,
+        "ecpm": 14.78
+      },
+      {
+        "name": "BBL Genify AI Genarator",
+        "rev": 663.68,
+        "imp": 131582,
+        "ecpm": 5.04
+      },
+      {
+        "name": "GoalArena",
+        "rev": 0.3,
+        "imp": 17,
+        "ecpm": 17.84
+      },
+      {
+        "name": "LunaAi-Chat",
+        "rev": 116.2,
+        "imp": 12077,
+        "ecpm": 9.62
+      },
+      {
+        "name": "Onyx Browser",
+        "rev": 2357.66,
+        "imp": 205092,
+        "ecpm": 11.5
+      },
+      {
+        "name": "QuickSave",
+        "rev": 16.33,
+        "imp": 4034,
+        "ecpm": 4.05
+      },
+      {
+        "name": "ScoreDeck",
+        "rev": 1.46,
+        "imp": 106,
+        "ecpm": 13.77
+      },
+      {
+        "name": "Sonic - Speaker cleaner",
+        "rev": 42.7,
+        "imp": 6620,
+        "ecpm": 6.45
+      },
+      {
+        "name": "VaultixBrowser",
+        "rev": 1058.62,
+        "imp": 113493,
+        "ecpm": 9.33
+      }
+    ]
+  },
   "2026-06-18": {
     "total": 4814.18,
     "apps": [
@@ -14204,107 +14269,6 @@
           "total_rev_vnd": "0.003",
           "cost_vnd": "0.0",
           "marketing_profit_vnd": "0.003",
-          "profit_pct_sheet": "100%"
-        }
-      }
-    ]
-  },
-  "2026-06-19": {
-    "total": 525.5,
-    "apps": [
-      {
-        "name": "B122 - RhythmLab Beat Maker Pro",
-        "rev": 43.1,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 34.83,
-        "sheet_data": {
-          "total_rev_vnd": "1.121",
-          "cost_vnd": "0.906",
-          "marketing_profit_vnd": "0.215",
-          "profit_pct_sheet": "19%"
-        }
-      },
-      {
-        "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 358.0,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 282.52,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "9.308",
-          "cost_vnd": "7.346",
-          "marketing_profit_vnd": "1.962",
-          "profit_pct_sheet": "21%"
-        }
-      },
-      {
-        "name": "B098 - AI Art",
-        "rev": 5.4,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.14",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.14",
-          "profit_pct_sheet": "100%"
-        }
-      },
-      {
-        "name": "B097 - Digital Cam",
-        "rev": 72.5,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 25.36,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 42.09,
-        "sheet_data": {
-          "total_rev_vnd": "1.885",
-          "cost_vnd": "1.754",
-          "marketing_profit_vnd": "0.131",
-          "profit_pct_sheet": "7%"
-        }
-      },
-      {
-        "name": "B087 - GBA",
-        "rev": 44.5,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 37.53,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "1.157",
-          "cost_vnd": "0.976",
-          "marketing_profit_vnd": "0.181",
-          "profit_pct_sheet": "16%"
-        }
-      },
-      {
-        "name": "B081 - Video downloader 3",
-        "rev": 2.0,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.052",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.052",
           "profit_pct_sheet": "100%"
         }
       }
