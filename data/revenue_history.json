@@ -1,4 +1,75 @@
 {
+  "2026-06-20": {
+    "total": 4201.28,
+    "apps": [
+      {
+        "name": "TurboVid",
+        "rev": 0.66,
+        "imp": 115,
+        "ecpm": 5.74
+      },
+      {
+        "name": "Aura-Recover",
+        "rev": 10.5,
+        "imp": 1079,
+        "ecpm": 9.74
+      },
+      {
+        "name": "BBL Genify AI Genarator",
+        "rev": 744.56,
+        "imp": 221206,
+        "ecpm": 3.37
+      },
+      {
+        "name": "GoalArena",
+        "rev": 0.02,
+        "imp": 6,
+        "ecpm": 2.65
+      },
+      {
+        "name": "LunaAi-Chat",
+        "rev": 1079.54,
+        "imp": 230733,
+        "ecpm": 4.68
+      },
+      {
+        "name": "Onyx Browser",
+        "rev": 2260.29,
+        "imp": 276481,
+        "ecpm": 8.18
+      },
+      {
+        "name": "QuickSave",
+        "rev": 20.9,
+        "imp": 4350,
+        "ecpm": 4.81
+      },
+      {
+        "name": "Rollicon3D",
+        "rev": 0.08,
+        "imp": 6,
+        "ecpm": 13.98
+      },
+      {
+        "name": "ScoreDeck",
+        "rev": 0.51,
+        "imp": 152,
+        "ecpm": 3.36
+      },
+      {
+        "name": "Sonic - Speaker cleaner",
+        "rev": 28.12,
+        "imp": 3776,
+        "ecpm": 7.45
+      },
+      {
+        "name": "VaultixBrowser",
+        "rev": 56.09,
+        "imp": 15997,
+        "ecpm": 3.51
+      }
+    ]
+  },
   "2026-06-19": {
     "total": 4892.78,
     "apps": [
@@ -14365,107 +14436,6 @@
           "total_rev_vnd": "0.003",
           "cost_vnd": "0.0",
           "marketing_profit_vnd": "0.003",
-          "profit_pct_sheet": "100%"
-        }
-      }
-    ]
-  },
-  "2026-06-20": {
-    "total": 552.0,
-    "apps": [
-      {
-        "name": "B122 - RhythmLab Beat Maker Pro",
-        "rev": 40.3,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 49.2,
-        "sheet_data": {
-          "total_rev_vnd": "1.048",
-          "cost_vnd": "1.279",
-          "marketing_profit_vnd": "-0.231",
-          "profit_pct_sheet": "-22%"
-        }
-      },
-      {
-        "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 340.3,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 292.77,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "8.848",
-          "cost_vnd": "7.612",
-          "marketing_profit_vnd": "1.236",
-          "profit_pct_sheet": "14%"
-        }
-      },
-      {
-        "name": "B098 - AI Art",
-        "rev": 6.6,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.172",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.172",
-          "profit_pct_sheet": "100%"
-        }
-      },
-      {
-        "name": "B097 - Digital Cam",
-        "rev": 54.1,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 26.46,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 40.73,
-        "sheet_data": {
-          "total_rev_vnd": "1.407",
-          "cost_vnd": "1.747",
-          "marketing_profit_vnd": "-0.34",
-          "profit_pct_sheet": "-24%"
-        }
-      },
-      {
-        "name": "B087 - GBA",
-        "rev": 109.0,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 92.1,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "2.834",
-          "cost_vnd": "2.395",
-          "marketing_profit_vnd": "0.439",
-          "profit_pct_sheet": "16%"
-        }
-      },
-      {
-        "name": "B081 - Video downloader 3",
-        "rev": 1.7,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.044",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.044",
           "profit_pct_sheet": "100%"
         }
       }
