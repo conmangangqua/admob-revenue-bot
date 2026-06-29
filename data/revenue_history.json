@@ -1,4 +1,75 @@
 {
+  "2026-06-28": {
+    "total": 699.76,
+    "apps": [
+      {
+        "name": "ADC Media TurboVid",
+        "rev": 125.3,
+        "imp": 16348,
+        "ecpm": 7.66
+      },
+      {
+        "name": "BBL Aura-Recover",
+        "rev": 6.13,
+        "imp": 269,
+        "ecpm": 22.79
+      },
+      {
+        "name": "BBL Genify AI Genarator",
+        "rev": 225.64,
+        "imp": 68608,
+        "ecpm": 3.29
+      },
+      {
+        "name": "BBL GoalArena",
+        "rev": 6.45,
+        "imp": 1672,
+        "ecpm": 3.86
+      },
+      {
+        "name": "Affica LunaAI Chat",
+        "rev": 228.06,
+        "imp": 40273,
+        "ecpm": 5.66
+      },
+      {
+        "name": "Onyx Browser",
+        "rev": 17.62,
+        "imp": 7263,
+        "ecpm": 2.43
+      },
+      {
+        "name": "BBL Quick Save",
+        "rev": 10.14,
+        "imp": 3698,
+        "ecpm": 2.74
+      },
+      {
+        "name": "BBL ScoreDeck",
+        "rev": 0.11,
+        "imp": 13,
+        "ecpm": 8.41
+      },
+      {
+        "name": "NTech Sonic - Speaker cleaner",
+        "rev": 16.76,
+        "imp": 5098,
+        "ecpm": 3.29
+      },
+      {
+        "name": "NTech StickerLab",
+        "rev": 53.88,
+        "imp": 12117,
+        "ecpm": 4.45
+      },
+      {
+        "name": "VaultixBrowser",
+        "rev": 9.66,
+        "imp": 3657,
+        "ecpm": 2.64
+      }
+    ]
+  },
   "2026-06-27": {
     "total": 1394.59,
     "apps": [
