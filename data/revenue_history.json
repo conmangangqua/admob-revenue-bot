@@ -1,118 +1,78 @@
 {
   "2026-07-03": {
-    "total": 279.8,
+    "total": 248.53,
     "apps": [
       {
-        "name": "B136 - FPS Booster",
-        "rev": 2.3,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.06",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.06",
-          "profit_pct_sheet": "100%"
-        }
+        "name": "ADC Media TurboVid",
+        "rev": 0.9,
+        "imp": 244,
+        "ecpm": 3.67
       },
       {
-        "name": "B122 - RhythmLab Beat Maker Pro",
-        "rev": 39.6,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 3.92,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.01,
-        "facebook_spend": 41.78,
-        "sheet_data": {
-          "total_rev_vnd": "1.03",
-          "cost_vnd": "1.189",
-          "marketing_profit_vnd": "-0.159",
-          "profit_pct_sheet": "-15%"
-        }
+        "name": "BBL Aura-Recover",
+        "rev": 6.26,
+        "imp": 220,
+        "ecpm": 28.43
       },
       {
-        "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 131.8,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 105.59,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "3.427",
-          "cost_vnd": "2.745",
-          "marketing_profit_vnd": "0.682",
-          "profit_pct_sheet": "20%"
-        }
+        "name": "BBL Genify AI Genarator",
+        "rev": 165.06,
+        "imp": 46206,
+        "ecpm": 3.57
       },
       {
-        "name": "B098 - AI Art",
-        "rev": 12.0,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 6.06,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 16.5,
-        "sheet_data": {
-          "total_rev_vnd": "0.312",
-          "cost_vnd": "0.586",
-          "marketing_profit_vnd": "-0.274",
-          "profit_pct_sheet": "-88%"
-        }
+        "name": "BBL GoalArena",
+        "rev": 6.41,
+        "imp": 1544,
+        "ecpm": 4.15
       },
       {
-        "name": "B097 - Digital Cam",
-        "rev": 2.9,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.075",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.075",
-          "profit_pct_sheet": "100%"
-        }
+        "name": "Affica LunaAI Chat",
+        "rev": 31.1,
+        "imp": 7045,
+        "ecpm": 4.41
       },
       {
-        "name": "B087 - GBA",
-        "rev": 90.4,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 79.28,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "2.35",
-          "cost_vnd": "2.061",
-          "marketing_profit_vnd": "0.289",
-          "profit_pct_sheet": "12%"
-        }
+        "name": "Onyx Browser",
+        "rev": 10.96,
+        "imp": 5587,
+        "ecpm": 1.96
       },
       {
-        "name": "B081 - Video downloader 3",
-        "rev": 0.8,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.021",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.021",
-          "profit_pct_sheet": "100%"
-        }
+        "name": "BBL Quick Save",
+        "rev": 11.97,
+        "imp": 3491,
+        "ecpm": 3.43
+      },
+      {
+        "name": "NTech Rollicon3D",
+        "rev": 0.06,
+        "imp": 35,
+        "ecpm": 1.58
+      },
+      {
+        "name": "BBL PitchSide",
+        "rev": 0.01,
+        "imp": 11,
+        "ecpm": 1.19
+      },
+      {
+        "name": "NTech Sonic - Speaker cleaner",
+        "rev": 1.47,
+        "imp": 633,
+        "ecpm": 2.33
+      },
+      {
+        "name": "NTech StickerLab",
+        "rev": 7.55,
+        "imp": 1755,
+        "ecpm": 4.3
+      },
+      {
+        "name": "VaultixBrowser",
+        "rev": 6.79,
+        "imp": 3423,
+        "ecpm": 1.98
       }
     ]
   },
