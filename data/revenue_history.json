@@ -1,10 +1,10 @@
 {
   "2026-07-08": {
-    "total": 161.5,
+    "total": 187.8,
     "apps": [
       {
         "name": "B136 - FPS Booster",
-        "rev": 1.8,
+        "rev": 2.1,
         "imp": 0,
         "ecpm": 0,
         "google_spend": 0.0,
@@ -12,15 +12,15 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "0.047",
+          "total_rev_vnd": "0.055",
           "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.047",
+          "marketing_profit_vnd": "0.055",
           "profit_pct_sheet": "100%"
         }
       },
       {
         "name": "B122 - RhythmLab Beat Maker Pro",
-        "rev": 3.3,
+        "rev": 3.6,
         "imp": 0,
         "ecpm": 0,
         "google_spend": 0.0,
@@ -28,47 +28,47 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "0.086",
+          "total_rev_vnd": "0.094",
           "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.086",
+          "marketing_profit_vnd": "0.094",
           "profit_pct_sheet": "100%"
         }
       },
       {
         "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 112.2,
+        "rev": 132.9,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 95.3,
+        "google_spend": 116.62,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "2.917",
-          "cost_vnd": "2.478",
-          "marketing_profit_vnd": "0.439",
-          "profit_pct_sheet": "15%"
+          "total_rev_vnd": "3.455",
+          "cost_vnd": "3.032",
+          "marketing_profit_vnd": "0.423",
+          "profit_pct_sheet": "12%"
         }
       },
       {
         "name": "B098 - AI Art",
-        "rev": 4.4,
+        "rev": 5.0,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 10.52,
+        "google_spend": 10.59,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "0.114",
-          "cost_vnd": "0.273",
-          "marketing_profit_vnd": "-0.159",
-          "profit_pct_sheet": "-139%"
+          "total_rev_vnd": "0.13",
+          "cost_vnd": "0.275",
+          "marketing_profit_vnd": "-0.145",
+          "profit_pct_sheet": "-112%"
         }
       },
       {
         "name": "B097 - Digital Cam",
-        "rev": 1.9,
+        "rev": 2.2,
         "imp": 0,
         "ecpm": 0,
         "google_spend": 0.0,
@@ -76,31 +76,31 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "0.049",
+          "total_rev_vnd": "0.057",
           "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.049",
+          "marketing_profit_vnd": "0.057",
           "profit_pct_sheet": "100%"
         }
       },
       {
         "name": "B087 - GBA",
-        "rev": 36.6,
+        "rev": 40.4,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 39.64,
+        "google_spend": 41.54,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "0.952",
-          "cost_vnd": "1.031",
-          "marketing_profit_vnd": "-0.079",
-          "profit_pct_sheet": "-8%"
+          "total_rev_vnd": "1.05",
+          "cost_vnd": "1.08",
+          "marketing_profit_vnd": "-0.03",
+          "profit_pct_sheet": "-3%"
         }
       },
       {
         "name": "B081 - Video downloader 3",
-        "rev": 1.3,
+        "rev": 1.6,
         "imp": 0,
         "ecpm": 0,
         "google_spend": 0.0,
@@ -108,9 +108,9 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "0.034",
+          "total_rev_vnd": "0.042",
           "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.034",
+          "marketing_profit_vnd": "0.042",
           "profit_pct_sheet": "100%"
         }
       }
@@ -276,7 +276,7 @@
         "rev": 39.9,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 40.21,
+        "google_spend": 40.19,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
@@ -18204,6 +18204,123 @@
           "total_rev_vnd": "0.003",
           "cost_vnd": "0.0",
           "marketing_profit_vnd": "0.003",
+          "profit_pct_sheet": "100%"
+        }
+      }
+    ]
+  },
+  "2026-07-09": {
+    "total": 43.1,
+    "apps": [
+      {
+        "name": "B136 - FPS Booster",
+        "rev": 0.4,
+        "imp": 0,
+        "ecpm": 0,
+        "google_spend": 0.0,
+        "mintegral_spend": 0.0,
+        "tiktok_spend": 0.0,
+        "facebook_spend": 0.0,
+        "sheet_data": {
+          "total_rev_vnd": "0.01",
+          "cost_vnd": "0.0",
+          "marketing_profit_vnd": "0.01",
+          "profit_pct_sheet": "100%"
+        }
+      },
+      {
+        "name": "B122 - RhythmLab Beat Maker Pro",
+        "rev": 0.6,
+        "imp": 0,
+        "ecpm": 0,
+        "google_spend": 0.0,
+        "mintegral_spend": 0.0,
+        "tiktok_spend": 0.0,
+        "facebook_spend": 0.0,
+        "sheet_data": {
+          "total_rev_vnd": "0.016",
+          "cost_vnd": "0.0",
+          "marketing_profit_vnd": "0.016",
+          "profit_pct_sheet": "100%"
+        }
+      },
+      {
+        "name": "B117 - SonicBooster: Volume Booster",
+        "rev": 31.7,
+        "imp": 0,
+        "ecpm": 0,
+        "google_spend": 0.0,
+        "mintegral_spend": 0.0,
+        "tiktok_spend": 0.0,
+        "facebook_spend": 0.0,
+        "sheet_data": {
+          "total_rev_vnd": "0.824",
+          "cost_vnd": "0.0",
+          "marketing_profit_vnd": "0.824",
+          "profit_pct_sheet": "100%"
+        }
+      },
+      {
+        "name": "B098 - AI Art",
+        "rev": 0.8,
+        "imp": 0,
+        "ecpm": 0,
+        "google_spend": 0.0,
+        "mintegral_spend": 0.0,
+        "tiktok_spend": 0.0,
+        "facebook_spend": 0.0,
+        "sheet_data": {
+          "total_rev_vnd": "0.021",
+          "cost_vnd": "0.0",
+          "marketing_profit_vnd": "0.021",
+          "profit_pct_sheet": "100%"
+        }
+      },
+      {
+        "name": "B097 - Digital Cam",
+        "rev": 1.8,
+        "imp": 0,
+        "ecpm": 0,
+        "google_spend": 0.0,
+        "mintegral_spend": 0.0,
+        "tiktok_spend": 0.0,
+        "facebook_spend": 0.0,
+        "sheet_data": {
+          "total_rev_vnd": "0.047",
+          "cost_vnd": "0.0",
+          "marketing_profit_vnd": "0.047",
+          "profit_pct_sheet": "100%"
+        }
+      },
+      {
+        "name": "B087 - GBA",
+        "rev": 7.5,
+        "imp": 0,
+        "ecpm": 0,
+        "google_spend": 0.0,
+        "mintegral_spend": 0.0,
+        "tiktok_spend": 0.0,
+        "facebook_spend": 0.0,
+        "sheet_data": {
+          "total_rev_vnd": "0.195",
+          "cost_vnd": "0.0",
+          "marketing_profit_vnd": "0.195",
+          "profit_pct_sheet": "100%"
+        }
+      },
+      {
+        "name": "B081 - Video downloader 3",
+        "rev": 0.3,
+        "imp": 0,
+        "ecpm": 0,
+        "google_spend": 0.0,
+        "mintegral_spend": 0.0,
+        "tiktok_spend": 0.0,
+        "facebook_spend": 0.0,
+        "sheet_data": {
+          "total_rev_vnd": "0.008",
+          "cost_vnd": "0.0",
+          "marketing_profit_vnd": "0.008",
           "profit_pct_sheet": "100%"
         }
       }
