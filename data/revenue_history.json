@@ -58,12 +58,12 @@
         "google_spend": 0.0,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
-        "facebook_spend": 1.89,
+        "facebook_spend": 1.92,
         "sheet_data": {
           "total_rev_vnd": "0.016",
-          "cost_vnd": "0.049",
+          "cost_vnd": "0.05",
           "marketing_profit_vnd": "-0.034",
-          "profit_pct_sheet": "-215%"
+          "profit_pct_sheet": "-220%"
         }
       },
       {
@@ -1405,7 +1405,7 @@
         "sheet_data": {
           "total_rev_vnd": "0.874",
           "cost_vnd": "0.773",
-          "marketing_profit_vnd": "0.1",
+          "marketing_profit_vnd": "0.101",
           "profit_pct_sheet": "12%"
         }
       },
