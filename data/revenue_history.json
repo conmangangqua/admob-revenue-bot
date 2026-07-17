@@ -471,14 +471,14 @@
         "rev": 305.2,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 327.66,
+        "google_spend": 327.33,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "7.935",
-          "cost_vnd": "8.519",
-          "marketing_profit_vnd": "-0.584",
+          "cost_vnd": "8.511",
+          "marketing_profit_vnd": "-0.575",
           "profit_pct_sheet": "-7%"
         }
       },
@@ -519,15 +519,15 @@
         "rev": 57.4,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 33.02,
+        "google_spend": 32.97,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "1.492",
-          "cost_vnd": "0.859",
-          "marketing_profit_vnd": "0.634",
-          "profit_pct_sheet": "42%"
+          "cost_vnd": "0.857",
+          "marketing_profit_vnd": "0.635",
+          "profit_pct_sheet": "43%"
         }
       },
       {
@@ -549,7 +549,7 @@
     ]
   },
   "2026-07-13": {
-    "total": 544.11,
+    "total": 542.91,
     "apps": [
       {
         "name": "ADC Media TurboVid",
@@ -657,17 +657,17 @@
       },
       {
         "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 256.1,
+        "rev": 255.3,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 292.2,
+        "google_spend": 292.19,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "6.659",
+          "total_rev_vnd": "6.638",
           "cost_vnd": "7.597",
-          "marketing_profit_vnd": "-0.939",
+          "marketing_profit_vnd": "-0.959",
           "profit_pct_sheet": "-14%"
         }
       },
@@ -689,7 +689,7 @@
       },
       {
         "name": "B097 - Digital Cam",
-        "rev": 2.3,
+        "rev": 2.2,
         "imp": 0,
         "ecpm": 0,
         "google_spend": 0.0,
@@ -697,26 +697,26 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "0.06",
+          "total_rev_vnd": "0.057",
           "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.06",
+          "marketing_profit_vnd": "0.057",
           "profit_pct_sheet": "100%"
         }
       },
       {
         "name": "B087 - GBA",
-        "rev": 50.6,
+        "rev": 50.3,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 23.95,
+        "google_spend": 23.94,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "1.316",
+          "total_rev_vnd": "1.308",
           "cost_vnd": "0.623",
-          "marketing_profit_vnd": "0.693",
-          "profit_pct_sheet": "53%"
+          "marketing_profit_vnd": "0.685",
+          "profit_pct_sheet": "52%"
         }
       },
       {
@@ -738,7 +738,7 @@
     ]
   },
   "2026-07-12": {
-    "total": 512.0,
+    "total": 511.4,
     "apps": [
       {
         "name": "ADC Media TurboVid",
@@ -830,7 +830,7 @@
       },
       {
         "name": "B122 - RhythmLab Beat Maker Pro",
-        "rev": 2.2,
+        "rev": 2.1,
         "imp": 0,
         "ecpm": 0,
         "google_spend": 0.0,
@@ -838,15 +838,15 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "0.057",
+          "total_rev_vnd": "0.055",
           "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.057",
+          "marketing_profit_vnd": "0.055",
           "profit_pct_sheet": "100%"
         }
       },
       {
         "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 217.7,
+        "rev": 217.4,
         "imp": 0,
         "ecpm": 0,
         "google_spend": 155.63,
@@ -854,15 +854,15 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "5.66",
+          "total_rev_vnd": "5.652",
           "cost_vnd": "4.046",
-          "marketing_profit_vnd": "1.614",
-          "profit_pct_sheet": "29%"
+          "marketing_profit_vnd": "1.606",
+          "profit_pct_sheet": "28%"
         }
       },
       {
         "name": "B098 - AI Art",
-        "rev": 11.2,
+        "rev": 11.1,
         "imp": 0,
         "ecpm": 0,
         "google_spend": 0.79,
@@ -870,10 +870,10 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 15.95,
         "sheet_data": {
-          "total_rev_vnd": "0.291",
+          "total_rev_vnd": "0.289",
           "cost_vnd": "0.435",
-          "marketing_profit_vnd": "-0.144",
-          "profit_pct_sheet": "-50%"
+          "marketing_profit_vnd": "-0.147",
+          "profit_pct_sheet": "-51%"
         }
       },
       {
@@ -894,7 +894,7 @@
       },
       {
         "name": "B087 - GBA",
-        "rev": 50.3,
+        "rev": 50.2,
         "imp": 0,
         "ecpm": 0,
         "google_spend": 20.75,
@@ -902,9 +902,9 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "1.308",
+          "total_rev_vnd": "1.305",
           "cost_vnd": "0.54",
-          "marketing_profit_vnd": "0.768",
+          "marketing_profit_vnd": "0.766",
           "profit_pct_sheet": "59%"
         }
       },
