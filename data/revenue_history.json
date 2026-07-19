@@ -1,4 +1,81 @@
 {
+  "2026-07-18": {
+    "total": 329.26,
+    "apps": [
+      {
+        "name": "ADC Media TurboVid",
+        "rev": 68.16,
+        "imp": 5241,
+        "ecpm": 13.01
+      },
+      {
+        "name": "BBL Aura-Recover",
+        "rev": 0.08,
+        "imp": 26,
+        "ecpm": 3.17
+      },
+      {
+        "name": "BBL Genify AI Genarator",
+        "rev": 92.85,
+        "imp": 26607,
+        "ecpm": 3.49
+      },
+      {
+        "name": "BBL GoalArena",
+        "rev": 0.2,
+        "imp": 86,
+        "ecpm": 2.32
+      },
+      {
+        "name": "Affica LunaAI Chat",
+        "rev": 107.48,
+        "imp": 22936,
+        "ecpm": 4.69
+      },
+      {
+        "name": "Onyx Browser",
+        "rev": 0.0,
+        "imp": 1,
+        "ecpm": 2.39
+      },
+      {
+        "name": "BBL Quick Save",
+        "rev": 8.33,
+        "imp": 2566,
+        "ecpm": 3.25
+      },
+      {
+        "name": "NTech Rollicon3D",
+        "rev": 14.78,
+        "imp": 17798,
+        "ecpm": 0.83
+      },
+      {
+        "name": "NTech Sonic - Speaker cleaner",
+        "rev": 0.81,
+        "imp": 305,
+        "ecpm": 2.65
+      },
+      {
+        "name": "NTech StickerLab",
+        "rev": 29.13,
+        "imp": 3930,
+        "ecpm": 7.41
+      },
+      {
+        "name": "VaultixBrowser",
+        "rev": 2.52,
+        "imp": 1625,
+        "ecpm": 1.55
+      },
+      {
+        "name": "Affica Dramio",
+        "rev": 4.92,
+        "imp": 2564,
+        "ecpm": 1.92
+      }
+    ]
+  },
   "2026-07-17": {
     "total": 279.57,
     "apps": [
@@ -19863,27 +19940,6 @@
           "total_rev_vnd": "0.003",
           "cost_vnd": "0.0",
           "marketing_profit_vnd": "0.003",
-          "profit_pct_sheet": "100%"
-        }
-      }
-    ]
-  },
-  "2026-07-18": {
-    "total": 0.2,
-    "apps": [
-      {
-        "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 0.2,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.005",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.005",
           "profit_pct_sheet": "100%"
         }
       }
