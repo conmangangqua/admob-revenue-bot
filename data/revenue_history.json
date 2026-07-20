@@ -766,14 +766,14 @@
         "rev": 305.1,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 326.87,
+        "google_spend": 326.82,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "7.933",
-          "cost_vnd": "8.499",
-          "marketing_profit_vnd": "-0.566",
+          "cost_vnd": "8.497",
+          "marketing_profit_vnd": "-0.565",
           "profit_pct_sheet": "-7%"
         }
       },
@@ -814,14 +814,14 @@
         "rev": 57.3,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 32.42,
+        "google_spend": 32.38,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "1.49",
-          "cost_vnd": "0.843",
-          "marketing_profit_vnd": "0.647",
+          "cost_vnd": "0.842",
+          "marketing_profit_vnd": "0.648",
           "profit_pct_sheet": "43%"
         }
       },
@@ -955,13 +955,13 @@
         "rev": 255.2,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 291.76,
+        "google_spend": 291.72,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "6.635",
-          "cost_vnd": "7.586",
+          "cost_vnd": "7.585",
           "marketing_profit_vnd": "-0.95",
           "profit_pct_sheet": "-14%"
         }
@@ -1009,7 +1009,7 @@
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "1.305",
-          "cost_vnd": "0.596",
+          "cost_vnd": "0.595",
           "marketing_profit_vnd": "0.71",
           "profit_pct_sheet": "54%"
         }
@@ -2089,14 +2089,14 @@
         "rev": 138.2,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 102.23,
+        "google_spend": 102.21,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "3.593",
-          "cost_vnd": "2.658",
-          "marketing_profit_vnd": "0.935",
+          "cost_vnd": "2.657",
+          "marketing_profit_vnd": "0.936",
           "profit_pct_sheet": "26%"
         }
       },
@@ -2105,15 +2105,15 @@
         "rev": 14.7,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 11.0,
+        "google_spend": 10.85,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 2.78,
         "sheet_data": {
           "total_rev_vnd": "0.382",
-          "cost_vnd": "0.358",
-          "marketing_profit_vnd": "0.024",
-          "profit_pct_sheet": "6%"
+          "cost_vnd": "0.354",
+          "marketing_profit_vnd": "0.028",
+          "profit_pct_sheet": "7%"
         }
       },
       {
@@ -2137,14 +2137,14 @@
         "rev": 39.9,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 38.75,
+        "google_spend": 38.52,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "1.037",
-          "cost_vnd": "1.008",
-          "marketing_profit_vnd": "0.03",
+          "cost_vnd": "1.001",
+          "marketing_profit_vnd": "0.036",
           "profit_pct_sheet": "3%"
         }
       },
@@ -2268,7 +2268,7 @@
         "facebook_spend": 37.64,
         "sheet_data": {
           "total_rev_vnd": "0.868",
-          "cost_vnd": "1.113",
+          "cost_vnd": "1.112",
           "marketing_profit_vnd": "-0.244",
           "profit_pct_sheet": "-28%"
         }
@@ -2278,14 +2278,14 @@
         "rev": 146.6,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 133.77,
+        "google_spend": 133.66,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "3.812",
-          "cost_vnd": "3.478",
-          "marketing_profit_vnd": "0.334",
+          "cost_vnd": "3.475",
+          "marketing_profit_vnd": "0.336",
           "profit_pct_sheet": "9%"
         }
       },
@@ -2294,14 +2294,14 @@
         "rev": 34.4,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 27.16,
+        "google_spend": 27.0,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 16.29,
         "sheet_data": {
           "total_rev_vnd": "0.894",
-          "cost_vnd": "1.13",
-          "marketing_profit_vnd": "-0.235",
+          "cost_vnd": "1.126",
+          "marketing_profit_vnd": "-0.231",
           "profit_pct_sheet": "-26%"
         }
       },
@@ -2326,15 +2326,15 @@
         "rev": 38.9,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 41.86,
+        "google_spend": 41.42,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "1.011",
-          "cost_vnd": "1.088",
-          "marketing_profit_vnd": "-0.077",
-          "profit_pct_sheet": "-8%"
+          "cost_vnd": "1.077",
+          "marketing_profit_vnd": "-0.065",
+          "profit_pct_sheet": "-6%"
         }
       },
       {
@@ -2461,14 +2461,14 @@
         "rev": 169.3,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 186.64,
+        "google_spend": 186.51,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "4.402",
-          "cost_vnd": "4.853",
-          "marketing_profit_vnd": "-0.451",
+          "cost_vnd": "4.849",
+          "marketing_profit_vnd": "-0.447",
           "profit_pct_sheet": "-10%"
         }
       },
@@ -2477,13 +2477,13 @@
         "rev": 13.1,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 4.27,
+        "google_spend": 4.25,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 6.26,
         "sheet_data": {
           "total_rev_vnd": "0.341",
-          "cost_vnd": "0.274",
+          "cost_vnd": "0.273",
           "marketing_profit_vnd": "0.067",
           "profit_pct_sheet": "20%"
         }
@@ -2509,14 +2509,14 @@
         "rev": 66.9,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 53.57,
+        "google_spend": 53.47,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "1.739",
-          "cost_vnd": "1.393",
-          "marketing_profit_vnd": "0.347",
+          "cost_vnd": "1.39",
+          "marketing_profit_vnd": "0.349",
           "profit_pct_sheet": "20%"
         }
       },
