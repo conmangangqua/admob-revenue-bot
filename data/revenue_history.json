@@ -1,4 +1,81 @@
 {
+  "2026-07-19": {
+    "total": 321.98,
+    "apps": [
+      {
+        "name": "ADC Media TurboVid",
+        "rev": 48.74,
+        "imp": 3498,
+        "ecpm": 13.93
+      },
+      {
+        "name": "BBL Aura-Recover",
+        "rev": 0.08,
+        "imp": 12,
+        "ecpm": 6.68
+      },
+      {
+        "name": "BBL Genify AI Genarator",
+        "rev": 74.28,
+        "imp": 23728,
+        "ecpm": 3.13
+      },
+      {
+        "name": "BBL GoalArena",
+        "rev": 0.28,
+        "imp": 101,
+        "ecpm": 2.76
+      },
+      {
+        "name": "Affica LunaAI Chat",
+        "rev": 148.39,
+        "imp": 40316,
+        "ecpm": 3.68
+      },
+      {
+        "name": "Onyx Browser",
+        "rev": 0.0,
+        "imp": 4,
+        "ecpm": 0.25
+      },
+      {
+        "name": "BBL Quick Save",
+        "rev": 9.43,
+        "imp": 2835,
+        "ecpm": 3.33
+      },
+      {
+        "name": "NTech Rollicon3D",
+        "rev": 12.23,
+        "imp": 17959,
+        "ecpm": 0.68
+      },
+      {
+        "name": "NTech Sonic - Speaker cleaner",
+        "rev": 0.48,
+        "imp": 202,
+        "ecpm": 2.38
+      },
+      {
+        "name": "NTech StickerLab",
+        "rev": 21.81,
+        "imp": 3333,
+        "ecpm": 6.54
+      },
+      {
+        "name": "VaultixBrowser",
+        "rev": 2.15,
+        "imp": 1382,
+        "ecpm": 1.55
+      },
+      {
+        "name": "Affica Dramio",
+        "rev": 4.12,
+        "imp": 3040,
+        "ecpm": 1.35
+      }
+    ]
+  },
   "2026-07-18": {
     "total": 329.46,
     "apps": [
@@ -19957,43 +20034,6 @@
           "cost_vnd": "0.0",
           "marketing_profit_vnd": "0.003",
           "profit_pct_sheet": "100%"
-        }
-      }
-    ]
-  },
-  "2026-07-19": {
-    "total": 0.1,
-    "apps": [
-      {
-        "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 0.1,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.003",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.003",
-          "profit_pct_sheet": "100%"
-        }
-      },
-      {
-        "name": "B081 - Video downloader 3",
-        "rev": 0.0,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.0",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.0",
-          "profit_pct_sheet": "0%"
         }
       }
     ]
