@@ -1,4 +1,75 @@
 {
+  "2026-07-20": {
+    "total": 466.12,
+    "apps": [
+      {
+        "name": "ADC Media TurboVid",
+        "rev": 3.86,
+        "imp": 436,
+        "ecpm": 8.85
+      },
+      {
+        "name": "BBL Aura-Recover",
+        "rev": 0.23,
+        "imp": 20,
+        "ecpm": 11.61
+      },
+      {
+        "name": "BBL Genify AI Genarator",
+        "rev": 47.72,
+        "imp": 22432,
+        "ecpm": 2.13
+      },
+      {
+        "name": "BBL GoalArena",
+        "rev": 0.05,
+        "imp": 30,
+        "ecpm": 1.74
+      },
+      {
+        "name": "Affica LunaAI Chat",
+        "rev": 362.23,
+        "imp": 85927,
+        "ecpm": 4.22
+      },
+      {
+        "name": "BBL Quick Save",
+        "rev": 6.55,
+        "imp": 2575,
+        "ecpm": 2.54
+      },
+      {
+        "name": "NTech Rollicon3D",
+        "rev": 18.4,
+        "imp": 25639,
+        "ecpm": 0.72
+      },
+      {
+        "name": "NTech Sonic - Speaker cleaner",
+        "rev": 0.33,
+        "imp": 202,
+        "ecpm": 1.65
+      },
+      {
+        "name": "NTech StickerLab",
+        "rev": 16.78,
+        "imp": 2699,
+        "ecpm": 6.22
+      },
+      {
+        "name": "VaultixBrowser",
+        "rev": 1.56,
+        "imp": 1370,
+        "ecpm": 1.14
+      },
+      {
+        "name": "Affica Dramio",
+        "rev": 8.41,
+        "imp": 4908,
+        "ecpm": 1.71
+      }
+    ]
+  },
   "2026-07-19": {
     "total": 322.09,
     "apps": [
@@ -20066,27 +20137,6 @@
           "cost_vnd": "0.0",
           "marketing_profit_vnd": "0.003",
           "profit_pct_sheet": "100%"
-        }
-      }
-    ]
-  },
-  "2026-07-20": {
-    "total": 0.0,
-    "apps": [
-      {
-        "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 0.0,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.0",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.0",
-          "profit_pct_sheet": "0%"
         }
       }
     ]
