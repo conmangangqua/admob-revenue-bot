@@ -1,4 +1,75 @@
 {
+  "2026-07-23": {
+    "total": 390.86,
+    "apps": [
+      {
+        "name": "ADC Media TurboVid",
+        "rev": 13.08,
+        "imp": 942,
+        "ecpm": 13.89
+      },
+      {
+        "name": "BBL Aura-Recover",
+        "rev": 0.3,
+        "imp": 17,
+        "ecpm": 17.87
+      },
+      {
+        "name": "BBL Genify AI Genarator",
+        "rev": 28.44,
+        "imp": 12454,
+        "ecpm": 2.28
+      },
+      {
+        "name": "BBL GoalArena",
+        "rev": 0.07,
+        "imp": 27,
+        "ecpm": 2.44
+      },
+      {
+        "name": "Affica LunaAI Chat",
+        "rev": 255.7,
+        "imp": 56009,
+        "ecpm": 4.57
+      },
+      {
+        "name": "BBL Quick Save",
+        "rev": 7.21,
+        "imp": 2457,
+        "ecpm": 2.93
+      },
+      {
+        "name": "NTech Rollicon3D",
+        "rev": 22.64,
+        "imp": 26747,
+        "ecpm": 0.85
+      },
+      {
+        "name": "NTech Sonic - Speaker cleaner",
+        "rev": 0.87,
+        "imp": 173,
+        "ecpm": 5.03
+      },
+      {
+        "name": "NTech StickerLab",
+        "rev": 27.92,
+        "imp": 4977,
+        "ecpm": 5.61
+      },
+      {
+        "name": "VaultixBrowser",
+        "rev": 2.78,
+        "imp": 1784,
+        "ecpm": 1.56
+      },
+      {
+        "name": "Affica Dramio",
+        "rev": 31.85,
+        "imp": 11212,
+        "ecpm": 2.84
+      }
+    ]
+  },
   "2026-07-22": {
     "total": 590.65,
     "apps": [
@@ -20315,27 +20386,6 @@
     "apps": [
       {
         "name": "B081 - Video downloader 3",
-        "rev": 0.1,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.003",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.003",
-          "profit_pct_sheet": "100%"
-        }
-      }
-    ]
-  },
-  "2026-07-23": {
-    "total": 0.1,
-    "apps": [
-      {
-        "name": "B117 - SonicBooster: Volume Booster",
         "rev": 0.1,
         "imp": 0,
         "ecpm": 0,
