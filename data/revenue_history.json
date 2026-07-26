@@ -1,4 +1,75 @@
 {
+  "2026-07-25": {
+    "total": 460.79,
+    "apps": [
+      {
+        "name": "ADC Media TurboVid",
+        "rev": 3.58,
+        "imp": 309,
+        "ecpm": 11.57
+      },
+      {
+        "name": "BBL Aura-Recover",
+        "rev": 0.07,
+        "imp": 18,
+        "ecpm": 3.98
+      },
+      {
+        "name": "BBL Genify AI Genarator",
+        "rev": 39.63,
+        "imp": 19872,
+        "ecpm": 1.99
+      },
+      {
+        "name": "BBL GoalArena",
+        "rev": 0.1,
+        "imp": 17,
+        "ecpm": 5.89
+      },
+      {
+        "name": "Affica LunaAI Chat",
+        "rev": 137.69,
+        "imp": 26463,
+        "ecpm": 5.2
+      },
+      {
+        "name": "BBL Quick Save",
+        "rev": 6.44,
+        "imp": 2394,
+        "ecpm": 2.69
+      },
+      {
+        "name": "NTech Rollicon3D",
+        "rev": 16.69,
+        "imp": 18908,
+        "ecpm": 0.88
+      },
+      {
+        "name": "NTech Sonic - Speaker cleaner",
+        "rev": 0.2,
+        "imp": 115,
+        "ecpm": 1.73
+      },
+      {
+        "name": "NTech StickerLab",
+        "rev": 55.38,
+        "imp": 12859,
+        "ecpm": 4.31
+      },
+      {
+        "name": "VaultixBrowser",
+        "rev": 2.08,
+        "imp": 1726,
+        "ecpm": 1.21
+      },
+      {
+        "name": "Affica Dramio",
+        "rev": 198.94,
+        "imp": 73562,
+        "ecpm": 2.7
+      }
+    ]
+  },
   "2026-07-24": {
     "total": 387.57,
     "apps": [
@@ -20501,43 +20572,6 @@
           "cost_vnd": "0.0",
           "marketing_profit_vnd": "0.003",
           "profit_pct_sheet": "100%"
-        }
-      }
-    ]
-  },
-  "2026-07-25": {
-    "total": 0.1,
-    "apps": [
-      {
-        "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 0.1,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.003",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.003",
-          "profit_pct_sheet": "100%"
-        }
-      },
-      {
-        "name": "B097 - Digital Cam",
-        "rev": 0.0,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.0",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.0",
-          "profit_pct_sheet": "0%"
         }
       }
     ]
