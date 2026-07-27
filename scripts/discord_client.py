@@ -25,13 +25,13 @@ PARTNER_MAP = {
     "LunaAi-Chat": "affica",
 }
 PARTNER_DISPLAY = {
-    "azura":   {"label": "Azura",  "emoji": "🅰️"},
-    "bbl":     {"label": "BBL",    "emoji": "🅱️"},
-    "herond":  {"label": "Herond", "emoji": "🐝"},
-    "affica":  {"label": "Affica", "emoji": "🌍"},
-    "ntech":   {"label": "NTech",  "emoji": "🔵"},
-    "adc":     {"label": "ADC",    "emoji": "🟠"},
-    "unknown": {"label": "Khác",   "emoji": "❓"},
+    "azura":   {"label": "AZURA",  "emoji": "💠"},
+    "bbl":     {"label": "BBL",    "emoji": "🎯"},
+    "herond":  {"label": "HEROND", "emoji": "🐝"},
+    "affica":  {"label": "AFFICA", "emoji": "🌍"},
+    "ntech":   {"label": "NTECH",  "emoji": "⚡"},
+    "adc":     {"label": "ADC",    "emoji": "🎬"},
+    "unknown": {"label": "KHÁC",   "emoji": "📦"},
 }
 
 
@@ -213,31 +213,33 @@ def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
             continue
         p_prev = sum(a.get("prev_revenue", 0) for a in apps)
         meta = PARTNER_DISPLAY[p]
-        name = f"{meta['emoji']}  {meta['label']}  ·  ${p_total:,.2f}"
-        arrow = _pct_arrow(p_total, p_prev)
-        if arrow:
-            name += f"   {arrow}"
+        name = f"{meta['emoji']}  {meta['label']}"
 
-        # v6.4: ```ansi``` — tên+% xanh/đỏ theo tăng giảm, SỐ TIỀN vàng đậm
+        # v6.5: TOÀN BỘ khối (kể cả dòng tổng partner) trong ```ansi``` —
+        # tiền VÀNG đậm, %Δ xanh/đỏ, share-bar xám mờ
         G, R, Y, X = "\u001b[2;32m", "\u001b[2;31m", "\u001b[1;33m", "\u001b[0m"
+        B, D = "\u001b[1;37m", "\u001b[2;30m"   # bold trắng / xám mờ
+        cp = G if p_total >= p_prev else R
+        p_pct = "  new" if p_prev <= 0 else f"{(p_total - p_prev) / p_prev * 100:+.1f}%"
+        rows = [
+            f"{B}{'TỔNG':<17}{X}  {Y}{'$' + format(p_total, ',.2f'):>10}{X} {cp}{p_pct:>8}{X}",
+            f"{D}{_share_bar(p_total, total)} tổng fleet{X}",
+        ]
         apps = sorted(apps, key=lambda a: -a["revenue"])
-        rows = []
         for i, a in enumerate(apps[:TOP_PER_PARTNER]):
             if a["revenue"] < 0.01:
                 break
             prev = a.get("prev_revenue", 0)
-            up = a["revenue"] >= prev
-            c = G if up else R
+            c = G if a["revenue"] >= prev else R
             pct = "   new" if prev <= 0 else f"{(a['revenue'] - prev) / prev * 100:+.1f}%"
-            nm = _short_name(a["app_name"])[:17]
+            nm = _short_name(a["app_name"])[:16]
             money = f"${a['revenue']:,.2f}"
-            rows.append(f"{i + 1}. {c}{nm:<17}{X} {Y}{money:>10}{X} {c}{pct:>8}{X}")
+            rows.append(f"{i + 1}. {c}{nm:<16}{X} {Y}{money:>10}{X} {c}{pct:>8}{X}")
         rest = [a for a in apps[TOP_PER_PARTNER:] if a["revenue"] >= 0.01]
         if rest:
             money = f"${sum(a['revenue'] for a in rest):,.2f}"
-            rows.append(f"   … +{len(rest)} app khác   {Y}{money:>10}{X}")
-        value = f"`{_share_bar(p_total, total)}` tổng fleet\n"
-        value += "```ansi\n" + "\n".join(rows) + "\n```"
+            rows.append(f"{D}   … +{len(rest)} app khác{X}  {Y}{money:>10}{X}")
+        value = "```ansi\n" + "\n".join(rows) + "\n```"
         fields.append({"name": name[:256], "value": value[:1024] or "—",
                        "inline": False})
     return fields
