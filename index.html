@@ -251,6 +251,14 @@
         .p-rank.medal { font-size: 1rem; }
         .p-appicon { width: 1.9rem; height: 1.9rem; border-radius: 0.5rem; object-fit: cover;
             background: #FDF0DC; border: 1px solid var(--border); display: block; }
+        /* Top 1/2/3: vòng vàng/bạc/đồng + huy chương góc để phân biệt với app thường */
+        .p-iconwrap { position: relative; display: inline-flex; }
+        .p-iconwrap.rank-1 .p-appicon { border-color: transparent; box-shadow: 0 0 0 2.5px #F59E0B, 0 2px 8px rgba(245,158,11,.4); }
+        .p-iconwrap.rank-2 .p-appicon { border-color: transparent; box-shadow: 0 0 0 2.5px #9CA3AF, 0 2px 8px rgba(156,163,175,.35); }
+        .p-iconwrap.rank-3 .p-appicon { border-color: transparent; box-shadow: 0 0 0 2.5px #C2731C, 0 2px 8px rgba(194,115,28,.35); }
+        .p-medal { position: absolute; bottom: -0.28rem; right: -0.28rem; font-size: 0.72rem;
+            line-height: 1; background: #fff; border-radius: 999px; padding: 0.06rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,.25); }
 
         .p-name { min-width: 0; }
         .p-name .nm { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
@@ -749,8 +757,9 @@
                         ? `👁 ${formatImp(imp[n])} · eCPM $${appEcpm.toFixed(2)}`
                         : '';
                     const _icon = appIcons[n] || appIcons[_normKey(shortName(n))] || appIcons[_normKey(n)];
+                    const _medalBadge = i < 3 ? `<span class="p-medal">${['🥇', '🥈', '🥉'][i]}</span>` : '';
                     const rankCell = _icon
-                        ? `<img class="p-appicon" src="${_icon}" loading="lazy" alt="" onerror="this.outerHTML='<span class=\\'p-rank\\'>${i + 1}</span>'">`
+                        ? `<span class="p-iconwrap${i < 3 ? ' rank-' + (i + 1) : ''}"><img class="p-appicon" src="${_icon}" loading="lazy" alt="" onerror="this.outerHTML='${i + 1}'">${_medalBadge}</span>`
                         : `<span class="p-rank ${i < 3 ? 'medal' : ''}" aria-hidden="true">${medal}</span>`;
                     return `
                     <div class="p-row" onclick="filterApp('${n.replace(/'/g, "\\'")}')" role="button" tabindex="0" title="${n}">
