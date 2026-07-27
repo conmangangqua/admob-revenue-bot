@@ -251,14 +251,37 @@
         .p-rank.medal { font-size: 1rem; }
         .p-appicon { width: 1.9rem; height: 1.9rem; border-radius: 0.5rem; object-fit: cover;
             background: #FDF0DC; border: 1px solid var(--border); display: block; }
-        /* Top 1/2/3: vòng vàng/bạc/đồng + huy chương góc để phân biệt với app thường */
+        /* ═══ Top 1/2/3: nền gradient theo hạng + vòng logo + badge/vương miện + shimmer lấp lánh ═══ */
         .p-iconwrap { position: relative; display: inline-flex; }
-        .p-iconwrap.rank-1 .p-appicon { border-color: transparent; box-shadow: 0 0 0 2.5px #F59E0B, 0 2px 8px rgba(245,158,11,.4); }
-        .p-iconwrap.rank-2 .p-appicon { border-color: transparent; box-shadow: 0 0 0 2.5px #9CA3AF, 0 2px 8px rgba(156,163,175,.35); }
-        .p-iconwrap.rank-3 .p-appicon { border-color: transparent; box-shadow: 0 0 0 2.5px #C2731C, 0 2px 8px rgba(194,115,28,.35); }
-        .p-medal { position: absolute; bottom: -0.28rem; right: -0.28rem; font-size: 0.72rem;
-            line-height: 1; background: #fff; border-radius: 999px; padding: 0.06rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+        .p-iconwrap.rank-1 .p-appicon { border-color: #F59E0B; box-shadow: 0 0 0 1px #FCD34D; }
+        .p-iconwrap.rank-2 .p-appicon { border-color: #9CA3AF; box-shadow: 0 0 0 1px #E5E7EB; }
+        .p-iconwrap.rank-3 .p-appicon { border-color: #C2731C; box-shadow: 0 0 0 1px #FCA55D; }
+        /* badge số / vương miện góc */
+        .p-medal { position: absolute; bottom: -0.24rem; right: -0.24rem;
+            min-width: 0.95rem; height: 0.95rem; padding: 0 0.12rem; border-radius: 999px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.58rem; font-weight: 800; color: #fff; font-style: normal;
+            border: 0.09rem solid var(--card); box-shadow: 0 1px 3px rgba(0,0,0,.28); z-index: 2; }
+        .rank-1 .p-medal { background: linear-gradient(135deg, #FDE68A, #F59E0B); }
+        .rank-2 .p-medal { background: linear-gradient(135deg, #F1F5F9, #94A3B8); }
+        .rank-3 .p-medal { background: linear-gradient(135deg, #FDBA74, #C2731C); }
+        .p-crown { position: absolute; top: -0.72rem; left: 50%; transform: translateX(-50%) rotate(-8deg);
+            font-size: 0.82rem; line-height: 1; filter: drop-shadow(0 1px 1px rgba(180,120,10,.5));
+            animation: crownBob 2.4s ease-in-out infinite; z-index: 3; }
+        @keyframes crownBob { 0%,100%{transform:translateX(-50%) rotate(-8deg) translateY(0)} 50%{transform:translateX(-50%) rotate(-8deg) translateY(-0.14rem)} }
+        /* nền hàng top + shimmer */
+        .p-row.top-rank { position: relative; overflow: hidden; }
+        .p-row.top-1 { background: linear-gradient(90deg, rgba(245,158,11,.16), rgba(253,230,138,.05) 55%, transparent); }
+        .p-row.top-2 { background: linear-gradient(90deg, rgba(148,163,184,.15), rgba(226,232,240,.05) 55%, transparent); }
+        .p-row.top-3 { background: linear-gradient(90deg, rgba(194,115,28,.15), rgba(253,186,116,.05) 55%, transparent); }
+        .p-row.top-rank::after {
+            content: ''; position: absolute; inset: 0; pointer-events: none;
+            background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,.5) 48%, transparent 58%);
+            transform: translateX(-130%); animation: shimmer 3.6s ease-in-out infinite; }
+        .p-row.top-2::after { animation-delay: .5s; }
+        .p-row.top-3::after { animation-delay: 1s; }
+        @keyframes shimmer { 0% { transform: translateX(-130%); } 55%, 100% { transform: translateX(130%); } }
+        @media (prefers-reduced-motion: reduce) { .p-crown, .p-row.top-rank::after { animation: none; } }
 
         .p-name { min-width: 0; }
         .p-name .nm { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
@@ -757,12 +780,13 @@
                         ? `👁 ${formatImp(imp[n])} · eCPM $${appEcpm.toFixed(2)}`
                         : '';
                     const _icon = appIcons[n] || appIcons[_normKey(shortName(n))] || appIcons[_normKey(n)];
-                    const _medalBadge = i < 3 ? `<span class="p-medal">${['🥇', '🥈', '🥉'][i]}</span>` : '';
+                    const _crown = i === 0 ? `<span class="p-crown">👑</span>` : '';
+                    const _medalBadge = i < 3 ? `<span class="p-medal">${i + 1}</span>` : '';
                     const rankCell = _icon
-                        ? `<span class="p-iconwrap${i < 3 ? ' rank-' + (i + 1) : ''}"><img class="p-appicon" src="${_icon}" loading="lazy" alt="" onerror="this.outerHTML='${i + 1}'">${_medalBadge}</span>`
+                        ? `<span class="p-iconwrap${i < 3 ? ' rank-' + (i + 1) : ''}">${_crown}<img class="p-appicon" src="${_icon}" loading="lazy" alt="" onerror="this.outerHTML='${i + 1}'">${_medalBadge}</span>`
                         : `<span class="p-rank ${i < 3 ? 'medal' : ''}" aria-hidden="true">${medal}</span>`;
                     return `
-                    <div class="p-row" onclick="filterApp('${n.replace(/'/g, "\\'")}')" role="button" tabindex="0" title="${n}">
+                    <div class="p-row${i < 3 ? ' top-rank top-' + (i + 1) : ''}" onclick="filterApp('${n.replace(/'/g, "\\'")}')" role="button" tabindex="0" title="${n}">
                         ${rankCell}
                         <span class="p-name"><span class="nm">${shortName(n)}</span>${gaLine ? `<span class="ga">${gaLine}</span>` : ''}</span>
                         <span class="p-rev">${formatAmount(cur[n])}</span>
