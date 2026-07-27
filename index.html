@@ -33,7 +33,7 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        html { font-size: 16px; }
+        html { font-size: 32px; }
 
         body {
             background:
@@ -65,7 +65,7 @@
 
         .brand { display: flex; align-items: center; gap: 0.7rem; }
         .brand-mark {
-            width: 38px; height: 38px; border-radius: 12px; flex-shrink: 0;
+            width: 76px; height: 76px; border-radius: 24px; flex-shrink: 0;
             background: linear-gradient(135deg, #FBBF24, #F59E0B);
             box-shadow: 0 4px 10px rgba(245, 158, 11, 0.35);
             display: flex; align-items: center; justify-content: center;
@@ -203,7 +203,7 @@
         .partner-head:active { transform: scale(0.998); }
 
         .partner-emoji {
-            width: 44px; height: 44px; border-radius: 14px; flex-shrink: 0;
+            width: 88px; height: 88px; border-radius: 28px; flex-shrink: 0;
             display: flex; align-items: center; justify-content: center;
             font-size: 1.35rem;
             background: color-mix(in srgb, var(--p-color, #F59E0B) 13%, #FFFFFF);
@@ -218,11 +218,11 @@
         .partner-total .amount { font-size: 1.35rem; font-weight: 800; color: var(--money); letter-spacing: -0.02em; }
 
         .share-track {
-            height: 8px; border-radius: 4px; margin: 0 1.4rem 0.4rem;
+            height: 16px; border-radius: 8px; margin: 0 1.4rem 0.4rem;
             background: #FDF0DC; overflow: hidden;
         }
         .share-fill {
-            height: 100%; border-radius: 4px;
+            height: 100%; border-radius: 8px;
             background: linear-gradient(90deg, color-mix(in srgb, var(--p-color, #F59E0B) 65%, #FFFFFF), var(--p-color, #F59E0B));
             transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
         }
@@ -281,6 +281,9 @@
 
         /* ═══════ Responsive ═══════ */
         @media (max-width: 768px) {
+            /* 2x (32px) tràn ngang trên điện thoại → giảm gốc còn ~1.4x cho vừa màn, filter tự wrap */
+            html { font-size: 22px; }
+            .brand-mark { width: 56px; height: 56px; border-radius: 18px; }
             .container { padding: 0 0.85rem 3rem; }
             .header-inner { padding: 0.7rem 0.85rem; }
             .controls { width: 100%; }
