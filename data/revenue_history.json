@@ -1,4 +1,96 @@
 {
+  "2026-07-27": {
+    "total": 0.0,
+    "apps": [
+      {
+        "name": "B117 - SonicBooster: Volume Booster",
+        "rev": 0.0,
+        "imp": 0,
+        "ecpm": 0,
+        "google_spend": 0.0,
+        "mintegral_spend": 0.0,
+        "tiktok_spend": 0.0,
+        "facebook_spend": 0.0,
+        "sheet_data": {
+          "total_rev_vnd": "0.0",
+          "cost_vnd": "0.0",
+          "marketing_profit_vnd": "0.0",
+          "profit_pct_sheet": "0%"
+        }
+      }
+    ]
+  },
+  "2026-07-26": {
+    "total": 676.96,
+    "apps": [
+      {
+        "name": "ADC Media TurboVid",
+        "rev": 3.53,
+        "imp": 267,
+        "ecpm": 13.24
+      },
+      {
+        "name": "BBL Aura-Recover",
+        "rev": 0.05,
+        "imp": 11,
+        "ecpm": 4.49
+      },
+      {
+        "name": "BBL Genify AI Genarator",
+        "rev": 37.62,
+        "imp": 20120,
+        "ecpm": 1.87
+      },
+      {
+        "name": "BBL GoalArena",
+        "rev": 0.12,
+        "imp": 43,
+        "ecpm": 2.88
+      },
+      {
+        "name": "Affica LunaAI Chat",
+        "rev": 142.51,
+        "imp": 26474,
+        "ecpm": 5.38
+      },
+      {
+        "name": "BBL Quick Save",
+        "rev": 6.63,
+        "imp": 2479,
+        "ecpm": 2.67
+      },
+      {
+        "name": "NTech Rollicon3D",
+        "rev": 13.82,
+        "imp": 17351,
+        "ecpm": 0.8
+      },
+      {
+        "name": "NTech Sonic - Speaker cleaner",
+        "rev": 1.14,
+        "imp": 148,
+        "ecpm": 7.7
+      },
+      {
+        "name": "NTech StickerLab",
+        "rev": 51.74,
+        "imp": 10703,
+        "ecpm": 4.83
+      },
+      {
+        "name": "VaultixBrowser",
+        "rev": 2.13,
+        "imp": 1586,
+        "ecpm": 1.34
+      },
+      {
+        "name": "Affica Dramio",
+        "rev": 417.67,
+        "imp": 163342,
+        "ecpm": 2.56
+      }
+    ]
+  },
   "2026-07-25": {
     "total": 460.9,
     "apps": [
@@ -20604,64 +20696,6 @@
           "cost_vnd": "0.0",
           "marketing_profit_vnd": "0.003",
           "profit_pct_sheet": "100%"
-        }
-      }
-    ]
-  },
-  "2026-07-26": {
-    "total": 0.1,
-    "apps": [
-      {
-        "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 0.1,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.003",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.003",
-          "profit_pct_sheet": "100%"
-        }
-      },
-      {
-        "name": "B097 - Digital Cam",
-        "rev": 0.0,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.0",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.0",
-          "profit_pct_sheet": "0%"
-        }
-      }
-    ]
-  },
-  "2026-07-27": {
-    "total": 0.0,
-    "apps": [
-      {
-        "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 0.0,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.0",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.0",
-          "profit_pct_sheet": "0%"
         }
       }
     ]
