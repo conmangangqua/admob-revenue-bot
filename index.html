@@ -350,9 +350,11 @@
             background: none; border: none; font: inherit; font-weight: 700; color: var(--text);
             padding: 0.5rem 0.7rem; border-radius: 999px; }
         .fdrop-trigger:hover { background: rgba(146,64,14,.06); }
-        /* position:fixed để THOÁT overflow:hidden của .filter-group (nếu absolute sẽ bị cắt) */
+        /* Modal căn GIỮA màn hình + nền mờ (position:fixed cũng thoát overflow:hidden filter-group) */
+        .fdrop-backdrop { position: fixed; inset: 0; background: rgba(69,26,3,.42); backdrop-filter: blur(2px); z-index: 199; }
         .fdrop-panel { position: fixed; z-index: 200;
-            width: min(940px, 94vw); max-height: min(76vh, 780px); overflow-y: auto;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: min(940px, 94vw); max-height: min(82vh, 860px); overflow-y: auto;
             background: var(--card); border: 1px solid var(--border-strong); border-radius: 18px;
             box-shadow: 0 18px 50px rgba(146,64,14,.22); padding: 16px; font-size: 19px; font-weight: 500; }
         .fdrop-search { width: 100%; padding: 13px 16px; border: 2px solid var(--border);
@@ -425,6 +427,7 @@
                             <span id="filterLabel">Tất cả</span>
                             <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
                         </button>
+                        <div class="fdrop-backdrop" id="filterBackdrop" hidden onclick="closeFilterPanel()"></div>
                         <div class="fdrop-panel" id="filterPanel" hidden>
                             <input type="text" class="fdrop-search" id="filterSearch" placeholder="Tìm đối tác / app…" oninput="filterSearchInput()" autocomplete="off">
                             <button type="button" class="fdrop-all" onclick="selectFilter('all','Tất cả')">🌐 <span>Tất cả</span></button>
@@ -718,21 +721,16 @@
             const panel = document.getElementById('filterPanel');
             if (panel.hidden) {
                 panel.hidden = false;
-                _positionFilterPanel();
+                document.getElementById('filterBackdrop').hidden = false;
                 const s = document.getElementById('filterSearch'); s.value = ''; filterSearchInput();
                 _markFilterSel();
                 setTimeout(() => s.focus(), 30);
-            } else { panel.hidden = true; }
+            } else { closeFilterPanel(); }
         }
-        function closeFilterPanel() { document.getElementById('filterPanel').hidden = true; }
-        function _positionFilterPanel() {
-            const panel = document.getElementById('filterPanel');
-            const tr = document.querySelector('#appFilterDrop .fdrop-trigger').getBoundingClientRect();
-            const pw = Math.min(760, window.innerWidth * 0.92);
-            panel.style.top = (tr.bottom + 8) + 'px';
-            panel.style.left = Math.max(8, Math.min(tr.left, window.innerWidth - pw - 12)) + 'px';
+        function closeFilterPanel() {
+            document.getElementById('filterPanel').hidden = true;
+            document.getElementById('filterBackdrop').hidden = true;
         }
-        window.addEventListener('resize', () => { const p = document.getElementById('filterPanel'); if (p && !p.hidden) _positionFilterPanel(); });
 
         function selectFilter(value, label) {
             document.getElementById('appFilter').value = value;
