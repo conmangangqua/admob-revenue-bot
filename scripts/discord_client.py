@@ -47,6 +47,14 @@ def _get_partner(app_name: str) -> str:
         return PARTNER_MAP[app_name]
     if _is_azura_bcode(app_name):
         return "azura"
+    # v6.0: tên từ GA (ga_names.json) mang prefix partner — suy trực tiếp
+    low = (app_name or "").lower()
+    if low.startswith("bbl"):
+        return "bbl"
+    if low.startswith("affica"):
+        return "affica"
+    if low.startswith("herond"):
+        return "herond"
     return "unknown"
 
 

@@ -9,21 +9,7 @@ from datetime import date, timedelta
 # Add the project root to sys.path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from scripts.firebase_client import get_all_projects_revenue
-
-def get_access_token_local(client_id: str, client_secret: str, refresh_token: str) -> str:
-    data = urllib.parse.urlencode({
-        "client_id": client_id,
-        "client_secret": client_secret,
-        "refresh_token": refresh_token,
-        "grant_type": "refresh_token",
-        "redirect_uri": "urn:ietf:wg:oauth:2.0:oob"
-    }).encode()
-    req = urllib.request.Request(
-        "https://oauth2.googleapis.com/token", data=data, method="POST"
-    )
-    with urllib.request.urlopen(req) as r:
-        return json.loads(r.read())["access_token"]
+from scripts.ga_client import get_ga_token, get_all_revenue
 
 class handler(BaseHTTPRequestHandler):
     def do_GET(self):
@@ -38,12 +24,8 @@ class handler(BaseHTTPRequestHandler):
             except Exception:
                 pass
 
-        # Bước 2: Bọc toàn bộ các bước lấy data realtime (AdMob, Google Sheets) trong block try-except lớn
+        # Bước 2: Bọc toàn bộ các bước lấy data realtime (GA4, Google Sheets) trong block try-except lớn
         try:
-            client_id = os.environ.get("ADMOB_CLIENT_ID", "")
-            client_secret = os.environ.get("ADMOB_CLIENT_SECRET", "")
-            refresh_token = os.environ.get("ADMOB_REFRESH_TOKEN", "")
-
             today = date.today()
             date_str = today.strftime("%Y-%m-%d")
 
@@ -51,10 +33,11 @@ class handler(BaseHTTPRequestHandler):
             if date_str not in history_data:
                 history_data[date_str] = {"total": 0, "apps": []}
 
-            if client_id and client_secret and refresh_token:
+            # v6.0: realtime hôm nay qua SA hub-admin-sa (ENV HUB_ADMIN_SA_KEY trên Vercel)
+            if os.environ.get("HUB_ADMIN_SA_KEY", "").strip():
                 try:
-                    access_token = get_access_token_local(client_id, client_secret, refresh_token)
-                    apps_today = get_all_projects_revenue(access_token, today)
+                    access_token = get_ga_token()
+                    apps_today = get_all_revenue(access_token, today)
                     
                     # Gộp doanh thu hôm nay vào History Dictionary (không ghi đè để giữ các app external từ CSV)
                     existing_apps = history_data[date_str].get("apps", [])

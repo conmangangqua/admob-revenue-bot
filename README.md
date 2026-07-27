@@ -1,38 +1,30 @@
-# 📊 AdMob Revenue Discord Bot
+# 📊 GA Revenue Discord Bot
 
-Bot tự động thống kê doanh thu AdMob hàng ngày và gửi báo cáo lên Discord.
+Bot tự động thống kê doanh thu ads hàng ngày (GA4 Data API) và gửi báo cáo lên Discord.
 
 ## Tính Năng
-- ✅ Tự động chạy lúc **8:00 AM giờ Việt Nam** mỗi ngày
-- ✅ Hỗ trợ **nhiều app** trong cùng tài khoản AdMob
-- ✅ Hiển thị **revenue, impressions, eCPM** từng app
+- ✅ Tự động chạy lúc **7:45 AM giờ Việt Nam** mỗi ngày (GitHub Actions)
+- ✅ **v6.0 (2026-07-27)**: đọc thẳng GA4 bằng service account `hub-admin-sa` — tự
+  discover MỌI property qua `accountSummaries`, app mới tự xuất hiện, không cần sửa code
+- ✅ Hiển thị **revenue, impressions, eCPM** từng app, gom theo partner
 - ✅ So sánh **% thay đổi** so với hôm qua (xanh/đỏ)
-- ✅ Chạy **miễn phí** qua GitHub Actions
+- ✅ Nguồn bổ sung: Looker Studio sync (launchd local) + Azura CSV
 
 ---
 
 ## 🚀 Hướng Dẫn Setup (Làm 1 Lần)
 
-### Bước 1: Tạo OAuth2 Credentials
+### Bước 1: Quyền GA cho service account
 
-1. Vào **[Google Cloud Console](https://console.cloud.google.com)**
-2. Tạo project mới hoặc chọn project có sẵn
-3. Vào **APIs & Services → Enable APIs**
-   - Tìm và enable: **AdMob API**
-4. Vào **APIs & Services → Credentials → Create Credentials → OAuth 2.0 Client ID**
-   - Application type: **Desktop app**
-   - Tên: `admob-revenue-bot` (tùy ý)
-5. Download JSON → lấy `client_id` và `client_secret`
+Nhờ chủ từng GA account vào **analytics.google.com → Admin → Account Access Management**
+add `hub-admin-sa@apps-status-reader.iam.gserviceaccount.com` role **Viewer** (cấp account).
 
-### Bước 2: Lấy Refresh Token (Chạy 1 lần)
+### Bước 2: Tạo key cho SA (nếu chưa có)
 
 ```bash
-pip install -r requirements.txt
-python scripts/get_refresh_token.py
+gcloud iam service-accounts keys create /tmp/hub-admin-sa.json \
+  --iam-account=hub-admin-sa@apps-status-reader.iam.gserviceaccount.com
 ```
-
-Script sẽ mở trình duyệt → đăng nhập Google → tự động lấy token.  
-Sau đó copy 3 giá trị in ra terminal.
 
 ### Bước 3: Tạo Discord Webhook
 
@@ -45,10 +37,10 @@ Vào GitHub Repo → **Settings → Secrets and variables → Actions → New se
 
 | Secret Name | Giá trị |
 |---|---|
-| `ADMOB_CLIENT_ID` | Client ID từ Bước 1 |
-| `ADMOB_CLIENT_SECRET` | Client Secret từ Bước 1 |
-| `ADMOB_REFRESH_TOKEN` | Refresh Token từ Bước 2 |
+| `HUB_ADMIN_SA_KEY` | Toàn bộ nội dung JSON key từ Bước 2 |
 | `DISCORD_WEBHOOK_URL` | Webhook URL từ Bước 3 |
+
+(Chạy local trên Mac không cần key — tự fallback `gcloud` impersonation.)
 
 ### Bước 5: Test Thủ Công
 
@@ -65,9 +57,12 @@ admob-revenue-bot/
 │       └── daily-revenue-report.yml  # Schedule & trigger
 ├── scripts/
 │   ├── main.py                        # Entry point
-│   ├── admob_client.py                # AdMob API wrapper
+│   ├── ga_client.py                   # GA4 Data API qua SA (v6.0)
 │   ├── discord_client.py              # Discord Webhook sender
-│   └── get_refresh_token.py          # Auth 1 lần (chạy local)
+│   └── sync_looker_daily.py          # Looker sync (launchd local)
+├── data/
+│   ├── revenue_history.json           # Lịch sử doanh thu (dashboard đọc)
+│   └── ga_names.json                  # Map GA property → tên app đẹp
 ├── requirements.txt
 └── README.md
 ```

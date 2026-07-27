@@ -36,9 +36,7 @@ jobs:
 
       - name: 📊 Run Revenue Report
         env:
-          ADMOB_CLIENT_ID: ${{ secrets.ADMOB_CLIENT_ID }}
-          ADMOB_CLIENT_SECRET: ${{ secrets.ADMOB_CLIENT_SECRET }}
-          ADMOB_REFRESH_TOKEN: ${{ secrets.ADMOB_REFRESH_TOKEN }}
+          HUB_ADMIN_SA_KEY: ${{ secrets.HUB_ADMIN_SA_KEY }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: python scripts/main.py
 

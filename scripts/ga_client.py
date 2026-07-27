@@ -1,0 +1,188 @@
+"""
+ga_client.py — Đọc doanh thu ads qua GA4 Data API bằng service account hub-admin-sa.
+
+Thay thế hoàn toàn firebase_client.py cũ (user refresh-token + fallback tạo temp key
+firebase-adminsdk — fallback đó vô dụng vì SA adminsdk không nằm trong GA ACL,
+hậu quả bot under-report: ~$500/ngày trong khi số thật ~$2.5K/ngày).
+
+Kiến trúc mới (2026-07-27):
+  1. Analytics Admin API `accountSummaries` → tự discover MỌI property SA đọc được
+     (SA đã được add Viewer cấp account: 384588955 / 385925354 / 394293629 / ...).
+     App mới link GA vào các account này sẽ TỰ xuất hiện, không cần sửa code.
+  2. GA4 Data API `runReport` per property: totalAdRevenue + publisherAdImpressions.
+  3. Tên app: ưu tiên data/ga_names.json (map property → displayName Firebase,
+     giữ liên tục naming với history cũ), fallback displayName của GA property.
+
+Auth (thứ tự ưu tiên):
+  1. ENV HUB_ADMIN_SA_KEY  — nội dung JSON key (GitHub Actions secret)
+  2. ENV HUB_ADMIN_KEY_PATH hoặc ~/.config/gcloud/hub-admin-sa.json — file key
+  3. gcloud impersonation (máy local đã `gcloud auth login`, cần TokenCreator trên SA)
+"""
+import json
+import os
+import subprocess
+import urllib.error
+import urllib.request
+from concurrent.futures import ThreadPoolExecutor
+from datetime import date
+from typing import List, Optional
+
+GA4_DATA_API = "https://analyticsdata.googleapis.com/v1beta"
+GA4_ADMIN_API = "https://analyticsadmin.googleapis.com/v1beta"
+GA4_SCOPE = "https://www.googleapis.com/auth/analytics.readonly"
+SA_EMAIL = "hub-admin-sa@apps-status-reader.iam.gserviceaccount.com"
+DEFAULT_KEY_PATH = os.path.expanduser("~/.config/gcloud/hub-admin-sa.json")
+NAMES_FILE = os.path.join(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "ga_names.json"
+)
+HTTP_TIMEOUT = 30
+
+
+# ─────────────────────────── auth ───────────────────────────
+
+def _token_from_key_info(info: dict) -> str:
+    from google.oauth2 import service_account
+    import google.auth.transport.requests
+    creds = service_account.Credentials.from_service_account_info(
+        info, scopes=[GA4_SCOPE]
+    )
+    creds.refresh(google.auth.transport.requests.Request())
+    return creds.token
+
+
+def get_ga_token() -> str:
+    """Lấy access-token SA scope analytics.readonly theo chuỗi ưu tiên."""
+    key_env = os.environ.get("HUB_ADMIN_SA_KEY", "").strip()
+    if key_env:
+        print("   🔑 Auth: SA key từ ENV HUB_ADMIN_SA_KEY")
+        return _token_from_key_info(json.loads(key_env))
+
+    key_path = os.environ.get("HUB_ADMIN_KEY_PATH", "") or DEFAULT_KEY_PATH
+    if os.path.exists(key_path):
+        print(f"   🔑 Auth: SA key file {key_path}")
+        with open(key_path) as f:
+            return _token_from_key_info(json.load(f))
+
+    # Local fallback: impersonation qua gcloud (không cần key file)
+    out = subprocess.run(
+        ["gcloud", "auth", "print-access-token",
+         f"--impersonate-service-account={SA_EMAIL}", f"--scopes={GA4_SCOPE}"],
+        capture_output=True, text=True, timeout=60,
+    )
+    if out.returncode == 0 and out.stdout.strip():
+        print("   🔑 Auth: gcloud impersonation → " + SA_EMAIL)
+        return out.stdout.strip()
+    raise RuntimeError(
+        "Không lấy được token SA: thiếu HUB_ADMIN_SA_KEY / key file, "
+        "và impersonation fail: " + out.stderr[-300:]
+    )
+
+
+# ─────────────────────── HTTP helpers ───────────────────────
+
+def _get(url: str, token: str) -> dict:
+    req = urllib.request.Request(url, headers={"Authorization": f"Bearer {token}"})
+    with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as r:
+        return json.loads(r.read())
+
+
+def _post(url: str, token: str, payload: dict) -> dict:
+    req = urllib.request.Request(
+        url, data=json.dumps(payload).encode(),
+        headers={"Authorization": f"Bearer {token}",
+                 "Content-Type": "application/json"},
+        method="POST",
+    )
+    with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as r:
+        return json.loads(r.read())
+
+
+# ─────────────────── property discovery ─────────────────────
+
+def list_properties(token: str) -> List[dict]:
+    """Mọi GA4 property SA đọc được: [{property_id, display, account}]."""
+    props, page = [], ""
+    while True:
+        url = f"{GA4_ADMIN_API}/accountSummaries?pageSize=200"
+        if page:
+            url += f"&pageToken={page}"
+        data = _get(url, token)
+        for acc in data.get("accountSummaries", []):
+            acc_id = acc.get("account", "").split("/")[-1]
+            for p in acc.get("propertySummaries", []):
+                props.append({
+                    "property_id": p["property"].split("/")[-1],
+                    "display": p.get("displayName", ""),
+                    "account": acc_id,
+                })
+        page = data.get("nextPageToken", "")
+        if not page:
+            break
+    return props
+
+
+def _load_name_overrides() -> dict:
+    try:
+        with open(NAMES_FILE, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return {}
+
+
+# ─────────────────────── revenue query ──────────────────────
+
+def _run_report(token: str, property_id: str, date_str: str):
+    result = _post(
+        f"{GA4_DATA_API}/properties/{property_id}:runReport", token,
+        {
+            "dateRanges": [{"startDate": date_str, "endDate": date_str}],
+            "metrics": [{"name": "totalAdRevenue"},
+                        {"name": "publisherAdImpressions"}],
+        },
+    )
+    rows = result.get("rows", [])
+    if not rows:
+        return 0.0, 0.0, 0
+    vals = rows[0]["metricValues"]
+    revenue = float(vals[0]["value"])
+    impressions = int(float(vals[1]["value"]))
+    ecpm = (revenue / impressions * 1000) if impressions > 0 else 0.0
+    return revenue, ecpm, impressions
+
+
+def get_all_revenue(token: str, report_date: date) -> List[dict]:
+    """Doanh thu 1 ngày của TẤT CẢ property SA đọc được.
+    Trả về list {app_name, revenue, impressions, ecpm} — sorted desc theo revenue."""
+    date_str = report_date.strftime("%Y-%m-%d")
+    props = list_properties(token)
+    if not props:
+        raise RuntimeError(
+            "accountSummaries trả về RỖNG — SA chưa được add vào GA account nào "
+            "(hoặc quyền bị thu hồi). Kiểm tra Account Access Management."
+        )
+    names = _load_name_overrides()
+    print(f"   🔎 {len(props)} property khả dụng, query ngày {date_str}…")
+
+    def fetch(p: dict) -> Optional[dict]:
+        try:
+            rev, ecpm, imp = _run_report(token, p["property_id"], date_str)
+            return {
+                "app_name": names.get(p["property_id"]) or p["display"] or p["property_id"],
+                "revenue": rev,
+                "impressions": imp,
+                "ecpm": ecpm,
+            }
+        except urllib.error.HTTPError as e:
+            print(f"   ⚠️  {p['display'] or p['property_id']}: HTTP {e.code}")
+            return None
+        except Exception as e:
+            print(f"   ⚠️  {p['display'] or p['property_id']}: {e}")
+            return None
+
+    with ThreadPoolExecutor(max_workers=10) as ex:
+        results = [r for r in ex.map(fetch, props) if r is not None]
+
+    results.sort(key=lambda a: -a["revenue"])
+    total = sum(a["revenue"] for a in results)
+    print(f"   ✅ {len(results)}/{len(props)} property OK — tổng ${total:,.2f}")
+    return results
