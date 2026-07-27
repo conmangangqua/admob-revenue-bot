@@ -10,7 +10,6 @@ Chạy trong daily job (main.py) để icon luôn tươi. Nguồn snapshot = Git
 """
 import json
 import os
-import re
 import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -30,52 +29,65 @@ def _fetch_snapshot():
         return json.load(r)
 
 
-def _scrape_play_icon(bundle):
-    """Fallback: lấy icon play-lh trực tiếp từ Play listing khi apps-status chưa có icon_url."""
-    if not bundle:
-        return None
-    url = f"https://play.google.com/store/apps/details?id={bundle}&hl=en"
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=15) as r:
-            html = r.read().decode("utf-8", "ignore")
-        m = re.search(r'https://play-lh\.googleusercontent\.com/[\w\-]+', html)
-        return m.group(0) if m else None
-    except Exception:
-        return None
+_PARTNER_PFX = ("herond", "bbl", "bll", "ntech", "affica", "adc media", "adc",
+                "azura", "one tabb", "one-tabb")
+
+
+def _norm(s):
+    return "".join(c for c in (s or "").lower() if c.isalnum())
+
+
+def _strip_prefix(name):
+    low = (name or "").lower().strip()
+    import re
+    low = re.sub(r"^(apb|b|p)\d+\s*[-–]?\s*", "", low)   # bỏ mã B117/APB972/P01…
+    for pfx in _PARTNER_PFX:
+        if low.startswith(pfx + " "):
+            return low[len(pfx) + 1:].strip()
+    return low
 
 
 def build():
     snap = _fetch_snapshot()
-    pid_icon, pid_bundle = {}, {}
+    # Icon ưu tiên: store_info.icon_url (Play/App Store) → a.icon (icon hub/repo — apps-status
+    # render field này khi chưa có store icon; QuickSave/FluxVPN… nằm ở đây).
+    pid_icon, slug_icon = {}, {}
     for p in snap.get("partners", []):
         for a in p.get("apps", []):
-            si = a.get("store_info") or {}
-            pid = (((a.get("firebase") or {}).get("meta") or {}).get("ga4") or {}).get("property_id")
-            if not pid:
+            icon = (a.get("store_info") or {}).get("icon_url") or a.get("icon")
+            if not icon:
                 continue
-            pid = str(pid)
-            if si.get("icon_url"):
-                pid_icon[pid] = si["icon_url"]
-            elif a.get("bundle_id"):
-                pid_bundle[pid] = a["bundle_id"]   # có app + bundle nhưng thiếu icon → scrape sau
+            pid = (((a.get("firebase") or {}).get("meta") or {}).get("ga4") or {}).get("property_id")
+            if pid:
+                pid_icon[str(pid)] = icon
+            # index phụ theo slug + tên (bắt app có icon nhưng ga4.property_id=None, vd SnapVid)
+            for key in (a.get("slug"), _strip_prefix(a.get("name"))):
+                k = _norm(key)
+                if k:
+                    slug_icon.setdefault(k, icon)
     names = json.load(open(NAMES, encoding="utf-8")) if os.path.isfile(NAMES) else {}
-    out, scraped = {}, 0
+    long_keys = [(k, ic) for k, ic in slug_icon.items() if len(k) >= 6]
+
+    def _fuzzy(nn):
+        # prefix 2 chiều (vd slug 'genifyai' ⊂ 'genifyaigenarator' — app đổi tên/GA property)
+        for k, ic in long_keys:
+            if nn.startswith(k) or k.startswith(nn):
+                return ic
+        return None
+
+    out = 0
+    result = {}
     for pid, name in names.items():
         if not name:
             continue
-        pid = str(pid)
-        icon = pid_icon.get(pid)
-        if not icon and pid in pid_bundle:
-            icon = _scrape_play_icon(pid_bundle[pid])   # fallback Play scrape
-            if icon:
-                scraped += 1
+        nn = _norm(_strip_prefix(name))
+        icon = pid_icon.get(str(pid)) or slug_icon.get(nn) or _fuzzy(nn)
         if icon:
-            out[name] = icon
-    json.dump(out, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
-    print(f"[gen_app_icons] {len(out)}/{len(names)} app có icon "
-          f"(snapshot {len(out) - scraped} + scrape Play {scraped}) → {OUT}")
-    return out
+            result[name] = icon
+            out += 1
+    json.dump(result, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
+    print(f"[gen_app_icons] {out}/{len(names)} app có icon → {OUT}")
+    return result
 
 
 if __name__ == "__main__":
