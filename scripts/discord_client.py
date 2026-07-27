@@ -17,6 +17,25 @@ from typing import Optional
 API_URL = "https://admob-revenue-bot.vercel.app/api/revenue"
 VND_RATE = 25400
 
+
+def _vnd(usd: float) -> str:
+    """Tiền Việt compact: 1,23 Tỷ / 45,6 Tr / 123K đ."""
+    vnd = usd * VND_RATE
+    a = abs(vnd)
+    if a >= 1_000_000_000:
+        return f"{vnd/1_000_000_000:,.2f} Tỷ"
+    if a >= 1_000_000:
+        return f"{vnd/1_000_000:,.1f} Tr"
+    if a >= 1_000:
+        return f"{vnd/1_000:,.0f}K đ"
+    return f"{round(vnd):,} đ"
+
+
+def _money(usd: float) -> str:
+    """Tiền Việt (đô) — VND là chính, USD trong ngoặc."""
+    return f"{_vnd(usd)} (${usd:,.0f})"
+
+
 # Partner mapping — mirror web dashboard getPartner()
 PARTNER_MAP = {
     "Quicksave": "bbl",
@@ -226,7 +245,7 @@ def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
         cp = G if p_total >= p_prev else R
         p_pct = "  new" if p_prev <= 0 else f"{(p_total - p_prev) / p_prev * 100:+.1f}%"
         rows = [
-            f"{B}{'TỔNG':<17}{X}  {Y}{'$' + format(p_total, ',.2f'):>10}{X} {cp}{p_pct:>8}{X}",
+            f"{B}{'TỔNG':<15}{X} {Y}{_vnd(p_total):>13}{X} {cp}{p_pct:>8}{X}",
             f"{D}{_share_bar(p_total, total)} tổng fleet{X}",
         ]
         apps = sorted(apps, key=lambda a: -a["revenue"])
@@ -236,21 +255,45 @@ def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
             prev = a.get("prev_revenue", 0)
             c = G if a["revenue"] >= prev else R
             pct = "   new" if prev <= 0 else f"{(a['revenue'] - prev) / prev * 100:+.1f}%"
-            nm = _short_name(a["app_name"])[:16]
-            money = f"${a['revenue']:,.2f}"
-            rows.append(f"{i + 1}. {c}{nm:<16}{X} {Y}{money:>10}{X} {c}{pct:>8}{X}")
+            nm = _short_name(a["app_name"])[:15]
+            rows.append(f"{i + 1}. {c}{nm:<15}{X} {Y}{_vnd(a['revenue']):>13}{X} {c}{pct:>8}{X}")
         rest = [a for a in apps[TOP_PER_PARTNER:] if a["revenue"] >= 0.01]
         if rest:
-            money = f"${sum(a['revenue'] for a in rest):,.2f}"
-            rows.append(f"{D}   … +{len(rest)} app khác{X}  {Y}{money:>10}{X}")
+            rows.append(f"{D}   … +{len(rest)} app khác{X} {Y}{_vnd(sum(a['revenue'] for a in rest)):>13}{X}")
         value = "```ansi\n" + "\n".join(rows) + "\n```"
         fields.append({"name": name[:256], "value": value[:1024] or "—",
                        "inline": False})
     return fields
 
 
+def _build_header_block(target_date: date, apps_data: list,
+                        prev_total: Optional[float], mtd_total: Optional[float]) -> str:
+    """Sếp chốt 2026-07-27: MTD lên đầu, rồi app count / hôm trước / hôm nay /
+    tăng giảm — tất cả trong ```ansi``` để có màu."""
+    G, R, Y, X, B = "\u001b[2;32m", "\u001b[2;31m", "\u001b[1;33m", "\u001b[0m", "\u001b[1;37m"
+    total = sum(a["revenue"] for a in apps_data)
+    n_apps = len([a for a in apps_data if a["revenue"] > 0])
+    d_str = target_date.strftime("%d/%m")
+    d_prev = (target_date - timedelta(days=1)).strftime("%d/%m")
+    lines = []
+    if mtd_total:
+        lines.append(f"{B}{'THÁNG NÀY (01→' + d_str + ')':<20}{X}{Y}{_money(mtd_total):>22}{X}")
+    lines.append(f"{'App có doanh thu':<20}{B}{n_apps:>22}{X}")
+    if prev_total and prev_total > 0:
+        lines.append(f"{'Hôm trước (' + d_prev + ')':<20}{Y}{_money(prev_total):>22}{X}")
+    lines.append(f"{'Hôm nay   (' + d_str + ')':<20}{Y}{_money(total):>22}{X}")
+    if prev_total and prev_total > 0:
+        diff = total - prev_total
+        c = G if diff >= 0 else R
+        pct = diff / prev_total * 100
+        sign = "+" if diff >= 0 else "-"
+        lines.append(f"{'Tăng/giảm':<20}{c}{sign + _vnd(abs(diff)) + f' ({pct:+.1f}%)':>22}{X}")
+    return "```ansi\n" + "\n".join(lines) + "\n```"
+
+
 def _build_embed(target_date: date, apps_data: list,
-                 prev_total: Optional[float] = None) -> dict:
+                 prev_total: Optional[float] = None,
+                 mtd_total: Optional[float] = None) -> dict:
     """v6.1: embed thuần doanh thu ads từ apps_data (GA4) — Sếp chốt 2026-07-27
     bỏ khối Lãi/Lỗ sheet, tách partner NTech/ADC, ẩn partner < $1."""
     fields = _build_revenue_fields(apps_data, prev_total)
@@ -261,10 +304,7 @@ def _build_embed(target_date: date, apps_data: list,
     })
     total = sum(a["revenue"] for a in apps_data)
     up = prev_total is None or total >= prev_total
-    n_apps = len([a for a in apps_data if a["revenue"] > 0])
-    desc = f"# ${total:,.2f}"
-    if prev_total and prev_total > 0:
-        desc += f"\n{_pct_arrow(total, prev_total)} so với hôm trước (${prev_total:,.2f}) · 📱 {n_apps} app"
+    desc = _build_header_block(target_date, apps_data, prev_total, mtd_total)
     return {
         "title": f"💹 Tranquil Revenue — {_day_name_vn(target_date)}, {target_date.strftime('%d/%m/%Y')}",
         "url": "https://admob-revenue-bot.vercel.app/",
@@ -282,6 +322,7 @@ def send_revenue_report(
     apps_data=None,
     report_date: Optional[date] = None,
     prev_total: Optional[float] = None,
+    mtd_total: Optional[float] = None,
     api_url: str = API_URL,   # giữ tham số cho tương thích — không dùng nữa
 ) -> bool:
     """Gửi report doanh thu build 100% từ apps_data (GA4 bot vừa quét)."""
@@ -291,7 +332,7 @@ def send_revenue_report(
         print("   ❌ Không có apps_data — bỏ qua gửi Discord.")
         return False
 
-    embed = _build_embed(report_date, apps_data, prev_total=prev_total)
+    embed = _build_embed(report_date, apps_data, prev_total=prev_total, mtd_total=mtd_total)
     payload = {"username": "Tranquil Revenue Bot", "embeds": [embed]}
 
     req = urllib.request.Request(

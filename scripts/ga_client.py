@@ -131,11 +131,11 @@ def _load_name_overrides() -> dict:
 
 # ─────────────────────── revenue query ──────────────────────
 
-def _run_report(token: str, property_id: str, date_str: str):
+def _run_report(token: str, property_id: str, date_str: str, end_str: str = None):
     result = _post(
         f"{GA4_DATA_API}/properties/{property_id}:runReport", token,
         {
-            "dateRanges": [{"startDate": date_str, "endDate": date_str}],
+            "dateRanges": [{"startDate": date_str, "endDate": end_str or date_str}],
             "metrics": [{"name": "totalAdRevenue"},
                         {"name": "publisherAdImpressions"}],
         },
@@ -148,6 +148,23 @@ def _run_report(token: str, property_id: str, date_str: str):
     impressions = int(float(vals[1]["value"]))
     ecpm = (revenue / impressions * 1000) if impressions > 0 else 0.0
     return revenue, ecpm, impressions
+
+
+def get_total_revenue(token: str, start_date: date, end_date: date) -> float:
+    """Tổng doanh thu ads MỌI property trong khoảng ngày (1 runReport range/property).
+    Dùng cho MTD — không lấy từ history vì các ngày thời bot cũ bị thiếu số."""
+    props = list_properties(token)
+    s, e = start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")
+
+    def fetch(p):
+        try:
+            rev, _, _ = _run_report(token, p["property_id"], s, e)
+            return rev
+        except Exception:
+            return 0.0
+
+    with ThreadPoolExecutor(max_workers=10) as ex:
+        return sum(ex.map(fetch, props))
 
 
 def get_all_revenue(token: str, report_date: date) -> List[dict]:

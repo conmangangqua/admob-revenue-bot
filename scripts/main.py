@@ -13,7 +13,7 @@ from datetime import date, timedelta
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from ga_client import get_ga_token, get_all_revenue
+from ga_client import get_ga_token, get_all_revenue, get_total_revenue
 from discord_client import send_revenue_report, send_error_notification
 
 
@@ -92,6 +92,9 @@ def main():
     apps_today = get_all_revenue(access_token, target_date)
     print("\n📊 Đang lấy revenue hôm kia (để so sánh)...")
     apps_prev  = get_all_revenue(access_token, day_before)
+    print("\n📆 Đang lấy tổng THÁNG NÀY (MTD, từ GA — history thời bot cũ thiếu số)...")
+    mtd_total = get_total_revenue(access_token, target_date.replace(day=1), target_date)
+    print(f"   ✅ MTD ${mtd_total:,.2f}")
     
     prev_total = sum(a["revenue"] for a in apps_prev)
     apps_prev_dict = {a["app_name"]: a["revenue"] for a in apps_prev}
@@ -127,6 +130,7 @@ def main():
         apps_data=apps_today,
         report_date=target_date,
         prev_total=prev_total if prev_total > 0 else None,
+        mtd_total=mtd_total,
     )
 
     if success:
