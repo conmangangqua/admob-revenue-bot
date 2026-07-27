@@ -709,6 +709,7 @@
                 const img = ic ? `<img src="${ic}" loading="lazy" alt="">` : `<span class="ph">${_escHtml((disp[0] || '?').toUpperCase())}</span>`;
                 return `<div class="fdrop-app" data-idx="${idx}" data-search="${_escHtml((disp + ' ' + a).toLowerCase())}">${img}<span class="an">${_escHtml(disp)}</span></div>`;
             }).join('');
+            if (!document.getElementById('filterPanel').hidden) filterSearchInput();  // refresh nếu panel đang mở (race deep-link)
         }
 
         function toggleFilterPanel(e) {
