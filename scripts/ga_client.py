@@ -99,8 +99,20 @@ def _post(url: str, token: str, payload: dict) -> dict:
 
 # ─────────────────── property discovery ─────────────────────
 
-def list_properties(token: str) -> List[dict]:
-    """Mọi GA4 property SA đọc được: [{property_id, display, account}]."""
+import re
+# GA4 property DEV (build test vẫn thu ít ad revenue) → loại, tránh trùng dòng với prod
+# trên dashboard (Sếp 2026-07-27: "Onyx Browser" x2 = onyx-browser-90060 + onyx-browser-dev).
+# Bắt: '...-dev', '...-dev-789', 'goalarenadev', '...dev$'. App prod luôn có property riêng.
+
+
+def _is_dev_property(display: str) -> bool:
+    d = (display or "").strip().lower()
+    return bool(re.search(r"[-_ ]dev(?:[-_ ]|\d|$)|dev$", d))
+
+
+def list_properties(token: str, include_dev: bool = False) -> List[dict]:
+    """Mọi GA4 property SA đọc được: [{property_id, display, account}].
+    Mặc định LOẠI property -dev (build test) để không trùng dòng với prod."""
     props, page = [], ""
     while True:
         url = f"{GA4_ADMIN_API}/accountSummaries?pageSize=200"
@@ -110,9 +122,12 @@ def list_properties(token: str) -> List[dict]:
         for acc in data.get("accountSummaries", []):
             acc_id = acc.get("account", "").split("/")[-1]
             for p in acc.get("propertySummaries", []):
+                disp = p.get("displayName", "")
+                if not include_dev and _is_dev_property(disp):
+                    continue
                 props.append({
                     "property_id": p["property"].split("/")[-1],
-                    "display": p.get("displayName", ""),
+                    "display": disp,
                     "account": acc_id,
                 })
         page = data.get("nextPageToken", "")

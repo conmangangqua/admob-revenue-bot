@@ -21,30 +21,30 @@
     ]
   },
   "2026-07-26": {
-    "total": 3723.56,
+    "total": 3723.88,
     "apps": [
       {
         "name": "Affica Yuki Chat",
-        "rev": 1463.74,
-        "imp": 182955,
+        "rev": 1463.92,
+        "imp": 182988,
         "ecpm": 8.0
       },
       {
         "name": "BLL Whispr",
         "rev": 565.41,
-        "imp": 41667,
+        "imp": 41674,
         "ecpm": 13.57
       },
       {
         "name": "Affica FanCall",
         "rev": 524.47,
-        "imp": 83900,
+        "imp": 83902,
         "ecpm": 6.25
       },
       {
         "name": "Affica Dramio",
-        "rev": 417.8,
-        "imp": 163408,
+        "rev": 417.83,
+        "imp": 163439,
         "ecpm": 2.56
       },
       {
@@ -61,8 +61,8 @@
       },
       {
         "name": "NTech Idol Mirage",
-        "rev": 137.05,
-        "imp": 22395,
+        "rev": 137.06,
+        "imp": 22396,
         "ecpm": 6.12
       },
       {
@@ -97,14 +97,14 @@
       },
       {
         "name": "BBL Fetchly",
-        "rev": 16.58,
-        "imp": 3246,
-        "ecpm": 5.11
+        "rev": 16.67,
+        "imp": 3252,
+        "ecpm": 5.13
       },
       {
         "name": "NTech Rollicon3D",
-        "rev": 13.82,
-        "imp": 17362,
+        "rev": 13.83,
+        "imp": 17366,
         "ecpm": 0.8
       },
       {
@@ -246,6 +246,22 @@
         "ecpm": 3.04
       },
       {
+        "name": "B117 - SonicBooster: Volume Booster",
+        "rev": 0.1,
+        "imp": 0,
+        "ecpm": 0,
+        "google_spend": 0.0,
+        "mintegral_spend": 0.0,
+        "tiktok_spend": 0.0,
+        "facebook_spend": 0.0,
+        "sheet_data": {
+          "total_rev_vnd": "0.003",
+          "cost_vnd": "0.0",
+          "marketing_profit_vnd": "0.003",
+          "profit_pct_sheet": "100%"
+        }
+      },
+      {
         "name": "BBL Aura-Recover",
         "rev": 0.05,
         "imp": 11,
@@ -274,22 +290,6 @@
         "rev": 0.0,
         "imp": 2,
         "ecpm": 1.65
-      },
-      {
-        "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 0.1,
-        "imp": 0,
-        "ecpm": 0,
-        "google_spend": 0.0,
-        "mintegral_spend": 0.0,
-        "tiktok_spend": 0.0,
-        "facebook_spend": 0.0,
-        "sheet_data": {
-          "total_rev_vnd": "0.003",
-          "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.003",
-          "profit_pct_sheet": "100%"
-        }
       },
       {
         "name": "B097 - Digital Cam",
