@@ -677,6 +677,8 @@
                             <option value="partner:bbl">BBL</option>
                             <option value="partner:herond">Herond</option>
                             <option value="partner:affica">Affica</option>
+                            <option value="partner:ntech">NTech</option>
+                            <option value="partner:adc">ADC</option>
                         </optgroup>
                         <optgroup label="App" id="appOptGroup">
                         <!-- Injected via JS -->
@@ -995,6 +997,13 @@
         function getPartner(name) {
             if (PARTNER_MAP[name]) return PARTNER_MAP[name];
             if (/^B\d+/.test(name)) return 'azura';
+            // v6.5: tên từ GA (ga_names.json) mang prefix partner
+            const low = (name || '').toLowerCase();
+            if (low.startsWith('bbl') || low.startsWith('bll')) return 'bbl';
+            if (low.startsWith('affica')) return 'affica';
+            if (low.startsWith('herond')) return 'herond';
+            if (low.startsWith('ntech')) return 'ntech';
+            if (low.startsWith('adc')) return 'adc';
             return 'unknown';
         }
 
@@ -1229,7 +1238,7 @@
             // Đổi label thành "Lãi thực"
             const profitLabel = curProfitVnd < 0 ? 'Lỗ thật' : 'Lãi thực';
             const heroLblText = lblHero.replace('Doanh thu', profitLabel).replace('Tổng', profitLabel);
-            const PARTNER_LABELS = { 'partner:azura': 'Azura', 'partner:bbl': 'BBL', 'partner:herond': 'Herond', 'partner:affica': 'Affica' };
+            const PARTNER_LABELS = { 'partner:azura': 'Azura', 'partner:bbl': 'BBL', 'partner:herond': 'Herond', 'partner:affica': 'Affica', 'partner:ntech': 'NTech', 'partner:adc': 'ADC' };
             const appSelLabel = PARTNER_LABELS[appSel] || (appSel !== 'all' ? appSel : '');
             document.getElementById('lblHeroRev').innerText = heroLblText + (appSelLabel ? ` (${appSelLabel})` : '');
 
@@ -1411,10 +1420,12 @@
         }
 
         const PARTNER_DISPLAY = {
-            azura:  { label: 'Azura',  emoji: '🅰️' },
-            bbl:    { label: 'BBL',    emoji: '🅱️' },
+            azura:  { label: 'Azura',  emoji: '💠' },
+            bbl:    { label: 'BBL',    emoji: '🎯' },
             herond: { label: 'Herond', emoji: '🐝' },
             affica: { label: 'Affica', emoji: '🌍' },
+            ntech:  { label: 'NTech',  emoji: '⚡' },
+            adc:    { label: 'ADC',    emoji: '🎬' },
             unknown:{ label: 'Khác',   emoji: '❓' },
         };
 
