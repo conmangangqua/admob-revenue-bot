@@ -350,7 +350,8 @@
             background: none; border: none; font: inherit; font-weight: 700; color: var(--text);
             padding: 0.5rem 0.7rem; border-radius: 999px; }
         .fdrop-trigger:hover { background: rgba(146,64,14,.06); }
-        .fdrop-panel { position: absolute; top: calc(100% + 8px); left: 0; z-index: 60;
+        /* position:fixed để THOÁT overflow:hidden của .filter-group (nếu absolute sẽ bị cắt) */
+        .fdrop-panel { position: fixed; z-index: 200;
             width: min(760px, 92vw); max-height: min(70vh, 620px); overflow-y: auto;
             background: var(--card); border: 1px solid var(--border-strong); border-radius: 16px;
             box-shadow: 0 18px 50px rgba(146,64,14,.22); padding: 12px; font-size: 14px; font-weight: 500; }
@@ -717,12 +718,21 @@
             const panel = document.getElementById('filterPanel');
             if (panel.hidden) {
                 panel.hidden = false;
+                _positionFilterPanel();
                 const s = document.getElementById('filterSearch'); s.value = ''; filterSearchInput();
                 _markFilterSel();
                 setTimeout(() => s.focus(), 30);
             } else { panel.hidden = true; }
         }
         function closeFilterPanel() { document.getElementById('filterPanel').hidden = true; }
+        function _positionFilterPanel() {
+            const panel = document.getElementById('filterPanel');
+            const tr = document.querySelector('#appFilterDrop .fdrop-trigger').getBoundingClientRect();
+            const pw = Math.min(760, window.innerWidth * 0.92);
+            panel.style.top = (tr.bottom + 8) + 'px';
+            panel.style.left = Math.max(8, Math.min(tr.left, window.innerWidth - pw - 12)) + 'px';
+        }
+        window.addEventListener('resize', () => { const p = document.getElementById('filterPanel'); if (p && !p.hidden) _positionFilterPanel(); });
 
         function selectFilter(value, label) {
             document.getElementById('appFilter').value = value;
