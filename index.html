@@ -249,6 +249,8 @@
 
         .p-rank { text-align: center; font-weight: 800; font-size: 0.78rem; color: var(--text-dim); }
         .p-rank.medal { font-size: 1rem; }
+        .p-appicon { width: 1.9rem; height: 1.9rem; border-radius: 0.5rem; object-fit: cover;
+            background: #FDF0DC; border: 1px solid var(--border); display: block; }
 
         .p-name { min-width: 0; }
         .p-name .nm { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
@@ -388,6 +390,7 @@
         let currentVndRate = 25400;
         let currentCurrency = 'VND';
         const expandedPartners = new Set();
+        let appIcons = {};   // { "<tên app GA>": "<icon_url>" } — data/app_icons.json
 
         async function init() {
             let debugStep = 'start';
@@ -399,6 +402,8 @@
                 }
                 debugStep = 'parse JSON';
                 historyData = await resp.json();
+                // logo app (thay medal) — không chặn nếu thiếu file
+                try { appIcons = await (await fetch('data/app_icons.json?cb=' + Date.now())).json(); } catch (e) { appIcons = {}; }
                 sortedDates = Object.keys(historyData).sort().reverse();
 
                 if (sortedDates.length > 0) {
@@ -743,9 +748,13 @@
                     const gaLine = imp[n] > 0
                         ? `👁 ${formatImp(imp[n])} · eCPM $${appEcpm.toFixed(2)}`
                         : '';
+                    const _icon = appIcons[n];
+                    const rankCell = _icon
+                        ? `<img class="p-appicon" src="${_icon}" loading="lazy" alt="" onerror="this.outerHTML='<span class=\\'p-rank\\'>${i + 1}</span>'">`
+                        : `<span class="p-rank ${i < 3 ? 'medal' : ''}" aria-hidden="true">${medal}</span>`;
                     return `
                     <div class="p-row" onclick="filterApp('${n.replace(/'/g, "\\'")}')" role="button" tabindex="0" title="${n}">
-                        <span class="p-rank ${i < 3 ? 'medal' : ''}" aria-hidden="true">${medal}</span>
+                        ${rankCell}
                         <span class="p-name"><span class="nm">${shortName(n)}</span>${gaLine ? `<span class="ga">${gaLine}</span>` : ''}</span>
                         <span class="p-rev">${formatAmount(cur[n])}</span>
                         ${pctBadgeHtml(cur[n], prev[n] || 0)}
