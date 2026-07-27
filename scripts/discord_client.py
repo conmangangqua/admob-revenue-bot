@@ -218,18 +218,27 @@ def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
         if arrow:
             name += f"   {arrow}"
 
-        lines = [f"`{_share_bar(p_total, total)}` tổng fleet"]
+        # v6.4: ```ansi``` — tên+% xanh/đỏ theo tăng giảm, SỐ TIỀN vàng đậm
+        G, R, Y, X = "\u001b[2;32m", "\u001b[2;31m", "\u001b[1;33m", "\u001b[0m"
         apps = sorted(apps, key=lambda a: -a["revenue"])
+        rows = []
         for i, a in enumerate(apps[:TOP_PER_PARTNER]):
             if a["revenue"] < 0.01:
                 break
-            ar = _pct_arrow(a["revenue"], a.get("prev_revenue", 0))
-            rank = _RANK[i] if i < 3 else f"`{i + 1} `"
-            lines.append(f"{rank} **{_short_name(a['app_name'])}** · `${a['revenue']:,.2f}` {ar}")
+            prev = a.get("prev_revenue", 0)
+            up = a["revenue"] >= prev
+            c = G if up else R
+            pct = "   new" if prev <= 0 else f"{(a['revenue'] - prev) / prev * 100:+.1f}%"
+            nm = _short_name(a["app_name"])[:17]
+            money = f"${a['revenue']:,.2f}"
+            rows.append(f"{i + 1}. {c}{nm:<17}{X} {Y}{money:>10}{X} {c}{pct:>8}{X}")
         rest = [a for a in apps[TOP_PER_PARTNER:] if a["revenue"] >= 0.01]
         if rest:
-            lines.append(f"╰ *+{len(rest)} app khác · ${sum(a['revenue'] for a in rest):,.2f}*")
-        fields.append({"name": name[:256], "value": "\n".join(lines)[:1024] or "—",
+            money = f"${sum(a['revenue'] for a in rest):,.2f}"
+            rows.append(f"   … +{len(rest)} app khác   {Y}{money:>10}{X}")
+        value = f"`{_share_bar(p_total, total)}` tổng fleet\n"
+        value += "```ansi\n" + "\n".join(rows) + "\n```"
+        fields.append({"name": name[:256], "value": value[:1024] or "—",
                        "inline": False})
     return fields
 
