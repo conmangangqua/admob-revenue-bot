@@ -158,31 +158,78 @@ def _sum_range(history: dict, partner: str, start_iso: str, end_iso: str):
 
 
 # ---------- Embed builder ----------
-def _build_embed(history: dict, target_date: date) -> dict:
-    target = target_date.isoformat()
-    if target not in history:
-        # Pick closest prior day
-        prior = [k for k in history.keys() if k <= target]
-        target = sorted(prior)[-1] if prior else sorted(history.keys())[-1]
+def _pct_arrow(cur: float, prev: float) -> str:
+    """▲ +12.3% / ▼ -8.1% / 🆕 khi hôm trước = 0."""
+    if prev <= 0:
+        return "🆕" if cur > 0 else ""
+    pct = (cur - prev) / prev * 100
+    return f"{'▲' if pct >= 0 else '▼'} {pct:+.1f}%"
 
-    apps = history[target].get("apps", []) or []
-    sorted_days = sorted(history.keys())
-    idx = sorted_days.index(target)
-    prev_apps = history[sorted_days[idx - 1]].get("apps", []) if idx > 0 else []
 
-    partners = _aggregate(apps)
-    prev_partners = _aggregate(prev_apps)
-
-    # Overall color: green if any LÃI > 0, red if total < 0, else blue
-    total_profit = sum(p["profit_trvnd"] for p in partners.values() if p["has_profit"])
-    color = 0x10B981 if total_profit > 0 else (0xEF4444 if total_profit < 0 else 0x3B82F6)
-
-    d = datetime.fromisoformat(target).date()
+def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
+    """v6.0: fields doanh thu GA từ apps_data bot vừa quét (KHÔNG phụ thuộc API)."""
     fields = []
+    total = sum(a["revenue"] for a in apps_data)
+    head = f"**${total:,.2f}**"
+    if prev_total and prev_total > 0:
+        head += f"  ({_pct_arrow(total, prev_total)} so với hôm trước ${prev_total:,.2f})"
+    n_apps = len([a for a in apps_data if a["revenue"] > 0])
+    head += f"\n📱 {n_apps} app có doanh thu"
+    fields.append({"name": "💰 Tổng doanh thu ads", "value": head[:1024], "inline": False})
+
+    top = sorted(apps_data, key=lambda a: -a["revenue"])[:10]
+    lines = []
+    for i, a in enumerate(top, 1):
+        if a["revenue"] <= 0:
+            break
+        arrow = _pct_arrow(a["revenue"], a.get("prev_revenue", 0))
+        lines.append(f"`{i:>2}.` **{a['app_name']}** — `${a['revenue']:,.2f}` {arrow}")
+    if lines:
+        fields.append({"name": "🏆 Top app", "value": "\n".join(lines)[:1024], "inline": False})
+
+    # Gom doanh thu theo partner (prefix tên)
+    by_partner = {}
+    for a in apps_data:
+        if a["revenue"] <= 0:
+            continue
+        by_partner.setdefault(_get_partner(a["app_name"]), 0.0)
+        by_partner[_get_partner(a["app_name"])] += a["revenue"]
+    if by_partner:
+        pl = [f"{PARTNER_DISPLAY[p]['emoji']} {PARTNER_DISPLAY[p]['label']} `${v:,.0f}`"
+              for p, v in sorted(by_partner.items(), key=lambda x: -x[1])]
+        fields.append({"name": "🌍 Doanh thu theo đối tác",
+                       "value": " · ".join(pl)[:1024], "inline": False})
+    return fields
+
+
+def _build_embed(history: dict, target_date: date,
+                 apps_data=None, prev_total: Optional[float] = None) -> dict:
+    d = target_date
+    fields = []
+    color = 0x3B82F6
+    total_profit = 0.0
+
+    # --- v6.0: khối DOANH THU từ dữ liệu GA bot vừa quét (nguồn chính) ---
+    if apps_data:
+        fields += _build_revenue_fields(apps_data, prev_total)
 
     def _pl(profit: float) -> str:
         return (f"💚 LÃI `{_fmt_trvnd(profit)}`" if profit >= 0
                 else f"🔻 LỖ `{_fmt_trvnd(profit)}`")
+
+    # --- Khối LÃI/LỖ từ history API (sheet-enriched) — best effort ---
+    target = target_date.isoformat()
+    if history:
+        if target not in history:
+            prior = [k for k in history.keys() if k <= target]
+            target = sorted(prior)[-1] if prior else sorted(history.keys())[-1]
+        apps = history[target].get("apps", []) or []
+        partners = _aggregate(apps)
+        total_profit = sum(p["profit_trvnd"] for p in partners.values() if p["has_profit"])
+        color = 0x10B981 if total_profit > 0 else (0xEF4444 if total_profit < 0 else 0x3B82F6)
+        d = datetime.fromisoformat(target).date()
+    else:
+        partners = {}
 
     # --- Lãi/Lỗ HÔM NAY (chỉ partner có đủ data lãi/lỗ) ---
     order = sorted(partners.keys(), key=lambda p: partners[p]["profit_trvnd"], reverse=True)
@@ -234,36 +281,32 @@ def _build_embed(history: dict, target_date: date) -> dict:
         "url": "https://admob-revenue-bot.vercel.app/",
         "color": color,
         "fields": fields,
-        "footer": {"text": "🤖 Theo đối tác · Doanh thu + Lãi thực (Tr VND)"},
-        "timestamp": f"{target}T01:00:00Z",
+        "footer": {"text": "🤖 v6.0 · GA4 Data API (SA) · Lãi thực (Tr VND) từ sheet"},
+        "timestamp": f"{d.isoformat()}T01:00:00Z",
     }
 
 
 # ---------- Public API (compat with main.py) ----------
 def send_revenue_report(
     webhook_url: str,
-    apps_data=None,            # kept for backward compat — ignored, we fetch live API
+    apps_data=None,            # v6.0: dữ liệu GA bot vừa quét — NGUỒN CHÍNH của embed
     report_date: Optional[date] = None,
-    prev_total: Optional[float] = None,  # kept for backward compat — ignored
+    prev_total: Optional[float] = None,
     api_url: str = API_URL,
 ) -> bool:
-    """Send a partner-grouped revenue report.
-
-    Fetches enriched history from the Vercel API (which merges sheet_data for
-    Quicksave / LunaAI on top of Looker / GA4 baseline). The legacy
-    apps_data and prev_total arguments are accepted for backward
-    compatibility with the existing main.py call site but are ignored.
-    """
+    """Gửi report: khối doanh thu build từ apps_data (GA4, số bot vừa quét);
+    khối Lãi/Lỗ build từ history API sheet-enriched (best effort — API sập
+    vẫn gửi phần doanh thu)."""
     if report_date is None:
         report_date = date.today() - timedelta(days=1)
 
     try:
         history = _fetch_history(api_url)
     except Exception as e:
-        print(f"   ❌ Fetch API failed: {e}")
-        return False
+        print(f"   ⚠️ Fetch API failed ({e}) — gửi report chỉ với dữ liệu GA.")
+        history = {}
 
-    embed = _build_embed(history, report_date)
+    embed = _build_embed(history, report_date, apps_data=apps_data, prev_total=prev_total)
     payload = {"username": "Tranquil Revenue Bot", "embeds": [embed]}
 
     req = urllib.request.Request(
