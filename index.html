@@ -7,16 +7,12 @@
     <title>Tranquil Revenue — Dashboard</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
-        /* ═══════════ Design tokens — Dark Slate + Blue data + Amber money ═══════════ */
+        /* ═══════════ Design tokens — Dark Slate + Amber money ═══════════ */
         :root {
             --bg: #0B1220;
             --surface: #101A2D;
             --card: #131F36;
-            --card-hover: #182642;
             --border: rgba(148, 163, 184, 0.12);
             --border-strong: rgba(148, 163, 184, 0.22);
             --text: #E8EDF5;
@@ -36,7 +32,6 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         html { font-size: 16px; }
         @media (min-width: 1600px) { html { font-size: 17px; } }
 
@@ -50,8 +45,7 @@
             line-height: 1.55;
         }
 
-        .container { max-width: 1280px; margin: 0 auto; padding: 0 1.25rem 4rem; }
-
+        .container { max-width: 1180px; margin: 0 auto; padding: 0 1.25rem 4rem; }
         ::selection { background: rgba(59, 130, 246, 0.35); }
 
         /* ═══════════ Header ═══════════ */
@@ -64,22 +58,19 @@
         }
 
         .header-inner {
-            max-width: 1280px; margin: 0 auto; padding: 0.8rem 1.25rem;
+            max-width: 1180px; margin: 0 auto; padding: 0.8rem 1.25rem;
             display: flex; justify-content: space-between; align-items: center;
             flex-wrap: wrap; gap: 0.75rem;
         }
 
         .brand { display: flex; align-items: center; gap: 0.65rem; }
-
         .brand-mark {
             width: 34px; height: 34px; border-radius: 10px; flex-shrink: 0;
             background: linear-gradient(135deg, #F5B841, #3B82F6);
             display: flex; align-items: center; justify-content: center;
             font-size: 1.05rem;
         }
-
         h1 { font-size: 1.02rem; font-weight: 800; letter-spacing: -0.01em; }
-
         .brand-sub { font-size: 0.68rem; color: var(--text-muted); font-weight: 500; margin-top: -2px; }
 
         .live-dot {
@@ -94,8 +85,6 @@
         @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
 
         .controls { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
-
-        #lastUpdated { font-size: 0.72rem; color: var(--text-muted); font-weight: 500; }
 
         .filter-group {
             display: flex; align-items: center;
@@ -125,32 +114,7 @@
         }
         #customRange input[type="date"]:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
 
-        /* ═══════════ Joke box ═══════════ */
-        .ai-joke-box {
-            display: flex; align-items: center; gap: 0.6rem;
-            background: rgba(139, 92, 246, 0.08);
-            border: 1px solid rgba(139, 92, 246, 0.22);
-            border-radius: var(--radius-sm);
-            padding: 0.55rem 0.9rem; margin: 1.1rem 0 0;
-            animation: fadeIn 0.4s ease;
-        }
-        .ai-joke-text { color: #C4B5FD; font-weight: 600; font-size: 0.82rem; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-4px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ═══════════ Hero band ═══════════ */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: 1.35fr 1fr;
-            gap: 1.1rem;
-            margin: 1.4rem 0 1.1rem;
-            align-items: stretch;
-        }
-        @media (max-width: 980px) { .summary-grid { grid-template-columns: 1fr; } }
-
+        /* ═══════════ Hero ═══════════ */
         .card {
             background: var(--card);
             border: 1px solid var(--border);
@@ -159,17 +123,14 @@
             padding: 1.35rem 1.5rem;
         }
 
-        .stat-card.hero {
+        .hero {
             position: relative; overflow: hidden;
-            cursor: pointer; user-select: none;
-            transition: transform 0.18s ease, border-color 0.18s ease;
-            display: flex; flex-direction: column; justify-content: center; gap: 0.4rem;
+            margin: 1.4rem 0 1.2rem;
+            display: flex; flex-direction: column; gap: 0.45rem;
         }
-        .stat-card.hero:hover { transform: translateY(-2px); border-color: var(--border-strong); }
-        .stat-card.hero:active { transform: scale(0.99); }
-        .stat-card.hero::after {
+        .hero::after {
             content: ''; position: absolute; inset: 0; pointer-events: none;
-            background: radial-gradient(480px 200px at 90% -20%, rgba(245, 184, 65, 0.10), transparent 65%);
+            background: radial-gradient(520px 220px at 90% -20%, rgba(245, 184, 65, 0.10), transparent 65%);
         }
 
         .hero-top { display: flex; align-items: baseline; gap: 0.7rem; flex-wrap: wrap; }
@@ -179,85 +140,32 @@
         }
         #heroDateRange { font-size: 0.72rem; color: var(--text-dim); font-weight: 600; }
 
-        .stat-value .usd {
-            font-size: 2.7rem; font-weight: 800; line-height: 1.12;
+        .hero-value {
+            font-size: 3rem; font-weight: 800; line-height: 1.1;
             letter-spacing: -0.03em; color: var(--money);
-            text-shadow: 0 0 24px rgba(245, 184, 65, 0.18);
+            text-shadow: 0 0 26px rgba(245, 184, 65, 0.18);
         }
 
         .trend-wrap { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
-
         .trend-badge {
-            font-size: 0.74rem; font-weight: 800;
-            padding: 0.22rem 0.55rem; border-radius: 999px;
+            font-size: 0.76rem; font-weight: 800;
+            padding: 0.22rem 0.6rem; border-radius: 999px;
         }
         .trend-badge.positive { background: var(--up-bg); color: var(--up); }
         .trend-badge.negative { background: var(--down-bg); color: var(--down); }
         .trend-badge.neutral  { background: rgba(148,163,184,0.12); color: var(--text-muted); }
+        .trend-text { font-size: 0.76rem; color: var(--text-muted); font-weight: 500; }
 
-        .trend-text { font-size: 0.74rem; color: var(--text-muted); font-weight: 500; }
-
-        .profit-chip {
-            display: inline-flex; align-items: center; gap: 0.4rem;
-            margin-top: 0.4rem; width: fit-content;
-            font-size: 0.8rem; font-weight: 700;
-            padding: 0.3rem 0.7rem; border-radius: 999px;
-            border: 1px solid var(--border);
-            background: var(--surface);
+        .hero-stats {
+            display: flex; gap: 1.6rem; flex-wrap: wrap; margin-top: 0.55rem;
+            padding-top: 0.75rem; border-top: 1px solid var(--border);
         }
+        .hstat { display: flex; flex-direction: column; gap: 0.05rem; }
+        .hstat .v { font-size: 1.05rem; font-weight: 800; }
+        .hstat .k { font-size: 0.66rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.08em; }
 
-        .converter-box {
-            margin-top: 0.55rem; font-size: 0.74rem; font-weight: 500;
-            color: var(--text-muted); animation: fadeIn 0.5s ease;
-        }
-
-        /* Top 3 podium */
-        .stat-header { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.9rem; }
-        .stat-hint { font-size: 0.66rem; color: var(--text-dim); margin-left: auto; font-weight: 600; }
-
-        #valTop3List { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.7rem; }
-        @media (max-width: 560px) { #valTop3List { grid-template-columns: 1fr !important; } }
-
-        .ranking-item {
-            display: flex; flex-direction: column; align-items: center; text-align: center;
-            padding: 0.9rem 0.6rem;
-            background: var(--surface); border: 1px solid var(--border);
-            border-radius: 12px; cursor: pointer; min-width: 0;
-            transition: transform 0.18s, border-color 0.18s, background 0.18s;
-        }
-        .ranking-item:hover { transform: translateY(-3px); border-color: var(--accent); background: rgba(59,130,246,0.06); }
-        .ranking-item:active { transform: scale(0.98); }
-
-        .ranking-rank { font-size: 1.6rem; line-height: 1; margin-bottom: 0.35rem; }
-        .ranking-info { width: 100%; min-width: 0; }
-        .ranking-name {
-            font-weight: 700; font-size: 0.78rem;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-            margin-bottom: 0.25rem;
-        }
-        .ranking-stats { display: flex; flex-direction: column; align-items: center; gap: 0.18rem; }
-
-        /* ═══════════ Charts ═══════════ */
-        .dashboard-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 1.1rem;
-            margin-bottom: 1.4rem; align-items: stretch;
-        }
-        @media (max-width: 980px) { .dashboard-grid { grid-template-columns: 1fr; } }
-
-        .card-title {
-            font-size: 0.95rem; font-weight: 700;
-            display: flex; align-items: center; gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-        .card-title .hint { font-size: 0.66rem; font-weight: 500; color: var(--text-dim); margin-left: auto; }
-
-        .chart-holder { flex: 1; min-height: 320px; width: 100%; position: relative; }
-
-        /* ═══════════ Partner sections (core) ═══════════ */
-        .section-heading {
-            display: flex; align-items: baseline; gap: 0.6rem;
-            margin: 1.8rem 0 1rem;
-        }
+        /* ═══════════ Partner sections ═══════════ */
+        .section-heading { display: flex; align-items: baseline; gap: 0.6rem; margin: 1.6rem 0 1rem; }
         .section-heading h2 { font-size: 1.15rem; font-weight: 800; letter-spacing: -0.01em; }
         .section-heading .sub { font-size: 0.74rem; color: var(--text-muted); font-weight: 500; }
 
@@ -282,6 +190,7 @@
             cursor: pointer;
         }
         .partner-head:hover .partner-name { color: var(--p-color, var(--accent)); }
+        .partner-head:active { transform: scale(0.998); }
 
         .partner-emoji {
             width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
@@ -294,10 +203,7 @@
         .partner-name { font-size: 1.02rem; font-weight: 800; transition: color 0.18s; }
         .partner-count { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; }
 
-        .partner-total {
-            margin-left: auto; text-align: right;
-            display: flex; align-items: center; gap: 0.6rem;
-        }
+        .partner-total { margin-left: auto; display: flex; align-items: center; gap: 0.6rem; }
         .partner-total .amount { font-size: 1.3rem; font-weight: 800; color: var(--money); letter-spacing: -0.02em; }
 
         .share-track {
@@ -318,27 +224,26 @@
 
         .p-row {
             display: grid;
-            grid-template-columns: 2.2rem minmax(0, 1fr) auto 5.4rem;
-            gap: 0.6rem; align-items: center;
-            padding: 0.5rem 0.55rem;
+            grid-template-columns: 2.2rem minmax(0, 1fr) auto 5.2rem;
+            gap: 0.7rem; align-items: center;
+            padding: 0.52rem 0.55rem;
             border-radius: 10px;
             cursor: pointer;
             transition: background 0.15s;
             font-size: 0.86rem;
         }
         .p-row:hover { background: rgba(148, 163, 184, 0.07); }
-        .p-row:active { transform: scale(0.995); }
+        .p-row:active { transform: scale(0.997); }
         .p-row + .p-row { border-top: 1px dashed rgba(148, 163, 184, 0.08); }
 
         .p-rank { text-align: center; font-weight: 700; font-size: 0.78rem; color: var(--text-dim); }
         .p-rank.medal { font-size: 0.95rem; }
 
-        .p-name {
-            font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-            display: flex; align-items: baseline; gap: 0.5rem; min-width: 0;
-        }
-        .p-name .profit-tag { font-size: 0.66rem; font-weight: 700; flex-shrink: 0; }
+        .p-name { min-width: 0; }
+        .p-name .nm { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: block; }
+        .p-name .ga { font-size: 0.64rem; color: var(--text-dim); font-weight: 600; }
 
+        .p-imp { font-size: 0.7rem; color: var(--text-muted); font-weight: 600; text-align: right; white-space: nowrap; }
         .p-rev { font-weight: 800; color: var(--money); text-align: right; white-space: nowrap; }
 
         .p-pct { text-align: right; font-size: 0.74rem; font-weight: 800; white-space: nowrap; }
@@ -357,67 +262,21 @@
         .p-more:hover { color: var(--text); border-color: var(--accent); background: rgba(59,130,246,0.06); }
         .p-more:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-        .empty-note {
-            text-align: center; color: var(--text-dim); padding: 2.2rem 0; font-size: 0.85rem;
-        }
+        .empty-note { text-align: center; color: var(--text-dim); padding: 2.2rem 0; font-size: 0.85rem; }
 
-        /* ═══════════ Modal ═══════════ */
-        .overlay {
-            position: fixed; inset: 0; z-index: 999; display: none;
-            background: rgba(4, 8, 16, 0.7); backdrop-filter: blur(6px);
-        }
-
-        #detailPanel {
-            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 92%; max-width: 660px; max-height: 84vh; overflow-y: auto;
-            background: var(--card); border: 1px solid var(--border-strong);
-            border-radius: 20px; padding: 1.8rem 2rem;
-            box-shadow: 0 40px 80px -20px rgba(0, 0, 0, 0.7);
-            z-index: 1000; display: none;
-        }
-
-        .btn-close {
-            float: right; width: 2rem; height: 2rem; border-radius: 50%;
-            background: var(--surface); border: 1px solid var(--border);
-            color: var(--text-muted); font-size: 1.05rem; font-weight: 700; line-height: 1;
-            cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.18s;
-        }
-        .btn-close:hover { background: var(--down); border-color: var(--down); color: #fff; }
-        .btn-close:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-
-        .detail-row {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0.7rem 0.85rem; border-radius: 10px; margin-bottom: 0.35rem;
-            background: var(--surface);
-        }
-        .detail-row:last-child { margin-bottom: 0; }
-        .detail-app { font-weight: 600; color: var(--text-muted); font-size: 0.86rem; }
-        .detail-rev { color: var(--money); font-weight: 800; font-size: 1rem; }
-
-        .sheet-box {
-            background: rgba(59, 130, 246, 0.05);
-            border: 1px solid rgba(59, 130, 246, 0.14);
-            padding: 0.75rem 0.9rem; border-radius: 10px;
-            margin: -0.15rem 0 0.8rem; font-size: 0.84rem;
-        }
-        .sheet-line { display: flex; justify-content: space-between; margin-bottom: 0.35rem; }
-        .sheet-line:last-child { margin-bottom: 0; }
-        .sheet-line.sep { border-top: 1px dashed var(--border); padding-top: 0.35rem; }
-
-        /* ═══════════ Responsive fine-tuning ═══════════ */
+        /* ═══════════ Responsive ═══════════ */
         @media (max-width: 768px) {
             .container { padding: 0 0.8rem 3rem; }
             .header-inner { padding: 0.7rem 0.8rem; }
             .controls { width: 100%; }
             .filter-group { width: 100%; flex-wrap: wrap; }
             .filter-group select { flex: 1; min-width: 105px; }
-            .stat-value .usd { font-size: 2.1rem; }
+            .hero-value { font-size: 2.2rem; }
             .partner-total .amount { font-size: 1.1rem; }
             .p-row { grid-template-columns: 1.6rem minmax(0, 1fr) auto; }
-            .p-pct { display: none; }
+            .p-row .p-pct { display: none; }
             .partner-head { padding: 0.9rem 1rem 0.7rem; }
-            .share-track, .share-label { margin-left: 1rem; margin-right: 1rem; padding-left: 0; padding-right: 0; }
+            .share-track { margin: 0 1rem 0.35rem; }
             .share-label { padding: 0 1rem 0.55rem; }
         }
 
@@ -428,13 +287,6 @@
 </head>
 
 <body>
-
-    <div class="overlay" id="overlay" onclick="closeDetail()"></div>
-    <div id="detailPanel" role="dialog" aria-modal="true" aria-labelledby="detailDate">
-        <button class="btn-close" onclick="closeDetail()" aria-label="Đóng">×</button>
-        <h3 id="detailDate" style="font-weight:800; font-size:1.15rem; margin-bottom:1.3rem;">Báo cáo Ngày</h3>
-        <div id="detailList" style="max-height:420px; overflow-y:auto; padding-right:0.4rem;"></div>
-    </div>
 
     <header class="site-header">
         <div class="header-inner">
@@ -485,55 +337,24 @@
 
     <main class="container">
 
-        <div class="ai-joke-box" id="aiJokeBox" style="display:none;">
-            <span style="font-size:1.3rem;" aria-hidden="true">🤖</span>
-            <span class="ai-joke-text" id="aiJokeText">Đang phân tích số…</span>
-        </div>
-
-        <!-- Hero -->
-        <div class="summary-grid">
-            <div class="card stat-card hero" id="heroCard" onclick="triggerEasterEgg()">
-                <div class="hero-top">
-                    <span class="stat-label" id="lblHeroRev">Tổng doanh thu</span>
-                    <span id="heroDateRange">--</span>
-                </div>
-                <div class="stat-value" id="valHeroRev"><div class="usd">--</div></div>
-                <div class="trend-wrap">
-                    <span class="trend-badge neutral" id="trendHeroBadge">--</span>
-                    <span class="trend-text" id="trendHeroText">so với kỳ trước</span>
-                </div>
-                <div class="profit-chip" id="profitChip" style="display:none;"></div>
-                <div id="converterBox" style="display:none;"></div>
+        <!-- Hero: tổng doanh thu GA4 -->
+        <section class="card hero" aria-label="Tổng doanh thu">
+            <div class="hero-top">
+                <span class="stat-label" id="lblHeroRev">Tổng doanh thu</span>
+                <span id="heroDateRange">--</span>
             </div>
-
-            <div class="card">
-                <div class="stat-header">
-                    <span aria-hidden="true">🏆</span>
-                    <span class="stat-label">Top App</span>
-                    <span class="stat-hint">xếp theo lãi thực</span>
-                </div>
-                <div id="valTop3List">
-                    <div class="empty-note">Đang lọc siêu sao…</div>
-                </div>
+            <div class="hero-value" id="valHeroRev">--</div>
+            <div class="trend-wrap">
+                <span class="trend-badge neutral" id="trendHeroBadge">--</span>
+                <span class="trend-text" id="trendHeroText"></span>
             </div>
-        </div>
-
-        <!-- Charts -->
-        <div class="dashboard-grid">
-            <section class="card" aria-label="Biểu đồ doanh thu">
-                <div class="card-title">📈 Doanh thu theo ngày <span class="hint">chạm điểm để xem chi tiết ngày</span></div>
-                <div class="chart-holder"><canvas id="revenueLineChart"></canvas></div>
-            </section>
-            <section class="card" aria-label="Biểu đồ lãi thực">
-                <div class="card-title">💹 Lãi thực MKT <span class="hint">từ sheet đối tác</span></div>
-                <div class="chart-holder"><canvas id="profitLineChart"></canvas></div>
-            </section>
-        </div>
+            <div class="hero-stats" id="heroStats"></div>
+        </section>
 
         <!-- Partner sections -->
         <div class="section-heading">
             <h2>Theo đối tác</h2>
-            <span class="sub" id="partnerSectionSub">tổng từng bên · top app bên trong</span>
+            <span class="sub" id="partnerSectionSub"></span>
         </div>
         <div class="partner-stack" id="partnerListUI"></div>
 
@@ -543,39 +364,10 @@
         let historyData = {};
         let sortedDates = [];
         let curDates = [], prevDates = [];
-        let appAgg = {}, profitAgg = {}, prevAppAgg = {}, prevProfitAppAgg = {};
         let allApps = new Set();
         let currentVndRate = 25400;
-        let clickCount = 0;
         let currentCurrency = 'VND';
-        const expandedPartners = new Set();   // partner đang mở "xem thêm"
-
-        Chart.register(ChartDataLabels);
-        let lineChartObj = null;
-        let profitLineChartObj = null;
-
-        Chart.defaults.font.family = "'Be Vietnam Pro', system-ui, sans-serif";
-        Chart.defaults.color = '#8C9AB0';
-
-        const POSITIVE_QUOTES = [
-            "Sếp đi sắm ngay chiếc Mẹc đi, để em code phần còn lại cho! 🚗💨",
-            "Tuyệt trần! Trend xanh mướt thế này tối nay anh em đi nhậu Buffet Sếp nhỉ? 🥂",
-            "Tiền về như lốc! Gửi Bank lấy lãi kép thôi Sếp! 💸",
-            "Nhìn số nhảy sướng con mắt, mai cho em xin nghỉ phép 1 hôm đi shopping nhé! 🛍️"
-        ];
-        const NEGATIVE_QUOTES = [
-            "Tụt tí thôi, phong độ là nhất thời. Hít thở sâu vào Sếp đừng giận em! 🧘‍♂️",
-            "Tiền ngoài trạm thu phí còn tắc cơ mà, mai rồi cá lại về lưới Sếp ạ! 🚦",
-            "Thôi đừng căng thẳng Sếp ơi! Làm cốc Trà đá 3k hút thuốc lào cho tỉnh nhé 🍵",
-            "Đồ thị biểu diễn nhịp tim đấy Sếp, lúc lên lúc xuống mới khỏe! 💓"
-        ];
-        const FUNNY_CONVERSIONS = [
-            { label: "Bát Phở Thìn bò lăn 🍜", price: 70000 },
-            { label: "Tháng Netflix Premium 🍿", price: 260000 },
-            { label: "Đĩa Vịt Quay Bắc Kinh 🦆", price: 800000 },
-            { label: "Chỉ Vàng 9999 SJC 🪙", price: 8500000 },
-            { label: "Tháng Lương Dev Quèn 👨‍💻", price: 15000000 }
-        ];
+        const expandedPartners = new Set();
 
         async function init() {
             let debugStep = 'start';
@@ -585,25 +377,23 @@
                 if (!resp || !resp.ok) {
                     resp = await fetch('data/revenue_history.json');
                 }
-                debugStep = 'json API';
+                debugStep = 'parse JSON';
                 historyData = await resp.json();
                 sortedDates = Object.keys(historyData).sort().reverse();
 
                 if (sortedDates.length > 0) {
                     document.getElementById('lastUpdated').innerText =
-                        `Cập nhật ${formatVNDate(sortedDates[0])} · 1$ = ${Math.round(currentVndRate).toLocaleString('vi-VN')}đ`;
+                        `Cập nhật ${formatVNDate(sortedDates[0])} · 1$ = ${Math.round(currentVndRate).toLocaleString('vi-VN')}đ · nguồn GA4`;
                 }
 
-                debugStep = 'loop apps';
+                debugStep = 'build app list';
                 const allTimeAppRev = {};
                 for (let d in historyData) {
-                    historyData[d].apps.forEach(a => {
+                    (historyData[d].apps || []).forEach(a => {
                         allApps.add(a.name);
-                        allTimeAppRev[a.name] = (allTimeAppRev[a.name] || 0) + a.rev;
+                        allTimeAppRev[a.name] = (allTimeAppRev[a.name] || 0) + (a.rev || 0);
                     });
                 }
-
-                debugStep = 'add options';
                 const appOptGroup = document.getElementById('appOptGroup');
                 [...allApps].sort((a, b) => allTimeAppRev[b] - allTimeAppRev[a]).forEach(app => {
                     const opt = document.createElement('option');
@@ -611,8 +401,7 @@
                     appOptGroup.appendChild(opt);
                 });
 
-                document.getElementById('timeFilter').value = 'thismonth';
-                debugStep = 'applyFilter()';
+                debugStep = 'applyFilter';
                 applyFilter();
             } catch (e) {
                 console.error('Failed to load data', e);
@@ -620,57 +409,7 @@
             }
         }
 
-        function triggerEasterEgg() {
-            clickCount++;
-            if (clickCount >= 3) {
-                clickCount = 0;
-                const moneyShape = confetti.shapeFromText({ text: '💸', scalar: 2.5 });
-                confetti({ particleCount: 150, spread: 100, origin: { y: 0.6 }, shapes: [moneyShape, 'circle'], colors: ['#34D399', '#F5B841'] });
-                document.getElementById('aiJokeBox').style.display = 'flex';
-                document.getElementById('aiJokeText').innerText = "Trời mưa lộc, rơi tiền rồi kìa nhặt đi Sếp ơiiiii !!! 🚀🚀🚀";
-            }
-        }
-
-        /* ───────── Number helpers (giữ nguyên logic) ───────── */
-        // Sheet ghi SỐ NGUYÊN, đơn vị NGHÌN ĐỒNG, '.' = phân tách hàng nghìn.
-        // App B-code Azura (Looker): TRIỆU VND English decimal. Còn lại: strip dot + /1000.
-        function _isAzuraBcode(appName) { return /^B\d+/.test(appName || ''); }
-
-        function sheetNum(raw, appName) {
-            if (raw === undefined || raw === null || raw === '') return NaN;
-            let s = String(raw).trim();
-            if (_isAzuraBcode(appName)) {
-                if (s.indexOf(',') !== -1 && s.indexOf('.') === -1) s = s.replace(',', '.');
-                const n = parseFloat(s);
-                return isNaN(n) ? NaN : n;
-            }
-            const neg = s.indexOf('-') !== -1;
-            s = s.replace(/[^0-9,]/g, '').replace(',', '.');
-            let n = parseFloat(s);
-            if (isNaN(n)) return NaN;
-            if (neg) n = -n;
-            return n / 1000;
-        }
-
-        function formatSheetVal(val) {
-            if (val === undefined || val === null || val === '') return '--';
-            let num = parseFloat(val.toString().replace(/,/g, ''));
-            if (isNaN(num)) return val;
-            if (num === 0) return '<span style="font-weight:400;font-size:0.72rem;color:var(--text-dim);">Chưa cập nhật</span>';
-            const abs = Math.abs(num);
-            if (abs < 1000) return num.toLocaleString('vi-VN', { maximumFractionDigits: 2 }) + ' Tr';
-            return (num / 1000).toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' Tỷ';
-        }
-
-        function getFunnyConverterText(usdValue, vndMillionOverride) {
-            const vnd = (vndMillionOverride != null) ? vndMillionOverride * 1_000_000 : usdValue * currentVndRate;
-            if (vnd <= 0) return "";
-            const mtb = FUNNY_CONVERSIONS[Math.floor(Math.random() * FUNNY_CONVERSIONS.length)];
-            const qty = Math.floor(vnd / mtb.price);
-            if (qty < 1) return `Mua được vài ly Trà Đá 🍵`;
-            return `≈ ${qty.toLocaleString('vi-VN')} ${mtb.label}`;
-        }
-
+        /* ───────── Format helpers ───────── */
         function formatVNDate(dateStr) {
             if (!dateStr) return '';
             const [y, m, d] = dateStr.split('-');
@@ -689,6 +428,13 @@
         function formatAmount(usdValue, compact = true) {
             if (currentCurrency === 'VND') return formatVnd(usdValue, compact);
             return '$' + usdValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        function formatImp(n) {
+            if (!n) return '0';
+            if (n >= 1000000) return (n / 1000000).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + 'M';
+            if (n >= 1000) return (n / 1000).toLocaleString('vi-VN', { maximumFractionDigits: 1 }) + 'K';
+            return String(Math.round(n));
         }
 
         function setCurrency(val) { currentCurrency = val; applyFilter(); }
@@ -723,43 +469,8 @@
             return 'unknown';
         }
 
-        // Bỏ prefix partner trong tên app khi đã đứng trong khối partner
         const PREFIX_RE = /^(bbl|bll|affica|herond|ntech|adc(?:[ -]media)?)[ \-]+/i;
         function shortName(name) { return (name || '').replace(PREFIX_RE, '').trim() || name; }
-
-        function getAppTrend(appName) {
-            const recent = curDates.slice(0, 7);
-            if (recent.length < 3) return null;
-            const vals = recent.map(d => {
-                const a = (historyData[d]?.apps || []).find(x => x.name === appName);
-                if (!a) return null;
-                if (a.sheet_data?.marketing_profit_vnd) {
-                    const v = sheetNum(a.sheet_data.marketing_profit_vnd, a.name);
-                    if (!isNaN(v)) return v;
-                }
-                return null;
-            }).filter(v => v !== null);
-            if (vals.length < 3) return null;
-            vals.reverse();
-            const n = vals.length;
-            const mean = vals.reduce((s, v) => s + v, 0) / n;
-            const xs = vals.map((_, i) => i + 1);
-            const xMean = (n + 1) / 2;
-            const slope = vals.reduce((s, v, i) => s + (xs[i] - xMean) * (v - mean), 0)
-                        / xs.reduce((s, x) => s + (x - xMean) ** 2, 0);
-            const stdev = Math.sqrt(vals.reduce((s, v) => s + (v - mean) ** 2, 0) / n);
-            const cv = mean !== 0 ? stdev / Math.abs(mean) : Infinity;
-            const profitDays = vals.filter(v => v > 0).length;
-            const lossDays = vals.filter(v => v < 0).length;
-            const lossRatio = lossDays / n;
-            const totalSum = vals.reduce((s, v) => s + v, 0);
-            if (totalSum < 0 && lossRatio > 0.6) return { label: '💀 Lỗ sấp mặt', color: '#F87171', bg: 'rgba(248,113,113,0.10)', border: 'rgba(248,113,113,0.35)' };
-            if (lossDays === 0) return { label: '✅ Lãi đều', color: '#34D399', bg: 'rgba(52,211,153,0.08)', border: 'rgba(52,211,153,0.3)' };
-            if (profitDays > 0 && lossDays > 0 && cv > 0.5) return { label: '⚡ Phập phù', color: '#F5B841', bg: 'rgba(245,184,65,0.08)', border: 'rgba(245,184,65,0.3)' };
-            if (totalSum < 0 && slope > 0) return { label: '🚀 Về bờ', color: '#34D399', bg: 'rgba(52,211,153,0.08)', border: 'rgba(52,211,153,0.3)' };
-            if (totalSum > 0 && slope < 0) return { label: '⚠️ Xa bờ', color: '#FB923C', bg: 'rgba(251,146,60,0.08)', border: 'rgba(251,146,60,0.3)' };
-            return { label: '✅ Lãi đều', color: '#34D399', bg: 'rgba(52,211,153,0.08)', border: 'rgba(52,211,153,0.3)' };
-        }
 
         function isMatchApp(name, appFilter) {
             if (appFilter === 'all') return true;
@@ -767,81 +478,53 @@
             return name === appFilter;
         }
 
-        function getAppRev(dataObj, appFilter) {
-            if (!dataObj) return 0;
-            if (appFilter === 'all') return dataObj.total;
-            let sum = 0;
-            dataObj.apps.forEach(a => { if (isMatchApp(a.name, appFilter)) sum += a.rev; });
-            return sum;
-        }
-
-        function getAppProfit(dataObj, appFilter) {
-            if (!dataObj) return 0;
-            let sum = 0;
-            dataObj.apps.forEach(a => {
-                if (isMatchApp(a.name, appFilter) && a.sheet_data && a.sheet_data.marketing_profit_vnd) {
-                    const num = sheetNum(a.sheet_data.marketing_profit_vnd, a.name);
-                    if (!isNaN(num)) sum += num * 1000000;
-                }
-            });
-            return sum / currentVndRate;
-        }
-
         /* ───────── Filter engine ───────── */
-        function applyFilter() {
-            const timeFilter = document.getElementById('timeFilter').value;
-            const appSel = document.getElementById('appFilter').value;
-            const customEl = document.getElementById('customRange');
-            if (customEl) customEl.style.display = (timeFilter === 'custom') ? 'inline-flex' : 'none';
-            if (sortedDates.length === 0) return;
-
-            curDates = []; prevDates = []; let lblHero = "Tổng doanh thu";
+        function pickDates(timeFilter) {
             const todayStr = new Date().toISOString().split('T')[0];
+            let cur = [], prev = [], lbl = "Tổng doanh thu";
 
             if (timeFilter === 'today') {
                 if (sortedDates[0] === todayStr) {
-                    curDates = [sortedDates[0]];
-                    prevDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
+                    cur = [sortedDates[0]];
+                    prev = sortedDates.length > 1 ? [sortedDates[1]] : [];
                 } else {
-                    curDates = [];
-                    prevDates = [sortedDates[0]];
+                    cur = [];
+                    prev = [sortedDates[0]];
                 }
-                lblHero = "Doanh thu hôm nay";
+                lbl = "Doanh thu hôm nay";
             } else if (timeFilter === 'yesterday') {
                 if (sortedDates[0] === todayStr) {
-                    curDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
-                    prevDates = sortedDates.length > 2 ? [sortedDates[2]] : [];
+                    cur = sortedDates.length > 1 ? [sortedDates[1]] : [];
+                    prev = sortedDates.length > 2 ? [sortedDates[2]] : [];
                 } else {
-                    curDates = [sortedDates[0]];
-                    prevDates = sortedDates.length > 1 ? [sortedDates[1]] : [];
+                    cur = [sortedDates[0]];
+                    prev = sortedDates.length > 1 ? [sortedDates[1]] : [];
                 }
-                lblHero = "Doanh thu hôm qua";
+                lbl = "Doanh thu hôm qua";
             } else if (timeFilter === '7days') {
-                curDates = sortedDates.slice(0, 7);
-                prevDates = sortedDates.slice(7, 14);
-                lblHero = "Tổng 7 ngày qua";
+                cur = sortedDates.slice(0, 7); prev = sortedDates.slice(7, 14);
+                lbl = "Tổng doanh thu 7 ngày";
             } else if (timeFilter === '30days') {
-                curDates = sortedDates.slice(0, 30);
-                prevDates = sortedDates.slice(30, 60);
-                lblHero = "Tổng 30 ngày qua";
+                cur = sortedDates.slice(0, 30); prev = sortedDates.slice(30, 60);
+                lbl = "Tổng doanh thu 30 ngày";
             } else if (timeFilter === 'thismonth') {
-                const currentMonthPrefix = sortedDates[0].substring(0, 7);
-                curDates = sortedDates.filter(d => d.startsWith(currentMonthPrefix));
-                prevDates = sortedDates.filter(d => !d.startsWith(currentMonthPrefix)).slice(0, curDates.length);
-                lblHero = "Tháng này (MTD)";
+                const pfx = sortedDates[0].substring(0, 7);
+                cur = sortedDates.filter(d => d.startsWith(pfx));
+                prev = sortedDates.filter(d => !d.startsWith(pfx)).slice(0, cur.length);
+                lbl = "Tổng doanh thu tháng này";
             } else if (timeFilter === 'lastmonth') {
                 const [ny, nm] = sortedDates[0].split('-').map(Number);
                 const lm = new Date(ny, nm - 2, 1);
-                const lmPrefix = lm.getFullYear() + '-' + String(lm.getMonth() + 1).padStart(2, '0');
+                const lmPfx = lm.getFullYear() + '-' + String(lm.getMonth() + 1).padStart(2, '0');
                 const pm = new Date(ny, nm - 3, 1);
-                const pmPrefix = pm.getFullYear() + '-' + String(pm.getMonth() + 1).padStart(2, '0');
-                curDates = sortedDates.filter(d => d.startsWith(lmPrefix));
-                prevDates = sortedDates.filter(d => d.startsWith(pmPrefix));
-                lblHero = "Tháng trước";
+                const pmPfx = pm.getFullYear() + '-' + String(pm.getMonth() + 1).padStart(2, '0');
+                cur = sortedDates.filter(d => d.startsWith(lmPfx));
+                prev = sortedDates.filter(d => d.startsWith(pmPfx));
+                lbl = "Tổng doanh thu tháng trước";
             } else if (timeFilter === 'alltime') {
-                curDates = sortedDates.filter(d => d >= '2026-01-01');
-                prevDates = [];
-                lblHero = "Toàn bộ (từ 01/01/2026)";
+                cur = sortedDates.filter(d => d >= '2026-01-01');
+                prev = [];
+                lbl = "Tổng doanh thu (từ 01/01/2026)";
             } else if (timeFilter === 'custom') {
                 const fromEl = document.getElementById('fromDate');
                 const toEl = document.getElementById('toDate');
@@ -852,61 +535,37 @@
                 if (!fromEl.value) fromEl.value = sortedDates[Math.min(6, sortedDates.length - 1)];
                 let from = fromEl.value, to = toEl.value;
                 if (from > to) { const t = from; from = to; to = t; }
-                curDates = sortedDates.filter(d => d >= from && d <= to);
-                prevDates = sortedDates.filter(d => d < from).slice(0, curDates.length);
-                lblHero = `Từ ${formatVNDate(from)} đến ${formatVNDate(to)}`;
+                cur = sortedDates.filter(d => d >= from && d <= to);
+                prev = sortedDates.filter(d => d < from).slice(0, cur.length);
+                lbl = `Doanh thu ${formatVNDate(from)} → ${formatVNDate(to)}`;
             }
+            return { cur, prev, lbl };
+        }
 
-            // ── Metrics ──
-            let curTotal = 0, prevTotal = 0;
-            let curProfitVnd = 0, prevProfitVnd = 0;
-            appAgg = {}; profitAgg = {}; prevAppAgg = {}; prevProfitAppAgg = {};
+        function applyFilter() {
+            const timeFilter = document.getElementById('timeFilter').value;
+            const appSel = document.getElementById('appFilter').value;
+            const customEl = document.getElementById('customRange');
+            if (customEl) customEl.style.display = (timeFilter === 'custom') ? 'inline-flex' : 'none';
+            if (sortedDates.length === 0) return;
 
-            curDates.forEach(d => {
-                const dObj = historyData[d];
-                curTotal += getAppRev(dObj, appSel);
-                dObj.apps.forEach(a => {
-                    if (isMatchApp(a.name, appSel)) {
-                        appAgg[a.name] = (appAgg[a.name] || 0) + a.rev;
-                        if (a.sheet_data && a.sheet_data.marketing_profit_vnd) {
-                            const pVal = sheetNum(a.sheet_data.marketing_profit_vnd, a.name);
-                            if (!isNaN(pVal)) profitAgg[a.name] = (profitAgg[a.name] || 0) + pVal;
-                        }
-                    }
-                });
-            });
+            const picked = pickDates(timeFilter);
+            curDates = picked.cur; prevDates = picked.prev;
 
-            if (appSel === 'all') {
-                const partnerProfitAgg = {};
-                Object.entries(profitAgg).forEach(([name, val]) => {
-                    const p = getPartner(name);
-                    partnerProfitAgg[p] = (partnerProfitAgg[p] || 0) + val;
-                });
-                curProfitVnd = Object.values(partnerProfitAgg).reduce((sum, val) => sum + Math.max(0, val), 0);
-            } else {
-                curProfitVnd = Object.values(profitAgg).reduce((sum, val) => sum + val, 0);
-            }
+            // ── Tổng GA4 (rev + imp) theo filter ──
+            let curTotal = 0, prevTotal = 0, curImp = 0;
+            let appCount = new Set();
+            curDates.forEach(d => (historyData[d]?.apps || []).forEach(a => {
+                if (!isMatchApp(a.name, appSel)) return;
+                curTotal += (a.rev || 0);
+                curImp += (a.imp || 0);
+                if ((a.rev || 0) >= 0.01) appCount.add(a.name);
+            }));
+            prevDates.forEach(d => (historyData[d]?.apps || []).forEach(a => {
+                if (isMatchApp(a.name, appSel)) prevTotal += (a.rev || 0);
+            }));
 
-            prevDates.forEach(d => {
-                prevTotal += getAppRev(historyData[d], appSel);
-                const dObj = historyData[d];
-                if (dObj && dObj.apps) {
-                    dObj.apps.forEach(a => {
-                        if (isMatchApp(a.name, appSel)) {
-                            prevAppAgg[a.name] = (prevAppAgg[a.name] || 0) + a.rev;
-                            if (a.sheet_data && a.sheet_data.marketing_profit_vnd) {
-                                const pVal = sheetNum(a.sheet_data.marketing_profit_vnd, a.name);
-                                if (!isNaN(pVal)) {
-                                    prevProfitVnd += pVal;
-                                    prevProfitAppAgg[a.name] = (prevProfitAppAgg[a.name] || 0) + pVal;
-                                }
-                            }
-                        }
-                    });
-                }
-            });
-
-            // ── Hero: DOANH THU là số chính ──
+            // ── Hero ──
             if (curDates.length > 0) {
                 const startD = formatVNDate(curDates[curDates.length - 1]);
                 const endD = formatVNDate(curDates[0]);
@@ -918,11 +577,9 @@
 
             const PARTNER_LABELS = { 'partner:affica': 'Affica', 'partner:bbl': 'BBL', 'partner:azura': 'Azura', 'partner:ntech': 'NTech', 'partner:adc': 'ADC', 'partner:herond': 'Herond' };
             const appSelLabel = PARTNER_LABELS[appSel] || (appSel !== 'all' ? appSel : '');
-            document.getElementById('lblHeroRev').innerText = lblHero + (appSelLabel ? ` · ${appSelLabel}` : '');
-            document.getElementById('valHeroRev').innerHTML =
-                `<div class="usd">${curTotal > 0 ? formatAmount(curTotal) : '--'}</div>`;
+            document.getElementById('lblHeroRev').innerText = picked.lbl + (appSelLabel ? ` · ${appSelLabel}` : '');
+            document.getElementById('valHeroRev').innerText = curTotal > 0 ? formatAmount(curTotal) : '--';
 
-            // Badge %Δ doanh thu vs kỳ trước
             const badgeObj = document.getElementById('trendHeroBadge');
             const trendText = document.getElementById('trendHeroText');
             if (prevTotal > 0 && curTotal > 0) {
@@ -930,91 +587,24 @@
                 badgeObj.className = 'trend-badge ' + (pct >= 0 ? 'positive' : 'negative');
                 badgeObj.innerText = `${pct >= 0 ? '▲' : '▼'} ${Math.abs(pct).toFixed(1)}%`;
                 trendText.innerText = `so với kỳ trước (${formatAmount(prevTotal)})`;
-                document.getElementById('aiJokeBox').style.display = 'flex';
-                const quotes = pct >= 0 ? POSITIVE_QUOTES : NEGATIVE_QUOTES;
-                document.getElementById('aiJokeText').innerText = quotes[Math.floor(Math.random() * quotes.length)];
             } else {
                 badgeObj.className = 'trend-badge neutral';
                 badgeObj.innerText = 'Chưa đủ dữ liệu so sánh';
                 trendText.innerText = '';
-                document.getElementById('aiJokeBox').style.display = 'none';
             }
 
-            // Chip lãi thực (giữ thông tin P/L)
-            const chip = document.getElementById('profitChip');
-            if (curProfitVnd !== 0) {
-                const good = curProfitVnd >= 0;
-                chip.style.display = 'inline-flex';
-                chip.style.color = good ? 'var(--up)' : 'var(--down)';
-                chip.innerHTML = `${good ? '💚 Lãi thực' : '🔻 Lỗ thật'}&nbsp;<b>${formatSheetVal(curProfitVnd)}</b>`;
-            } else {
-                chip.style.display = 'none';
-            }
-
-            if (curProfitVnd !== 0 && curTotal > 0) {
-                document.getElementById('converterBox').style.display = 'block';
-                document.getElementById('converterBox').innerHTML =
-                    `<div class="converter-box">${getFunnyConverterText(curTotal, curProfitVnd)}</div>`;
-            } else {
-                document.getElementById('converterBox').style.display = 'none';
-            }
-
-            // ── Top 3 (xếp theo lãi thực, fallback revenue) ──
-            const appArr = Object.entries(appAgg).sort((a, b) => {
-                const pa = profitAgg[a[0]] !== undefined ? profitAgg[a[0]] : -Infinity;
-                const pb = profitAgg[b[0]] !== undefined ? profitAgg[b[0]] : -Infinity;
-                if (pa === -Infinity && pb === -Infinity) return b[1] - a[1];
-                return pb - pa;
-            });
-            renderTop3(appArr);
-
-            // ── Charts + Partner blocks ──
-            let chartDates = curDates;
-            if (chartDates.length < 7) chartDates = sortedDates.slice(0, Math.max(7, chartDates.length));
+            // Stats phụ từ GA4: số app · impressions · eCPM
+            const ecpm = curImp > 0 ? (curTotal / curImp * 1000) : 0;
+            document.getElementById('heroStats').innerHTML = `
+                <div class="hstat"><span class="v">${appCount.size}</span><span class="k">App có doanh thu</span></div>
+                <div class="hstat"><span class="v">${formatImp(curImp)}</span><span class="k">Impressions</span></div>
+                <div class="hstat"><span class="v">${ecpm > 0 ? '$' + ecpm.toFixed(2) : '--'}</span><span class="k">eCPM trung bình</span></div>
+                <div class="hstat"><span class="v">${curDates.length}</span><span class="k">Ngày trong kỳ</span></div>`;
 
             renderPartnerBlocks(appSel);
-            renderCharts([...chartDates].reverse(), appArr, appSel);
         }
 
-        function renderTop3(appArr) {
-            const box = document.getElementById('valTop3List');
-            if (appArr.length === 0) {
-                box.innerHTML = '<div class="empty-note">Không có dữ liệu xếp hạng</div>';
-                return;
-            }
-            const medals = ['🥇', '🥈', '🥉'];
-            const top3 = appArr.slice(0, 3);
-            box.style.gridTemplateColumns = `repeat(${top3.length}, 1fr)`;
-            box.innerHTML = top3.map((app, index) => {
-                const appName = app[0];
-                let totalProfit = 0, hasSheet = false;
-                curDates.forEach(d => {
-                    const aData = (historyData[d]?.apps || []).find(a => a.name === appName);
-                    if (aData?.sheet_data?.marketing_profit_vnd) {
-                        const pVal = sheetNum(aData.sheet_data.marketing_profit_vnd, aData.name);
-                        if (!isNaN(pVal)) { totalProfit += pVal; hasSheet = true; }
-                    }
-                });
-                const profitColor = totalProfit < 0 ? 'var(--down)' : 'var(--up)';
-                const profitText = hasSheet ? `Lãi: ${formatSheetVal(totalProfit)}` : '';
-                const trend = getAppTrend(appName);
-                const trendPill = trend ? `<span style="font-size:0.64rem;font-weight:800;color:${trend.color};background:${trend.bg};padding:0.12rem 0.45rem;border-radius:999px;">${trend.label}</span>` : '';
-                return `
-                <div class="ranking-item" onclick="showAppDetail('${appName.replace(/'/g, "\\'")}')" role="button" tabindex="0">
-                    <div class="ranking-rank" aria-hidden="true">${medals[index] || (index + 1)}</div>
-                    <div class="ranking-info">
-                        <div class="ranking-name" title="${appName}">${appName}</div>
-                        <div class="ranking-stats">
-                            ${trendPill}
-                            <span style="font-size:1rem;color:var(--money);font-weight:800;">${formatAmount(app[1])}</span>
-                            ${profitText ? `<span style="font-size:0.68rem;color:${profitColor};font-weight:700;">${profitText}</span>` : ''}
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
-        /* ───────── Partner blocks — trái tim của dashboard ───────── */
+        /* ───────── Partner blocks ───────── */
         const TOP_PER_PARTNER = 6;
 
         function pctBadgeHtml(cur, prev) {
@@ -1030,18 +620,27 @@
             renderPartnerBlocks(document.getElementById('appFilter').value);
         }
 
+        function filterPartner(p) {
+            const sel = document.getElementById('appFilter');
+            sel.value = (sel.value === 'partner:' + p) ? 'all' : 'partner:' + p;
+            applyFilter();
+        }
+
+        function filterApp(name) {
+            document.getElementById('appFilter').value = name;
+            applyFilter();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         function renderPartnerBlocks(appSel) {
             const container = document.getElementById('partnerListUI');
             const onlyPartner = (appSel && appSel.startsWith('partner:')) ? appSel.slice(8) : null;
 
-            // Doanh thu + lãi per app, ĐỘC LẬP với app filter (luôn nhìn toàn fleet)
-            const cur = {}, prev = {}, profit = {}, hasProfit = {};
+            // Doanh thu + imp per app trong kỳ (toàn fleet, độc lập app filter)
+            const cur = {}, prev = {}, imp = {};
             curDates.forEach(d => (historyData[d]?.apps || []).forEach(a => {
                 cur[a.name] = (cur[a.name] || 0) + (a.rev || 0);
-                if (a.sheet_data?.marketing_profit_vnd) {
-                    const v = sheetNum(a.sheet_data.marketing_profit_vnd, a.name);
-                    if (!isNaN(v)) { profit[a.name] = (profit[a.name] || 0) + v; hasProfit[a.name] = true; }
-                }
+                imp[a.name] = (imp[a.name] || 0) + (a.imp || 0);
             }));
             prevDates.forEach(d => (historyData[d]?.apps || []).forEach(a => {
                 prev[a.name] = (prev[a.name] || 0) + (a.rev || 0);
@@ -1059,14 +658,14 @@
                     p, names,
                     total: names.reduce((s, n) => s + cur[n], 0),
                     prevTotal: names.reduce((s, n) => s + (prev[n] || 0), 0),
-                    profit: names.reduce((s, n) => s + (profit[n] || 0), 0),
-                    hasProfit: names.some(n => hasProfit[n]),
                 }))
                 .filter(g => g.total >= 0.01 && (!onlyPartner || g.p === onlyPartner))
                 .sort((a, b) => b.total - a.total);
 
             document.getElementById('partnerSectionSub').innerText =
-                onlyPartner ? `đang lọc: ${PARTNER_DISPLAY[onlyPartner]?.label || onlyPartner}` : `${blocks.length} đối tác · tổng ${formatAmount(fleetTotal)}`;
+                onlyPartner
+                    ? `đang lọc: ${PARTNER_DISPLAY[onlyPartner]?.label || onlyPartner} — bấm lại header để bỏ lọc`
+                    : `${blocks.length} đối tác · tổng ${formatAmount(fleetTotal)}`;
 
             if (blocks.length === 0) {
                 container.innerHTML = '<div class="card empty-note">Không có doanh thu trong khoảng thời gian này</div>';
@@ -1082,13 +681,14 @@
 
                 const rows = shown.map((n, i) => {
                     const medal = i < 3 ? ['🥇', '🥈', '🥉'][i] : (i + 1);
-                    const profTag = hasProfit[n]
-                        ? `<span class="profit-tag" style="color:${profit[n] < 0 ? 'var(--down)' : 'var(--up)'};">${profit[n] < 0 ? 'lỗ' : 'lãi'} ${formatSheetVal(Math.abs(profit[n]))}</span>`
+                    const appEcpm = imp[n] > 0 ? (cur[n] / imp[n] * 1000) : 0;
+                    const gaLine = imp[n] > 0
+                        ? `👁 ${formatImp(imp[n])} · eCPM $${appEcpm.toFixed(2)}`
                         : '';
                     return `
-                    <div class="p-row" onclick="showAppDetail('${n.replace(/'/g, "\\'")}')" role="button" tabindex="0" title="${n}">
+                    <div class="p-row" onclick="filterApp('${n.replace(/'/g, "\\'")}')" role="button" tabindex="0" title="${n}">
                         <span class="p-rank ${i < 3 ? 'medal' : ''}" aria-hidden="true">${medal}</span>
-                        <span class="p-name">${shortName(n)}${profTag}</span>
+                        <span class="p-name"><span class="nm">${shortName(n)}</span>${gaLine ? `<span class="ga">${gaLine}</span>` : ''}</span>
                         <span class="p-rev">${formatAmount(cur[n])}</span>
                         ${pctBadgeHtml(cur[n], prev[n] || 0)}
                     </div>`;
@@ -1100,22 +700,17 @@
                     : (expanded && !onlyPartner && names.length > TOP_PER_PARTNER
                         ? `<button class="p-more" onclick="togglePartner('${g.p}')">Thu gọn ▴</button>` : '');
 
-                const partnerProfit = g.hasProfit
-                    ? `<span style="font-size:0.72rem;font-weight:700;color:${g.profit < 0 ? 'var(--down)' : 'var(--up)'};">${g.profit < 0 ? 'Lỗ' : 'Lãi'} ${formatSheetVal(Math.abs(g.profit))}</span>`
-                    : '';
-
                 return `
                 <section class="partner-block" style="--p-color:${meta.color};" aria-label="Đối tác ${meta.label}">
-                    <div class="partner-head" onclick="filterPartner('${g.p}')" role="button" tabindex="0"
-                         title="Lọc theo ${meta.label}">
+                    <div class="partner-head" onclick="filterPartner('${g.p}')" role="button" tabindex="0" title="Lọc theo ${meta.label}">
                         <div class="partner-emoji" aria-hidden="true">${meta.emoji}</div>
                         <div>
                             <div class="partner-name">${meta.label}</div>
-                            <div class="partner-count">${names.length} app có doanh thu ${partnerProfit ? '· ' : ''}${partnerProfit}</div>
+                            <div class="partner-count">${names.length} app có doanh thu</div>
                         </div>
                         <div class="partner-total">
                             <span class="amount">${formatAmount(g.total)}</span>
-                            ${pctBadgeHtml(g.total, g.prevTotal).replace('p-pct', 'p-pct" style="font-size:0.8rem;')}
+                            ${pctBadgeHtml(g.total, g.prevTotal).replace('class="p-pct', 'style="font-size:0.8rem;" class="p-pct')}
                         </div>
                     </div>
                     <div class="share-track"><div class="share-fill" style="width:${Math.max(share, 0.8)}%"></div></div>
@@ -1124,166 +719,6 @@
                 </section>`;
             }).join('');
         }
-
-        function filterPartner(p) {
-            const sel = document.getElementById('appFilter');
-            sel.value = (sel.value === 'partner:' + p) ? 'all' : 'partner:' + p;
-            applyFilter();
-        }
-
-        /* ───────── Charts (dark) ───────── */
-        function renderCharts(orderedDates, appArr, appSel) {
-            if (lineChartObj) lineChartObj.destroy();
-            if (profitLineChartObj) profitLineChartObj.destroy();
-
-            const gridColor = 'rgba(148, 163, 184, 0.08)';
-            const showLabels = orderedDates.length <= 16;
-
-            const ctx1 = document.getElementById('revenueLineChart').getContext('2d');
-            const grad = ctx1.createLinearGradient(0, 0, 0, 320);
-            grad.addColorStop(0, 'rgba(59, 130, 246, 0.28)');
-            grad.addColorStop(1, 'rgba(59, 130, 246, 0)');
-
-            lineChartObj = new Chart(ctx1, {
-                type: 'line',
-                data: {
-                    labels: orderedDates.map(d => formatVNDate(d)),
-                    datasets: [{
-                        label: 'Doanh thu',
-                        data: orderedDates.map(d => getAppRev(historyData[d], appSel)),
-                        borderColor: '#3B82F6', backgroundColor: grad,
-                        borderWidth: 2.5, tension: 0.4, fill: true,
-                        pointBackgroundColor: '#0B1220', pointBorderColor: '#3B82F6',
-                        pointBorderWidth: 2, pointRadius: 3.5, pointHoverRadius: 7
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    layout: { padding: { top: 24, left: 6, right: 12 } },
-                    onClick: (e, elements) => {
-                        if (elements.length > 0) showDetail(orderedDates[elements[0].index], appSel);
-                    },
-                    plugins: {
-                        datalabels: {
-                            display: showLabels, align: 'top', anchor: 'end',
-                            color: '#60A5FA', font: { weight: 700, size: 10 },
-                            formatter: v => formatAmount(v)
-                        },
-                        legend: { display: false },
-                        tooltip: {
-                            displayColors: false, backgroundColor: '#060B14',
-                            borderColor: 'rgba(148,163,184,0.2)', borderWidth: 1,
-                            padding: 12, cornerRadius: 10,
-                            callbacks: { label: ctx => ` Doanh thu: ${formatAmount(ctx.parsed.y)}` }
-                        }
-                    },
-                    scales: {
-                        y: { grid: { color: gridColor }, border: { display: false }, ticks: { callback: v => formatAmount(v) } },
-                        x: { grid: { display: false }, border: { display: false } }
-                    },
-                    interaction: { intersect: false, mode: 'index' }
-                }
-            });
-
-            profitLineChartObj = new Chart(document.getElementById('profitLineChart').getContext('2d'), {
-                type: 'bar',
-                data: {
-                    labels: orderedDates.map(d => formatVNDate(d)),
-                    datasets: [{
-                        label: 'Lãi thực',
-                        data: orderedDates.map(d => getAppProfit(historyData[d], appSel)),
-                        backgroundColor: ctx => (ctx.raw || 0) < 0 ? 'rgba(248, 113, 113, 0.75)' : 'rgba(52, 211, 153, 0.75)',
-                        borderRadius: 5, borderWidth: 0, maxBarThickness: 26,
-                    }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    layout: { padding: { top: 24, left: 6, right: 12 } },
-                    onClick: (e, elements) => {
-                        if (elements.length > 0) showDetail(orderedDates[elements[0].index], appSel);
-                    },
-                    plugins: {
-                        datalabels: {
-                            display: showLabels, align: 'top', anchor: 'end',
-                            color: ctx => (ctx.dataset.data[ctx.dataIndex] < 0 ? '#F87171' : '#34D399'),
-                            font: { weight: 700, size: 10 },
-                            formatter: v => formatAmount(v)
-                        },
-                        legend: { display: false },
-                        tooltip: {
-                            displayColors: false, backgroundColor: '#060B14',
-                            borderColor: 'rgba(148,163,184,0.2)', borderWidth: 1,
-                            padding: 12, cornerRadius: 10,
-                            callbacks: { label: ctx => ` Lãi thực: ${formatAmount(ctx.parsed.y)}` }
-                        }
-                    },
-                    scales: {
-                        y: { grid: { color: gridColor }, border: { display: false }, ticks: { callback: v => formatAmount(v) } },
-                        x: { grid: { display: false }, border: { display: false } }
-                    },
-                    interaction: { intersect: false, mode: 'index' }
-                }
-            });
-        }
-
-        /* ───────── Detail modal ───────── */
-        function showDetail(dateStr, appSel) {
-            document.getElementById('detailDate').innerText = `Báo cáo ngày ${formatVNDate(dateStr)}`;
-            const apps = [...historyData[dateStr].apps].sort((a, b) => b.rev - a.rev);
-
-            let html = '';
-            let totalModal = 0;
-            apps.forEach(a => {
-                if (!isMatchApp(a.name, appSel)) return;
-                totalModal += a.rev;
-                html += `<div class="detail-row">
-                        <span class="detail-app" style="font-weight:700;color:var(--text);">${a.name}</span>
-                        <div class="detail-rev">${formatAmount(a.rev, false)}</div>
-                     </div>`;
-
-                if (!a.sheet_data || (!a.sheet_data.total_rev_vnd && !a.sheet_data.cost_vnd)) return;
-
-                const isVnd = currentCurrency === 'VND';
-                const s = a.sheet_data;
-                const fmt = (valStr) => {
-                    const num = sheetNum(valStr, a.name);
-                    if (isNaN(num)) return valStr;
-                    if (num === 0) return '<span style="font-weight:400;font-size:0.76rem;color:var(--text-dim);">Chưa cập nhật</span>';
-                    const realVnd = num * 1000000;
-                    if (isVnd) return realVnd.toLocaleString('vi-VN') + ' đ';
-                    return '$' + (realVnd / currentVndRate).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                };
-                const sdPct = s.profit_pct_sheet || '-';
-                const profitColor = (s.marketing_profit_vnd || '').toString().includes('-') ? 'var(--down)' : 'var(--up)';
-                html += `<div class="sheet-box">
-                        <div class="sheet-line"><span style="color:var(--text-muted);">Doanh thu tổng (VND)</span><span style="font-weight:700;color:var(--accent);">${fmt(s.total_rev_vnd || '0')}</span></div>
-                        <div class="sheet-line"><span style="color:var(--text-muted);">Chi phí tổng</span><span style="font-weight:700;color:var(--down);">${fmt(s.cost_vnd || '0')}</span></div>
-                        <div class="sheet-line sep"><span style="color:var(--text-muted);">Lãi Marketing</span><span style="font-weight:800;color:${profitColor};">${fmt(s.marketing_profit_vnd || '0')}</span></div>
-                        <div class="sheet-line"><span style="color:var(--text-muted);">Lãi/Doanh thu</span><span style="font-weight:800;">${sdPct}${sdPct.toString().includes('%') ? '' : '%'}</span></div>
-                    </div>`;
-            });
-            html += `<div class="detail-row" style="margin-top:0.6rem;border-top:2px dashed var(--border-strong);padding-top:0.9rem;background:transparent;">
-                    <span class="detail-app" style="font-weight:800;color:var(--text);">TỔNG CỘNG</span>
-                    <div class="detail-rev" style="font-size:1.3rem;">${formatAmount(totalModal, false)}</div>
-                 </div>`;
-
-            document.getElementById('detailList').innerHTML = html;
-            document.getElementById('overlay').style.display = 'block';
-            document.getElementById('detailPanel').style.display = 'block';
-        }
-
-        function showAppDetail(appName) {
-            document.getElementById('appFilter').value = appName;
-            applyFilter();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function closeDetail() {
-            document.getElementById('overlay').style.display = 'none';
-            document.getElementById('detailPanel').style.display = 'none';
-        }
-
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
 
         init();
     </script>
