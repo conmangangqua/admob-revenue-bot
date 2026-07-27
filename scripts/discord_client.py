@@ -52,6 +52,7 @@ PARTNER_DISPLAY = {
     "affica":  {"label": "AFFICA", "emoji": "🌍"},
     "ntech":   {"label": "NTECH",  "emoji": "⚡"},
     "adc":     {"label": "ADC",    "emoji": "🎬"},
+    "one_tabb":{"label": "ONE TABB","emoji": "📑"},
     "unknown": {"label": "KHÁC",   "emoji": "📦"},
 }
 
@@ -82,6 +83,8 @@ def _get_partner(app_name: str) -> str:
         return "ntech"
     if low.startswith("adc"):
         return "adc"
+    if "one tabb" in low or "one-tabb" in low or (low.startswith("p") and len(low) > 1 and low[1].isdigit()):
+        return "one_tabb"
     return "unknown"
 
 

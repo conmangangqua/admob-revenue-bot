@@ -326,6 +326,8 @@
                             <option value="partner:ntech">NTech</option>
                             <option value="partner:adc">ADC</option>
                             <option value="partner:herond">Herond</option>
+                            <option value="partner:azura">Azura</option>
+                            <option value="partner:one_tabb">One Tabb</option>
                         </optgroup>
                         <optgroup label="App" id="appOptGroup"></optgroup>
                     </select>
@@ -476,6 +478,7 @@
             ntech:  { label: 'NTech',  emoji: '⚡', color: '#DB2777' },
             adc:    { label: 'ADC',    emoji: '🎬', color: '#EA580C' },
             herond: { label: 'Herond', emoji: '🐝', color: '#CA8A04' },
+            one_tabb:{ label: 'One Tabb', emoji: '📑', color: '#4F46E5' },
             unknown:{ label: 'Khác',   emoji: '📦', color: '#78716C' },
         };
 
@@ -491,6 +494,7 @@
             if (low.startsWith('herond')) return 'herond';
             if (low.startsWith('ntech')) return 'ntech';
             if (low.startsWith('adc')) return 'adc';
+            if (low.includes('one tabb') || low.includes('one-tabb') || /^p\d+\b/.test(low)) return 'one_tabb';
             return 'unknown';
         }
 
@@ -622,7 +626,7 @@
                 document.getElementById('heroDateRange').style.display = 'none';
             }
 
-            const PARTNER_LABELS = { 'partner:affica': 'Affica', 'partner:bbl': 'BBL', 'partner:azura': 'Azura', 'partner:ntech': 'NTech', 'partner:adc': 'ADC', 'partner:herond': 'Herond' };
+            const PARTNER_LABELS = { 'partner:affica': 'Affica', 'partner:bbl': 'BBL', 'partner:azura': 'Azura', 'partner:ntech': 'NTech', 'partner:adc': 'ADC', 'partner:herond': 'Herond', 'partner:one_tabb': 'One Tabb' };
             const appSelLabel = PARTNER_LABELS[appSel] || (appSel !== 'all' ? appSel : '');
             document.getElementById('lblHeroRev').innerText = picked.lbl + (appSelLabel ? ` · ${appSelLabel}` : '');
             document.getElementById('valHeroRev').innerText = curTotal > 0 ? formatAmount(curTotal) : '--';
@@ -653,7 +657,7 @@
         }
 
         /* ───────── Partner blocks ───────── */
-        const TOP_PER_PARTNER = 6;
+        const TOP_PER_PARTNER = Infinity;   // Sếp 2026-07-27: web hiện HẾT app, bỏ "Xem thêm"
 
         function pctBadgeHtml(cur, prev) {
             // Nền kỳ trước < $1 → %Δ vô nghĩa (thời bot cũ mất số) → coi là MỚI
