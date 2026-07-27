@@ -114,6 +114,13 @@ def main():
     print("\n📂 Đang lưu dữ liệu lịch sử...")
     save_historical_data(apps_today, target_date)
 
+    # Refresh map logo app (data/app_icons.json) cho dashboard — không chặn nếu fail
+    try:
+        import gen_app_icons
+        gen_app_icons.build()
+    except Exception as e:
+        print(f"⚠️  gen_app_icons fail (bỏ qua, dashboard fallback medal): {e}")
+
     # Kiểm tra tắt thông báo
     skip_notify = os.environ.get("SKIP_NOTIFY", "false").lower() == "true"
     if skip_notify:
