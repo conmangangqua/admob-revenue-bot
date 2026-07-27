@@ -83,7 +83,10 @@ def build():
         nn = _norm(_strip_prefix(name))
         icon = pid_icon.get(str(pid)) or slug_icon.get(nn) or _fuzzy(nn)
         if icon:
-            result[name] = icon
+            result[name] = icon          # key tên hiển thị (khớp cũ)
+            if nn:
+                result[nn] = icon        # key CANONICAL (norm+strip prefix) → frontend tra theo canon,
+                                          # miễn nhiễm khác case/space/prefix ('Herond SnapVid' vs 'Herond Snapvid')
             out += 1
     json.dump(result, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print(f"[gen_app_icons] {out}/{len(names)} app có icon → {OUT}")

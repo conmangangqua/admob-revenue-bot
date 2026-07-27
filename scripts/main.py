@@ -17,6 +17,39 @@ from ga_client import get_ga_token, get_all_revenue, get_total_revenue
 from discord_client import send_revenue_report, send_error_notification
 
 
+import re as _re
+_PFX = ("herond", "bbl", "bll", "ntech", "affica", "adc media", "adc", "azura", "one tabb", "one-tabb")
+
+
+def _canon(name):
+    """Khoá chuẩn hoá 1 app: bỏ mã B117/APB972/P01 + prefix partner + non-alnum.
+    'VaultixBrowser' và 'BBL Vaultix Browser' → cùng 'vaultixbrowser' (chống trùng dòng
+    khi 1 property GA đổi tên/thêm override qua thời gian — Sếp 2026-07-27)."""
+    low = (name or "").lower().strip()
+    low = _re.sub(r"^(apb|b|p)\d+\s*[-–]?\s*", "", low)
+    for p in _PFX:
+        if low.startswith(p + " "):
+            low = low[len(p) + 1:].strip(); break
+    return "".join(c for c in low if c.isalnum())
+
+
+def _dedupe_by_canon(apps):
+    """Gộp app cùng canon → giữ bản REV CAO NHẤT, ưu tiên tên CÓ prefix partner (chuẩn hơn)."""
+    best = {}
+    for a in apps:
+        k = _canon(a["name"])
+        cur = best.get(k)
+        if cur is None:
+            best[k] = a
+            continue
+        a_pref = a["name"].lower().startswith(_PFX)
+        cur_pref = cur["name"].lower().startswith(_PFX)
+        # ưu tiên: có prefix partner > rev cao hơn
+        if (a_pref and not cur_pref) or (a_pref == cur_pref and a["rev"] > cur["rev"]):
+            best[k] = a
+    return list(best.values())
+
+
 def save_historical_data(apps_data, report_date):
     """Lưu dữ liệu doanh thu vào file JSON lịch sử để Web Dashboard hiển thị."""
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,7 +80,8 @@ def save_historical_data(apps_data, report_date):
     }
     merged = {a["name"]: a for a in history.get(date_key, {}).get("apps", [])}
     merged.update(ga_apps)
-    apps_list = sorted(merged.values(), key=lambda a: -a["rev"])
+    apps_list = _dedupe_by_canon(merged.values())
+    apps_list.sort(key=lambda a: -a["rev"])
     history[date_key] = {
         "total": round(sum(a["rev"] for a in apps_list), 2),
         "apps": apps_list,

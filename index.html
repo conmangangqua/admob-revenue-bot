@@ -748,7 +748,7 @@
                     const gaLine = imp[n] > 0
                         ? `👁 ${formatImp(imp[n])} · eCPM $${appEcpm.toFixed(2)}`
                         : '';
-                    const _icon = appIcons[n];
+                    const _icon = appIcons[n] || appIcons[_normKey(shortName(n))] || appIcons[_normKey(n)];
                     const rankCell = _icon
                         ? `<img class="p-appicon" src="${_icon}" loading="lazy" alt="" onerror="this.outerHTML='<span class=\\'p-rank\\'>${i + 1}</span>'">`
                         : `<span class="p-rank ${i < 3 ? 'medal' : ''}" aria-hidden="true">${medal}</span>`;
