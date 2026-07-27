@@ -344,6 +344,42 @@
         .empty-note { text-align: center; color: var(--text-dim); padding: 2.2rem 0; font-size: 0.85rem; font-weight: 600; }
 
         /* ═══════ Responsive ═══════ */
+        /* ═══ Filter dropdown custom (icon đối tác + logo app, lưới nhiều cột + search) ═══ */
+        .fdrop { position: relative; }
+        .fdrop-trigger { display: inline-flex; align-items: center; gap: 0.4rem; cursor: pointer;
+            background: none; border: none; font: inherit; font-weight: 700; color: var(--text);
+            padding: 0.5rem 0.7rem; border-radius: 999px; }
+        .fdrop-trigger:hover { background: rgba(146,64,14,.06); }
+        .fdrop-panel { position: absolute; top: calc(100% + 8px); left: 0; z-index: 60;
+            width: min(760px, 92vw); max-height: min(70vh, 620px); overflow-y: auto;
+            background: var(--card); border: 1px solid var(--border-strong); border-radius: 16px;
+            box-shadow: 0 18px 50px rgba(146,64,14,.22); padding: 12px; font-size: 14px; font-weight: 500; }
+        .fdrop-search { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border);
+            border-radius: 10px; font: inherit; font-size: 14px; margin-bottom: 8px; outline: none; background: #FFFDF7; }
+        .fdrop-search:focus { border-color: var(--primary); }
+        .fdrop-all { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
+            padding: 9px 12px; border: none; background: none; font: inherit; font-size: 14px; font-weight: 700;
+            border-radius: 10px; cursor: pointer; color: var(--text); }
+        .fdrop-all:hover, .fdrop-all.sel { background: #FEF3C7; }
+        .fdrop-sec { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+            color: var(--text-dim); margin: 10px 6px 6px; }
+        .fdrop-partners { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+        .fdrop-partner { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 8px;
+            border: 1.5px solid var(--border); border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 700;
+            background: #fff; color: var(--text); transition: .12s; }
+        .fdrop-partner .pe { width: 22px; height: 22px; border-radius: 7px; display: flex; align-items: center;
+            justify-content: center; font-size: 14px; }
+        .fdrop-partner:hover { border-color: var(--p-c, #F59E0B); }
+        .fdrop-partner.sel { background: #FEF3C7; border-color: var(--primary); }
+        .fdrop-apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 4px; }
+        .fdrop-app { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 9px;
+            cursor: pointer; color: var(--text); font-size: 13px; font-weight: 600; min-width: 0; }
+        .fdrop-app:hover, .fdrop-app.sel { background: #FEF3C7; }
+        .fdrop-app img, .fdrop-app .ph { width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
+            object-fit: cover; background: #FDF0DC; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text-dim); }
+        .fdrop-app .an { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .fdrop-empty { padding: 16px; text-align: center; color: var(--text-dim); font-size: 13px; }
+
         @media (max-width: 768px) {
             /* 2x (32px) tràn ngang trên điện thoại → giảm gốc còn ~1.4x cho vừa màn, filter tự wrap */
             html { font-size: 22px; }
@@ -382,19 +418,22 @@
             </div>
             <div class="controls">
                 <div class="filter-group">
-                    <select id="appFilter" onchange="applyFilter()" aria-label="Lọc theo đối tác hoặc app">
-                        <option value="all">Tất cả</option>
-                        <optgroup label="Đối tác">
-                            <option value="partner:affica">Affica</option>
-                            <option value="partner:bbl">BBL</option>
-                            <option value="partner:ntech">NTech</option>
-                            <option value="partner:adc">ADC</option>
-                            <option value="partner:herond">Herond</option>
-                            <option value="partner:azura">Azura</option>
-                            <option value="partner:one_tabb">One Tabb</option>
-                        </optgroup>
-                        <optgroup label="App" id="appOptGroup"></optgroup>
-                    </select>
+                    <input type="hidden" id="appFilter" value="all">
+                    <div class="fdrop" id="appFilterDrop">
+                        <button type="button" class="fdrop-trigger" onclick="toggleFilterPanel(event)" aria-haspopup="listbox">
+                            <span id="filterLabel">Tất cả</span>
+                            <svg width="1em" height="1em" viewBox="0 0 24 24" fill="none" style="flex-shrink:0"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </button>
+                        <div class="fdrop-panel" id="filterPanel" hidden>
+                            <input type="text" class="fdrop-search" id="filterSearch" placeholder="Tìm đối tác / app…" oninput="filterSearchInput()" autocomplete="off">
+                            <button type="button" class="fdrop-all" onclick="selectFilter('all','Tất cả')">🌐 <span>Tất cả</span></button>
+                            <div class="fdrop-sec">Đối tác</div>
+                            <div class="fdrop-partners" id="filterPartners"></div>
+                            <div class="fdrop-sec">App</div>
+                            <div class="fdrop-apps" id="filterApps"></div>
+                            <div class="fdrop-empty" id="filterEmpty" hidden>Không tìm thấy</div>
+                        </div>
+                    </div>
                     <select id="timeFilter" onchange="applyFilter()" aria-label="Khoảng thời gian">
                         <option value="today">Hôm nay</option>
                         <option value="yesterday">Hôm qua</option>
@@ -483,12 +522,7 @@
                         allTimeAppRev[n] = (allTimeAppRev[n] || 0) + (a.rev || 0);
                     });
                 }
-                const appOptGroup = document.getElementById('appOptGroup');
-                [...allApps].sort((a, b) => allTimeAppRev[b] - allTimeAppRev[a]).forEach(app => {
-                    const opt = document.createElement('option');
-                    opt.value = app; opt.text = app;
-                    appOptGroup.appendChild(opt);
-                });
+                buildFilterPanel([...allApps].sort((a, b) => allTimeAppRev[b] - allTimeAppRev[a]));
 
                 debugStep = 'applyFilter';
                 applyFilter();
@@ -658,7 +692,89 @@
             return { cur, prev, lbl };
         }
 
+        // ── Filter dropdown custom (icon đối tác + logo app, lưới + search) ──
+        const _P_ORDER = ['affica', 'bbl', 'ntech', 'adc', 'herond', 'azura', 'one_tabb'];
+        let _filterApps = [];
+        function _escHtml(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+        function _iconFor(n) { return appIcons[n] || appIcons[_normKey(shortName(n))] || appIcons[_normKey(n)] || ''; }
+
+        function buildFilterPanel(apps) {
+            _filterApps = apps;
+            document.getElementById('filterPartners').innerHTML = _P_ORDER.map(p => {
+                const m = PARTNER_DISPLAY[p]; if (!m) return '';
+                return `<button type="button" class="fdrop-partner" data-search="${_escHtml(m.label.toLowerCase())} ${p}" data-val="partner:${p}" data-label="${_escHtml(m.emoji + ' ' + m.label)}" style="--p-c:${m.color}"><span class="pe" style="background:${m.color}22">${m.emoji}</span>${_escHtml(m.label)}</button>`;
+            }).join('');
+            document.getElementById('filterApps').innerHTML = apps.map((a, idx) => {
+                const disp = shortName(a), ic = _iconFor(a);
+                const img = ic ? `<img src="${ic}" loading="lazy" alt="">` : `<span class="ph">${_escHtml((disp[0] || '?').toUpperCase())}</span>`;
+                return `<div class="fdrop-app" data-idx="${idx}" data-search="${_escHtml((disp + ' ' + a).toLowerCase())}">${img}<span class="an">${_escHtml(disp)}</span></div>`;
+            }).join('');
+        }
+
+        function toggleFilterPanel(e) {
+            if (e) e.stopPropagation();
+            const panel = document.getElementById('filterPanel');
+            if (panel.hidden) {
+                panel.hidden = false;
+                const s = document.getElementById('filterSearch'); s.value = ''; filterSearchInput();
+                _markFilterSel();
+                setTimeout(() => s.focus(), 30);
+            } else { panel.hidden = true; }
+        }
+        function closeFilterPanel() { document.getElementById('filterPanel').hidden = true; }
+
+        function selectFilter(value, label) {
+            document.getElementById('appFilter').value = value;
+            document.getElementById('filterLabel').textContent = label;
+            closeFilterPanel();
+            applyFilter();
+        }
+
+        function _markFilterSel() {
+            const cur = document.getElementById('appFilter').value;
+            document.querySelector('.fdrop-all')?.classList.toggle('sel', cur === 'all');
+            document.querySelectorAll('.fdrop-partner').forEach(el => el.classList.toggle('sel', el.dataset.val === cur));
+            document.querySelectorAll('.fdrop-app').forEach(el => el.classList.toggle('sel', _filterApps[+el.dataset.idx] === cur));
+        }
+
+        function filterSearchInput() {
+            const q = (document.getElementById('filterSearch').value || '').toLowerCase().trim();
+            let anyP = 0, anyA = 0;
+            document.querySelectorAll('.fdrop-partner').forEach(el => {
+                const ok = !q || el.dataset.search.includes(q); el.style.display = ok ? '' : 'none'; if (ok) anyP++;
+            });
+            document.querySelectorAll('.fdrop-app').forEach(el => {
+                const ok = !q || el.dataset.search.includes(q); el.style.display = ok ? '' : 'none'; if (ok) anyA++;
+            });
+            document.querySelectorAll('.fdrop-sec')[0].style.display = anyP ? '' : 'none';
+            document.querySelectorAll('.fdrop-sec')[1].style.display = anyA ? '' : 'none';
+            document.getElementById('filterEmpty').hidden = (anyP + anyA) > 0;
+        }
+
+        function syncFilterLabel() {
+            const v = document.getElementById('appFilter').value;
+            let label = 'Tất cả';
+            if (v && v.startsWith('partner:')) {
+                const m = PARTNER_DISPLAY[v.slice(8)]; label = m ? `${m.emoji} ${m.label}` : v.slice(8);
+            } else if (v && v !== 'all') { label = shortName(v); }
+            const el = document.getElementById('filterLabel'); if (el) el.textContent = label;
+        }
+
+        // click ngoài panel → đóng; click app tile → chọn
+        document.addEventListener('click', e => {
+            if (!e.target.closest('#appFilterDrop')) closeFilterPanel();
+        });
+        document.addEventListener('click', e => {
+            const app = e.target.closest('.fdrop-app');
+            if (app) { const a = _filterApps[+app.dataset.idx]; selectFilter(a, shortName(a)); return; }
+            const p = e.target.closest('.fdrop-partner');
+            if (p) selectFilter(p.dataset.val, p.dataset.label);
+        });
+
+        if (location.hash === '#openfilter') window.addEventListener('load', () => setTimeout(() => toggleFilterPanel(), 400));
+
         function applyFilter() {
+            syncFilterLabel();
             const timeFilter = document.getElementById('timeFilter').value;
             const appSel = document.getElementById('appFilter').value;
             const customEl = document.getElementById('customRange');
