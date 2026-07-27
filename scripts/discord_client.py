@@ -21,6 +21,8 @@ VND_RATE = 25400
 PARTNER_MAP = {
     "Quicksave": "bbl",
     "Aura-Recover": "bbl",
+    "Onyx Browser": "bbl",        # find_partner.py 2026-07-27
+    "VaultixBrowser": "bbl",      # find_partner.py 2026-07-27
     "Herond Snapvid": "herond",
     "LunaAi-Chat": "affica",
 }
