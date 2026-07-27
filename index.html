@@ -775,7 +775,7 @@
 
             // Masonry JS: N cột theo bề rộng, card rơi vào cột đang ngắn nhất
             const width = container.clientWidth || document.body.clientWidth;
-            const colCount = Math.max(1, Math.min(4, Math.floor(width / 450)));
+            const colCount = Math.max(1, Math.min(4, Math.floor(width / 900)));
             const colHtml = Array.from({ length: colCount }, () => []);
             const colH = new Array(colCount).fill(0);
             blocks.forEach((g, i) => {
