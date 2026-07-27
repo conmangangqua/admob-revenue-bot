@@ -406,9 +406,10 @@
                 const allTimeAppRev = {};
                 for (let d in historyData) {
                     (historyData[d].apps || []).forEach(a => {
-                        if (!isGAApp(a.name)) return;
-                        allApps.add(a.name);
-                        allTimeAppRev[a.name] = (allTimeAppRev[a.name] || 0) + (a.rev || 0);
+                        const n = canon(a.name);
+                        if (!isGAApp(n)) return;
+                        allApps.add(n);
+                        allTimeAppRev[n] = (allTimeAppRev[n] || 0) + (a.rev || 0);
                     });
                 }
                 const appOptGroup = document.getElementById('appOptGroup');
@@ -494,6 +495,26 @@
         const PREFIX_RE = /^(bbl|bll|affica|herond|ntech|adc(?:[ -]media)?)[ \-]+/i;
         function shortName(name) { return (name || '').replace(PREFIX_RE, '').trim() || name; }
 
+        // History chứa 1 app dưới 2 tên (thời bot cũ không prefix: "StickerLab" vs
+        // "NTech StickerLab") → tự khớp tên không-prefix vào tên GA cùng gốc để gộp số.
+        let _canonIdx = null;
+        function _normKey(s) { return (s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+        function canon(name) {
+            if (getPartner(name) !== 'unknown') return name;
+            if (!_canonIdx) {
+                _canonIdx = {};
+                const seen = new Set();
+                for (const d in historyData) (historyData[d].apps || []).forEach(a => {
+                    if (seen.has(a.name)) return;
+                    seen.add(a.name);
+                    if (getPartner(a.name) === 'unknown') return;
+                    _canonIdx[_normKey(shortName(a.name))] = a.name;
+                    _canonIdx[_normKey(a.name)] = a.name;
+                });
+            }
+            return _canonIdx[_normKey(name)] || name;
+        }
+
         function isMatchApp(name, appFilter) {
             if (appFilter === 'all') return true;
             if (appFilter.startsWith('partner:')) return getPartner(name) === appFilter.slice(8);
@@ -578,13 +599,15 @@
             let curTotal = 0, prevTotal = 0, curImp = 0;
             let appCount = new Set();
             curDates.forEach(d => (historyData[d]?.apps || []).forEach(a => {
-                if (!isGAApp(a.name) || !isMatchApp(a.name, appSel)) return;
+                const n = canon(a.name);
+                if (!isGAApp(n) || !isMatchApp(n, appSel)) return;
                 curTotal += (a.rev || 0);
                 curImp += (a.imp || 0);
-                if ((a.rev || 0) >= 0.01) appCount.add(a.name);
+                if ((a.rev || 0) >= 0.01) appCount.add(n);
             }));
             prevDates.forEach(d => (historyData[d]?.apps || []).forEach(a => {
-                if (isGAApp(a.name) && isMatchApp(a.name, appSel)) prevTotal += (a.rev || 0);
+                const n = canon(a.name);
+                if (isGAApp(n) && isMatchApp(n, appSel)) prevTotal += (a.rev || 0);
             }));
 
             // ── Hero ──
@@ -664,13 +687,15 @@
             // Doanh thu + imp per app trong kỳ (toàn fleet, độc lập app filter)
             const cur = {}, prev = {}, imp = {};
             curDates.forEach(d => (historyData[d]?.apps || []).forEach(a => {
-                if (!isGAApp(a.name)) return;
-                cur[a.name] = (cur[a.name] || 0) + (a.rev || 0);
-                imp[a.name] = (imp[a.name] || 0) + (a.imp || 0);
+                const n = canon(a.name);
+                if (!isGAApp(n)) return;
+                cur[n] = (cur[n] || 0) + (a.rev || 0);
+                imp[n] = (imp[n] || 0) + (a.imp || 0);
             }));
             prevDates.forEach(d => (historyData[d]?.apps || []).forEach(a => {
-                if (!isGAApp(a.name)) return;
-                prev[a.name] = (prev[a.name] || 0) + (a.rev || 0);
+                const n = canon(a.name);
+                if (!isGAApp(n)) return;
+                prev[n] = (prev[n] || 0) + (a.rev || 0);
             }));
 
             const groups = {};
