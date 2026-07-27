@@ -29,6 +29,8 @@ PARTNER_DISPLAY = {
     "bbl":     {"label": "BBL",    "emoji": "🅱️"},
     "herond":  {"label": "Herond", "emoji": "🐝"},
     "affica":  {"label": "Affica", "emoji": "🌍"},
+    "ntech":   {"label": "NTech",  "emoji": "🔵"},
+    "adc":     {"label": "ADC",    "emoji": "🟠"},
     "unknown": {"label": "Khác",   "emoji": "❓"},
 }
 
@@ -49,12 +51,16 @@ def _get_partner(app_name: str) -> str:
         return "azura"
     # v6.0: tên từ GA (ga_names.json) mang prefix partner — suy trực tiếp
     low = (app_name or "").lower()
-    if low.startswith("bbl"):
+    if low.startswith("bbl") or low.startswith("bll"):  # bll-whispr = typo của bbl
         return "bbl"
     if low.startswith("affica"):
         return "affica"
     if low.startswith("herond"):
         return "herond"
+    if low.startswith("ntech"):
+        return "ntech"
+    if low.startswith("adc"):
+        return "adc"
     return "unknown"
 
 
@@ -159,154 +165,118 @@ def _sum_range(history: dict, partner: str, start_iso: str, end_iso: str):
 
 # ---------- Embed builder ----------
 def _pct_arrow(cur: float, prev: float) -> str:
-    """▲ +12.3% / ▼ -8.1% / 🆕 khi hôm trước = 0."""
+    """📈 +12.3% / 📉 -8.1% / 🆕 khi hôm trước = 0."""
     if prev <= 0:
         return "🆕" if cur > 0 else ""
     pct = (cur - prev) / prev * 100
-    return f"{'▲' if pct >= 0 else '▼'} {pct:+.1f}%"
+    return f"{'📈' if pct >= 0 else '📉'} {pct:+.1f}%"
+
+
+def _share_bar(part: float, total: float, width: int = 10) -> str:
+    """Thanh tỷ trọng ▰▰▰▱▱ + %."""
+    if total <= 0:
+        return ""
+    share = part / total
+    filled = max(1, round(share * width)) if part > 0 else 0
+    return "▰" * filled + "▱" * (width - filled) + f" {share*100:.0f}%"
+
+
+_RANK = ["🥇", "🥈", "🥉"]
+
+
+_PREFIX_RE = re.compile(r"(?i)^(bbl|bll|affica|herond|ntech|adc(?:[ -]media)?)[ \-]+")
+
+TOP_PER_PARTNER = 5  # số app hiện trong mỗi khối partner
+
+
+def _short_name(name: str) -> str:
+    """Bỏ prefix partner trong tên app (đã nằm trong khối partner rồi)."""
+    return _PREFIX_RE.sub("", name).strip() or name
 
 
 def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
-    """v6.0: fields doanh thu GA từ apps_data bot vừa quét (KHÔNG phụ thuộc API)."""
+    """v6.2 (Sếp chốt 2026-07-27): chia theo ĐỐI TÁC — mỗi partner 1 khối:
+    header = tổng partner + %Δ, bên dưới top app của partner đó."""
     fields = []
     total = sum(a["revenue"] for a in apps_data)
-    head = f"**${total:,.2f}**"
-    if prev_total and prev_total > 0:
-        head += f"  ({_pct_arrow(total, prev_total)} so với hôm trước ${prev_total:,.2f})"
-    n_apps = len([a for a in apps_data if a["revenue"] > 0])
-    head += f"\n📱 {n_apps} app có doanh thu"
-    fields.append({"name": "💰 Tổng doanh thu ads", "value": head[:1024], "inline": False})
 
-    top = sorted(apps_data, key=lambda a: -a["revenue"])[:10]
-    lines = []
-    for i, a in enumerate(top, 1):
-        if a["revenue"] <= 0:
-            break
-        arrow = _pct_arrow(a["revenue"], a.get("prev_revenue", 0))
-        lines.append(f"`{i:>2}.` **{a['app_name']}** — `${a['revenue']:,.2f}` {arrow}")
-    if lines:
-        fields.append({"name": "🏆 Top app", "value": "\n".join(lines)[:1024], "inline": False})
-
-    # Gom doanh thu theo partner (prefix tên)
-    by_partner = {}
+    # Gom app theo partner
+    groups = {}
     for a in apps_data:
-        if a["revenue"] <= 0:
+        groups.setdefault(_get_partner(a["app_name"]), []).append(a)
+
+    order = sorted(groups.items(),
+                   key=lambda kv: -sum(a["revenue"] for a in kv[1]))
+    for p, apps in order:
+        p_total = sum(a["revenue"] for a in apps)
+        if p_total < 1:
             continue
-        by_partner.setdefault(_get_partner(a["app_name"]), 0.0)
-        by_partner[_get_partner(a["app_name"])] += a["revenue"]
-    if by_partner:
-        pl = [f"{PARTNER_DISPLAY[p]['emoji']} {PARTNER_DISPLAY[p]['label']} `${v:,.0f}`"
-              for p, v in sorted(by_partner.items(), key=lambda x: -x[1])]
-        fields.append({"name": "🌍 Doanh thu theo đối tác",
-                       "value": " · ".join(pl)[:1024], "inline": False})
+        p_prev = sum(a.get("prev_revenue", 0) for a in apps)
+        meta = PARTNER_DISPLAY[p]
+        name = f"{meta['emoji']}  {meta['label']}  ·  ${p_total:,.2f}"
+        arrow = _pct_arrow(p_total, p_prev)
+        if arrow:
+            name += f"   {arrow}"
+
+        lines = [f"`{_share_bar(p_total, total)}` tổng fleet"]
+        apps = sorted(apps, key=lambda a: -a["revenue"])
+        for i, a in enumerate(apps[:TOP_PER_PARTNER]):
+            if a["revenue"] < 0.01:
+                break
+            ar = _pct_arrow(a["revenue"], a.get("prev_revenue", 0))
+            rank = _RANK[i] if i < 3 else f"`{i + 1} `"
+            lines.append(f"{rank} **{_short_name(a['app_name'])}** · `${a['revenue']:,.2f}` {ar}")
+        rest = [a for a in apps[TOP_PER_PARTNER:] if a["revenue"] >= 0.01]
+        if rest:
+            lines.append(f"╰ *+{len(rest)} app khác · ${sum(a['revenue'] for a in rest):,.2f}*")
+        fields.append({"name": name[:256], "value": "\n".join(lines)[:1024] or "—",
+                       "inline": False})
     return fields
 
 
-def _build_embed(history: dict, target_date: date,
-                 apps_data=None, prev_total: Optional[float] = None) -> dict:
-    d = target_date
-    fields = []
-    color = 0x3B82F6
-    total_profit = 0.0
-
-    # --- v6.0: khối DOANH THU từ dữ liệu GA bot vừa quét (nguồn chính) ---
-    if apps_data:
-        fields += _build_revenue_fields(apps_data, prev_total)
-
-    def _pl(profit: float) -> str:
-        return (f"💚 LÃI `{_fmt_trvnd(profit)}`" if profit >= 0
-                else f"🔻 LỖ `{_fmt_trvnd(profit)}`")
-
-    # --- Khối LÃI/LỖ từ history API (sheet-enriched) — best effort ---
-    target = target_date.isoformat()
-    if history:
-        if target not in history:
-            prior = [k for k in history.keys() if k <= target]
-            target = sorted(prior)[-1] if prior else sorted(history.keys())[-1]
-        apps = history[target].get("apps", []) or []
-        partners = _aggregate(apps)
-        total_profit = sum(p["profit_trvnd"] for p in partners.values() if p["has_profit"])
-        color = 0x10B981 if total_profit > 0 else (0xEF4444 if total_profit < 0 else 0x3B82F6)
-        d = datetime.fromisoformat(target).date()
-    else:
-        partners = {}
-
-    # --- Lãi/Lỗ HÔM NAY (chỉ partner có đủ data lãi/lỗ) ---
-    order = sorted(partners.keys(), key=lambda p: partners[p]["profit_trvnd"], reverse=True)
-    today_lines = []
-    for p in order:
-        e = partners[p]
-        if not e["has_profit"]:
-            continue
-        meta = PARTNER_DISPLAY[p]
-        today_lines.append(f"{meta['emoji']} **{meta['label']}** — {_pl(e['profit_trvnd'])}")
-    if today_lines:
-        value = (f"**Tổng:** {_pl(total_profit)}\n" + "\n".join(today_lines))
-        fields.append({
-            "name": "💹 Hôm nay",
-            "value": value[:1024],
-            "inline": False,
-        })
-
-    # --- Lãi/Lỗ LŨY KẾ (chỉ partner có đủ data lãi/lỗ) ---
-    month_start = d.replace(day=1).isoformat()
-    summary_partners = [
-        ("azura",  month_start,  f"tháng {d.strftime('%m')}"),
-        ("bbl",    month_start,  f"tháng {d.strftime('%m')}"),
-        ("herond", month_start,  f"tháng {d.strftime('%m')}"),
-        ("affica", month_start,  f"tháng {d.strftime('%m')}"),
-    ]
-    sum_lines = []
-    for p, start_iso, label in summary_partners:
-        rev, spend, profit, has_profit, days = _sum_range(history, p, start_iso, target)
-        if not has_profit:
-            continue
-        meta = PARTNER_DISPLAY[p]
-        sum_lines.append(f"{meta['emoji']} **{meta['label']}** ({label}) — {_pl(profit)}")
-    if sum_lines:
-        fields.append({
-            "name": "📅 Lãi / Lỗ lũy kế",
-            "value": "\n".join(sum_lines)[:1024],
-            "inline": False,
-        })
-
+def _build_embed(target_date: date, apps_data: list,
+                 prev_total: Optional[float] = None) -> dict:
+    """v6.1: embed thuần doanh thu ads từ apps_data (GA4) — Sếp chốt 2026-07-27
+    bỏ khối Lãi/Lỗ sheet, tách partner NTech/ADC, ẩn partner < $1."""
+    fields = _build_revenue_fields(apps_data, prev_total)
     fields.append({
-        "name": "🔗 Chi tiết",
-        "value": "👉 [Doanh thu & từng app trên Web App](https://admob-revenue-bot.vercel.app/)",
+        "name": "\u200b",
+        "value": "🔗 [Chi tiết từng app trên Web App](https://admob-revenue-bot.vercel.app/)",
         "inline": False,
     })
-
+    total = sum(a["revenue"] for a in apps_data)
+    up = prev_total is None or total >= prev_total
+    n_apps = len([a for a in apps_data if a["revenue"] > 0])
+    desc = f"# ${total:,.2f}"
+    if prev_total and prev_total > 0:
+        desc += f"\n{_pct_arrow(total, prev_total)} so với hôm trước (${prev_total:,.2f}) · 📱 {n_apps} app"
     return {
-        "title": f"💹 Tranquil Revenue — {_day_name_vn(d)}, {d.strftime('%d/%m/%Y')}",
+        "title": f"💹 Tranquil Revenue — {_day_name_vn(target_date)}, {target_date.strftime('%d/%m/%Y')}",
         "url": "https://admob-revenue-bot.vercel.app/",
-        "color": color,
+        "description": desc,
+        "color": 0x10B981 if up else 0xEF4444,
         "fields": fields,
-        "footer": {"text": "🤖 v6.0 · GA4 Data API (SA) · Lãi thực (Tr VND) từ sheet"},
-        "timestamp": f"{d.isoformat()}T01:00:00Z",
+        "footer": {"text": "🤖 v6.2 · GA4 Data API (service account)"},
+        "timestamp": f"{target_date.isoformat()}T01:00:00Z",
     }
 
 
 # ---------- Public API (compat with main.py) ----------
 def send_revenue_report(
     webhook_url: str,
-    apps_data=None,            # v6.0: dữ liệu GA bot vừa quét — NGUỒN CHÍNH của embed
+    apps_data=None,
     report_date: Optional[date] = None,
     prev_total: Optional[float] = None,
-    api_url: str = API_URL,
+    api_url: str = API_URL,   # giữ tham số cho tương thích — không dùng nữa
 ) -> bool:
-    """Gửi report: khối doanh thu build từ apps_data (GA4, số bot vừa quét);
-    khối Lãi/Lỗ build từ history API sheet-enriched (best effort — API sập
-    vẫn gửi phần doanh thu)."""
+    """Gửi report doanh thu build 100% từ apps_data (GA4 bot vừa quét)."""
     if report_date is None:
         report_date = date.today() - timedelta(days=1)
+    if not apps_data:
+        print("   ❌ Không có apps_data — bỏ qua gửi Discord.")
+        return False
 
-    try:
-        history = _fetch_history(api_url)
-    except Exception as e:
-        print(f"   ⚠️ Fetch API failed ({e}) — gửi report chỉ với dữ liệu GA.")
-        history = {}
-
-    embed = _build_embed(history, report_date, apps_data=apps_data, prev_total=prev_total)
+    embed = _build_embed(report_date, apps_data, prev_total=prev_total)
     payload = {"username": "Tranquil Revenue Bot", "embeds": [embed]}
 
     req = urllib.request.Request(
@@ -314,7 +284,7 @@ def send_revenue_report(
         data=json.dumps(payload).encode(),
         headers={
             "Content-Type": "application/json",
-            "User-Agent": "DiscordBot (https://github.com/conmangangqua/admob-revenue-bot, 6.0)",
+            "User-Agent": "DiscordBot (https://github.com/conmangangqua/admob-revenue-bot, 6.1)",
         },
         method="POST",
     )
