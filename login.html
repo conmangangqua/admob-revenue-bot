@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Đăng nhập — Tranquil Revenue</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📊%3C/text%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;background:radial-gradient(ellipse at top,#1E1B4B 0%,#0F0E2A 60%,#000 100%);color:#E2E8F0;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px}
+  .card{max-width:420px;width:100%;background:linear-gradient(180deg,rgba(99,102,241,.06),rgba(15,14,42,.6));backdrop-filter:blur(20px);border:1px solid rgba(139,92,246,.22);border-radius:20px;padding:40px 36px;box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.04) inset;animation:rise .6s cubic-bezier(.16,1,.3,1)}
+  @keyframes rise{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+  .logo{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#6366F1,#8B5CF6,#EC4899);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 20px;box-shadow:0 8px 24px rgba(99,102,241,.45)}
+  h1{text-align:center;font-size:1.5rem;font-weight:800;margin-bottom:6px;background:linear-gradient(135deg,#A78BFA,#F472B6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+  .sub{text-align:center;color:#94A3B8;font-size:.85rem;margin-bottom:28px;line-height:1.5}
+  .gbtn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px 20px;background:#fff;color:#1F2937;text-decoration:none;border-radius:12px;font-weight:600;font-size:.95rem;border:none;cursor:pointer;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+  .gbtn:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.3)}
+  .gbtn:active{transform:translateY(0) scale(.98)}
+  .gbtn svg{flex-shrink:0}
+  .footer{text-align:center;margin-top:24px;color:#64748B;font-size:.7rem}
+  .footer code{background:rgba(139,92,246,.12);color:#A78BFA;padding:2px 6px;border-radius:4px;font-family:ui-monospace,monospace}
+  .err{margin-top:14px;padding:10px 14px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.3);border-radius:8px;color:#FCA5A5;font-size:.78rem;text-align:center;display:none}
+  .err.show{display:block}
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">💹</div>
+    <h1>Tranquil Revenue</h1>
+    <p class="sub">Đăng nhập bằng tài khoản<br><strong style="color:#A78BFA">@tranquilmind.co</strong> để xem doanh thu</p>
+    <a class="gbtn" id="loginBtn" href="/api/auth/login">
+      <svg width="20" height="20" viewBox="0 0 48 48">
+        <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C12.955 4 4 12.955 4 24s8.955 20 20 20s20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
+        <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4C16.318 4 9.656 8.337 6.306 14.691z"/>
+        <path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/>
+        <path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002l6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/>
+      </svg>
+      Sign in with Google
+    </a>
+    <div class="err" id="err"></div>
+    <div class="footer">Phiên đăng nhập <code>7 ngày</code> · cookie HttpOnly + Secure</div>
+  </div>
+<script>
+  // Truyền `next` param qua login.
+  const params = new URLSearchParams(location.search);
+  const next = params.get('next') || '/';
+  document.getElementById('loginBtn').href = '/api/auth/login?next=' + encodeURIComponent(next);
+
+  // Hiển thị lỗi nếu redirect mang ?error=
+  const err = params.get('error');
+  if (err) {
+    const e = document.getElementById('err');
+    e.textContent = decodeURIComponent(err);
+    e.classList.add('show');
+  }
+</script>
+</body>
+</html>
