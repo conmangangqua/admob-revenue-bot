@@ -720,6 +720,9 @@
             if (e) e.stopPropagation();
             const panel = document.getElementById('filterPanel');
             if (panel.hidden) {
+                // portal ra body: .site-header có backdrop-filter → neo position:fixed vào header, lệch tâm
+                document.body.appendChild(document.getElementById('filterBackdrop'));
+                document.body.appendChild(panel);
                 panel.hidden = false;
                 document.getElementById('filterBackdrop').hidden = false;
                 const s = document.getElementById('filterSearch'); s.value = ''; filterSearchInput();
