@@ -604,10 +604,11 @@
 
             const badgeObj = document.getElementById('trendHeroBadge');
             const trendText = document.getElementById('trendHeroText');
-            if (prevTotal > 0 && curTotal > 0) {
+            if (prevTotal >= 1 && curTotal > 0) {
                 const pct = (curTotal - prevTotal) / prevTotal * 100;
+                const label = Math.abs(pct) > 999 ? '>999' : Math.abs(pct).toFixed(1);
                 badgeObj.className = 'trend-badge ' + (pct >= 0 ? 'positive' : 'negative');
-                badgeObj.innerText = `${pct >= 0 ? '▲' : '▼'} ${Math.abs(pct).toFixed(1)}%`;
+                badgeObj.innerText = `${pct >= 0 ? '▲' : '▼'} ${label}%`;
                 trendText.innerText = `so với kỳ trước (${formatAmount(prevTotal)})`;
             } else {
                 badgeObj.className = 'trend-badge neutral';
@@ -630,10 +631,12 @@
         const TOP_PER_PARTNER = 6;
 
         function pctBadgeHtml(cur, prev) {
-            if (prev <= 0) return cur > 0 ? '<span class="p-pct new">MỚI</span>' : '<span class="p-pct"></span>';
+            // Nền kỳ trước < $1 → %Δ vô nghĩa (thời bot cũ mất số) → coi là MỚI
+            if (prev < 1) return cur > 0 ? '<span class="p-pct new">MỚI</span>' : '<span class="p-pct"></span>';
             const pct = (cur - prev) / prev * 100;
             const cls = pct >= 0 ? 'up' : 'down';
-            return `<span class="p-pct ${cls}">${pct >= 0 ? '▲' : '▼'} ${Math.abs(pct).toFixed(1)}%</span>`;
+            const label = Math.abs(pct) > 999 ? '>999' : Math.abs(pct).toFixed(1);
+            return `<span class="p-pct ${cls}">${pct >= 0 ? '▲' : '▼'} ${label}%</span>`;
         }
 
         function togglePartner(p) {

@@ -167,10 +167,12 @@ def _sum_range(history: dict, partner: str, start_iso: str, end_iso: str):
 
 # ---------- Embed builder ----------
 def _pct_arrow(cur: float, prev: float) -> str:
-    """📈 +12.3% / 📉 -8.1% / 🆕 khi hôm trước = 0."""
-    if prev <= 0:
+    """📈 +12.3% / 📉 -8.1% / 🆕 khi nền kỳ trước < $1 (so % với nền ~0 vô nghĩa)."""
+    if prev < 1:
         return "🆕" if cur > 0 else ""
     pct = (cur - prev) / prev * 100
+    if abs(pct) > 999:
+        return f"{'📈' if pct >= 0 else '📉'} {'+' if pct >= 0 else '-'}>999%"
     return f"{'📈' if pct >= 0 else '📉'} {pct:+.1f}%"
 
 
