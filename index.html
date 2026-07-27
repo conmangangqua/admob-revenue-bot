@@ -352,34 +352,34 @@
         .fdrop-trigger:hover { background: rgba(146,64,14,.06); }
         /* position:fixed để THOÁT overflow:hidden của .filter-group (nếu absolute sẽ bị cắt) */
         .fdrop-panel { position: fixed; z-index: 200;
-            width: min(760px, 92vw); max-height: min(70vh, 620px); overflow-y: auto;
-            background: var(--card); border: 1px solid var(--border-strong); border-radius: 16px;
-            box-shadow: 0 18px 50px rgba(146,64,14,.22); padding: 12px; font-size: 14px; font-weight: 500; }
-        .fdrop-search { width: 100%; padding: 9px 12px; border: 1.5px solid var(--border);
-            border-radius: 10px; font: inherit; font-size: 14px; margin-bottom: 8px; outline: none; background: #FFFDF7; }
+            width: min(940px, 94vw); max-height: min(76vh, 780px); overflow-y: auto;
+            background: var(--card); border: 1px solid var(--border-strong); border-radius: 18px;
+            box-shadow: 0 18px 50px rgba(146,64,14,.22); padding: 16px; font-size: 19px; font-weight: 500; }
+        .fdrop-search { width: 100%; padding: 13px 16px; border: 2px solid var(--border);
+            border-radius: 12px; font: inherit; font-size: 19px; margin-bottom: 10px; outline: none; background: #FFFDF7; }
         .fdrop-search:focus { border-color: var(--primary); }
-        .fdrop-all { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left;
-            padding: 9px 12px; border: none; background: none; font: inherit; font-size: 14px; font-weight: 700;
-            border-radius: 10px; cursor: pointer; color: var(--text); }
+        .fdrop-all { display: flex; align-items: center; gap: 11px; width: 100%; text-align: left;
+            padding: 12px 15px; border: none; background: none; font: inherit; font-size: 19px; font-weight: 700;
+            border-radius: 12px; cursor: pointer; color: var(--text); }
         .fdrop-all:hover, .fdrop-all.sel { background: #FEF3C7; }
-        .fdrop-sec { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
-            color: var(--text-dim); margin: 10px 6px 6px; }
-        .fdrop-partners { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
-        .fdrop-partner { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px 6px 8px;
-            border: 1.5px solid var(--border); border-radius: 999px; cursor: pointer; font-size: 13px; font-weight: 700;
+        .fdrop-sec { font-size: 14px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase;
+            color: var(--text-dim); margin: 14px 6px 8px; }
+        .fdrop-partners { display: flex; flex-wrap: wrap; gap: 9px; margin-bottom: 4px; }
+        .fdrop-partner { display: inline-flex; align-items: center; gap: 9px; padding: 9px 16px 9px 11px;
+            border: 2px solid var(--border); border-radius: 999px; cursor: pointer; font-size: 17px; font-weight: 700;
             background: #fff; color: var(--text); transition: .12s; }
-        .fdrop-partner .pe { width: 22px; height: 22px; border-radius: 7px; display: flex; align-items: center;
-            justify-content: center; font-size: 14px; }
+        .fdrop-partner .pe { width: 30px; height: 30px; border-radius: 9px; display: flex; align-items: center;
+            justify-content: center; font-size: 19px; }
         .fdrop-partner:hover { border-color: var(--p-c, #F59E0B); }
         .fdrop-partner.sel { background: #FEF3C7; border-color: var(--primary); }
-        .fdrop-apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 4px; }
-        .fdrop-app { display: flex; align-items: center; gap: 8px; padding: 6px 8px; border-radius: 9px;
-            cursor: pointer; color: var(--text); font-size: 13px; font-weight: 600; min-width: 0; }
+        .fdrop-apps { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 5px; }
+        .fdrop-app { display: flex; align-items: center; gap: 11px; padding: 9px 11px; border-radius: 11px;
+            cursor: pointer; color: var(--text); font-size: 17px; font-weight: 600; min-width: 0; }
         .fdrop-app:hover, .fdrop-app.sel { background: #FEF3C7; }
-        .fdrop-app img, .fdrop-app .ph { width: 26px; height: 26px; border-radius: 7px; flex-shrink: 0;
-            object-fit: cover; background: #FDF0DC; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--text-dim); }
+        .fdrop-app img, .fdrop-app .ph { width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+            object-fit: cover; background: #FDF0DC; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 16px; color: var(--text-dim); }
         .fdrop-app .an { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .fdrop-empty { padding: 16px; text-align: center; color: var(--text-dim); font-size: 13px; }
+        .fdrop-empty { padding: 18px; text-align: center; color: var(--text-dim); font-size: 17px; }
 
         @media (max-width: 768px) {
             /* 2x (32px) tràn ngang trên điện thoại → giảm gốc còn ~1.4x cho vừa màn, filter tự wrap */
