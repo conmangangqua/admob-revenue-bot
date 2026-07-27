@@ -178,7 +178,8 @@
         .section-heading h2 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.01em; }
         .section-heading .sub { font-size: 0.74rem; color: var(--text-muted); font-weight: 600; }
 
-        .partner-stack { columns: 480px; column-gap: 1.25rem; }
+        .partner-stack { display: flex; gap: 1.25rem; align-items: flex-start; }
+        .p-col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 1.25rem; }
 
         .partner-block {
             background: var(--card);
@@ -187,8 +188,6 @@
             box-shadow: var(--shadow);
             overflow: hidden;
             position: relative;
-            break-inside: avoid;
-            margin-bottom: 1.25rem;
         }
         .partner-block::before {
             content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 5px;
@@ -294,7 +293,7 @@
             .partner-head { padding: 0.95rem 1rem 0.7rem; }
             .share-track { margin: 0 1rem 0.4rem; }
             .share-label { padding: 0 1rem 0.6rem; }
-            .partner-stack { columns: 1; }
+            .partner-stack { flex-direction: column; }
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -724,7 +723,7 @@
                 return;
             }
 
-            container.innerHTML = blocks.map(g => {
+            const blockHtmls = blocks.map(g => {
                 const meta = PARTNER_DISPLAY[g.p] || { label: g.p, emoji: '🏷️', color: '#94A3B8' };
                 const share = fleetTotal > 0 ? g.total / fleetTotal * 100 : 0;
                 const names = g.names.filter(n => cur[n] >= 0.01).sort((a, b) => cur[b] - cur[a]);
@@ -769,8 +768,33 @@
                     <span class="share-label">${share.toFixed(1)}% doanh thu toàn fleet</span>
                     <div class="partner-rows">${rows}${moreBtn}</div>
                 </section>`;
-            }).join('');
+            });
+
+            // Masonry JS: N cột theo bề rộng, card rơi vào cột đang ngắn nhất
+            const width = container.clientWidth || document.body.clientWidth;
+            const colCount = Math.max(1, Math.min(4, Math.floor(width / 450)));
+            const colHtml = Array.from({ length: colCount }, () => []);
+            const colH = new Array(colCount).fill(0);
+            blocks.forEach((g, i) => {
+                const shownCount = Math.min(
+                    g.names.filter(n => cur[n] >= 0.01).length,
+                    (expandedPartners.has(g.p) || !!onlyPartner) ? Infinity : TOP_PER_PARTNER);
+                const estH = 175 + shownCount * 52 + 50;
+                let target = 0;
+                for (let c = 1; c < colCount; c++) if (colH[c] < colH[target]) target = c;
+                colHtml[target].push(blockHtmls[i]);
+                colH[target] += estH;
+            });
+            container.innerHTML = colHtml
+                .map(items => `<div class="p-col">${items.join('')}</div>`)
+                .join('');
         }
+
+        let _rsTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(_rsTimer);
+            _rsTimer = setTimeout(() => renderPartnerBlocks(document.getElementById('appFilter').value), 150);
+        });
 
         init();
     </script>
