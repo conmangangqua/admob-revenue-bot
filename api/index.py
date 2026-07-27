@@ -15,7 +15,7 @@ class handler(BaseHTTPRequestHandler):
     def do_GET(self):
         # Bước 1: Trích xuất lịch sử từ File tĩnh trước
         base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        history_file = os.path.join(base_dir, "data", "revenue_history.json")
+        history_file = os.path.join(base_dir, "public", "data", "revenue_history.json")
         history_data = {}
         if os.path.exists(history_file):
             try:

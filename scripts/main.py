@@ -53,7 +53,7 @@ def _dedupe_by_canon(apps):
 def save_historical_data(apps_data, report_date):
     """Lưu dữ liệu doanh thu vào file JSON lịch sử để Web Dashboard hiển thị."""
     base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    history_file = os.path.join(base_dir, "data", "revenue_history.json")
+    history_file = os.path.join(base_dir, "public", "data", "revenue_history.json")
     
     # Đọc dữ liệu cũ nếu có
     history = {}

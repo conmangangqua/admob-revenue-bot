@@ -33,7 +33,7 @@ GA4_SCOPE = "https://www.googleapis.com/auth/analytics.readonly"
 SA_EMAIL = "hub-admin-sa@apps-status-reader.iam.gserviceaccount.com"
 DEFAULT_KEY_PATH = os.path.expanduser("~/.config/gcloud/hub-admin-sa.json")
 NAMES_FILE = os.path.join(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "ga_names.json"
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "public", "data", "ga_names.json"
 )
 HTTP_TIMEOUT = 30
 

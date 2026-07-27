@@ -14,8 +14,8 @@ import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
-NAMES = os.path.join(REPO, "data", "ga_names.json")
-OUT = os.path.join(REPO, "data", "app_icons.json")
+NAMES = os.path.join(REPO, "public", "data", "ga_names.json")
+OUT = os.path.join(REPO, "public", "data", "app_icons.json")
 SNAP_URL = "https://raw.githubusercontent.com/conmangangqua/apps-status/data/snapshot.json"
 
 
