@@ -218,7 +218,7 @@ def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
         # v6.5: TOÀN BỘ khối (kể cả dòng tổng partner) trong ```ansi``` —
         # tiền VÀNG đậm, %Δ xanh/đỏ, share-bar xám mờ
         G, R, Y, X = "\u001b[2;32m", "\u001b[2;31m", "\u001b[1;33m", "\u001b[0m"
-        B, D = "\u001b[1;37m", "\u001b[2;30m"   # bold trắng / xám mờ
+        B, D = "\u001b[1;37m", "\u001b[0;37m"   # bold trắng / xám sáng (2;30m đen quá — Sếp 2026-07-27)
         cp = G if p_total >= p_prev else R
         p_pct = "  new" if p_prev <= 0 else f"{(p_total - p_prev) / p_prev * 100:+.1f}%"
         rows = [
