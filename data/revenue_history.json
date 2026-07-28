@@ -6357,14 +6357,14 @@
         "rev": 182.4,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 168.46,
+        "google_spend": 168.34,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "4.742",
-          "cost_vnd": "4.38",
-          "marketing_profit_vnd": "0.362",
+          "cost_vnd": "4.377",
+          "marketing_profit_vnd": "0.365",
           "profit_pct_sheet": "8%"
         }
       },
@@ -6942,14 +6942,14 @@
         "rev": 305.1,
         "imp": 0,
         "ecpm": 0,
-        "google_spend": 326.74,
+        "google_spend": 326.7,
         "mintegral_spend": 0.0,
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
           "total_rev_vnd": "7.933",
-          "cost_vnd": "8.495",
-          "marketing_profit_vnd": "-0.563",
+          "cost_vnd": "8.494",
+          "marketing_profit_vnd": "-0.562",
           "profit_pct_sheet": "-7%"
         }
       },
