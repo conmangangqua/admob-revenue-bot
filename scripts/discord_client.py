@@ -15,7 +15,25 @@ from datetime import date, datetime, timedelta
 from typing import Optional
 
 API_URL = "https://admob-revenue-bot.vercel.app/api/revenue"
-VND_RATE = 25400
+VND_RATE = 25400  # fallback; ghi đè bằng tỷ giá realtime khi bot khởi động
+
+
+def refresh_vnd_rate() -> float:
+    """Lấy tỷ giá USD→VND realtime (open.er-api.com, free no-key). Gọi 1 lần đầu
+    mỗi run; lỗi/chậm → giữ fallback 25.400. Khớp nguồn với web dashboard."""
+    global VND_RATE
+    try:
+        req = urllib.request.Request(
+            "https://open.er-api.com/v6/latest/USD",
+            headers={"User-Agent": "admob-revenue-bot"})
+        with urllib.request.urlopen(req, timeout=8) as r:
+            vnd = json.loads(r.read()).get("rates", {}).get("VND")
+        if vnd and vnd > 0:
+            VND_RATE = float(vnd)
+            print(f"   💱 Tỷ giá realtime: 1$ = {round(VND_RATE):,}đ")
+    except Exception as e:
+        print(f"   ⚠️ Tỷ giá realtime fail ({e}) — dùng fallback {VND_RATE:,}đ")
+    return VND_RATE
 
 
 def _vnd(usd: float) -> str:

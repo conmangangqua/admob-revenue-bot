@@ -14,7 +14,7 @@ from datetime import date, timedelta
 sys.path.insert(0, os.path.dirname(__file__))
 
 from ga_client import get_ga_token, get_all_revenue, get_total_revenue
-from discord_client import send_revenue_report, send_error_notification
+from discord_client import send_revenue_report, send_error_notification, refresh_vnd_rate
 
 
 import re as _re
@@ -109,6 +109,9 @@ def main():
     day_before  = target_date - timedelta(days=1)
 
     print(f"\n📅 Báo cáo ngày: {target_date.strftime('%d/%m/%Y')}")
+
+    print("\n💱 Đang lấy tỷ giá USD→VND realtime...")
+    refresh_vnd_rate()
 
     print("\n🔑 Đang lấy token service account...")
     try:
