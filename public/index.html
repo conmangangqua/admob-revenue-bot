@@ -514,9 +514,35 @@
             if (u && u.email) document.getElementById('userEmail').textContent = u.email;
         }).catch(() => {});
 
+        let rateIsLive = false;
+        // Tỷ giá USD→VND realtime (open.er-api.com — free, no-key, CORS OK).
+        // Fallback giữ nguyên 25.400 nếu API lỗi/chậm. Cache 6h trong localStorage.
+        async function fetchVndRate() {
+            try {
+                const cached = JSON.parse(localStorage.getItem('vndRate') || 'null');
+                if (cached && Date.now() - cached.t < 6 * 3600 * 1000 && cached.r > 0) {
+                    currentVndRate = cached.r; rateIsLive = true; return;
+                }
+            } catch (e) {}
+            const ctrl = new AbortController();
+            const to = setTimeout(() => ctrl.abort(), 4000);
+            try {
+                const r = await fetch('https://open.er-api.com/v6/latest/USD', { signal: ctrl.signal });
+                const j = await r.json();
+                const vnd = j && j.rates && j.rates.VND;
+                if (vnd > 0) {
+                    currentVndRate = vnd; rateIsLive = true;
+                    try { localStorage.setItem('vndRate', JSON.stringify({ r: vnd, t: Date.now() })); } catch (e) {}
+                }
+            } catch (e) { /* giữ fallback 25.400 */ }
+            finally { clearTimeout(to); }
+        }
+
         async function init() {
             let debugStep = 'start';
             try {
+                debugStep = 'fetch rate';
+                await fetchVndRate();
                 debugStep = 'fetch data';
                 // Đọc THẲNG file static (đủ data, update daily) — /api/revenue serverless
                 // không đọc được file trong bundle nên chỉ dùng làm fallback.
@@ -530,7 +556,7 @@
 
                 if (sortedDates.length > 0) {
                     document.getElementById('lastUpdated').innerText =
-                        `Cập nhật ${formatVNDate(sortedDates[0])} · 1$ = ${Math.round(currentVndRate).toLocaleString('vi-VN')}đ · nguồn GA4`;
+                        `Cập nhật ${formatVNDate(sortedDates[0])} · 1$ = ${Math.round(currentVndRate).toLocaleString('vi-VN')}đ ${rateIsLive ? '🟢' : '⚪'} · nguồn GA4`;
                 }
 
                 debugStep = 'build app list';
