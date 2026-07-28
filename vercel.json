@@ -1,5 +1,8 @@
 {
   "functions": {
-    "api/revenue.py": { "maxDuration": 30 }
+    "api/revenue.py": {
+      "maxDuration": 30,
+      "includeFiles": "public/data/**"
+    }
   }
 }
