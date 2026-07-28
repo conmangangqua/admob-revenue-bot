@@ -77,6 +77,12 @@
             -webkit-background-clip: text; background-clip: text; color: transparent;
         }
         .brand-sub { font-size: 0.7rem; color: var(--text-dim); font-weight: 600; margin-top: -1px; }
+        .user-box { display: flex; align-items: center; gap: 0.7rem; }
+        .user-email { font-size: 0.8rem; color: var(--text-dim); font-weight: 700; max-width: 14rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .logout-btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1rem; border-radius: 999px;
+            background: #FEE2E2; color: #B91C1C; font-weight: 800; font-size: 0.85rem; text-decoration: none;
+            border: 1.5px solid rgba(185,28,28,.22); transition: .15s; cursor: pointer; }
+        .logout-btn:hover { background: #FECACA; border-color: rgba(185,28,28,.4); }
 
         .live-dot {
             display: inline-flex; align-items: center; gap: 0.35rem;
@@ -459,6 +465,13 @@
                     <input type="date" id="toDate" onchange="applyFilter()" aria-label="Đến ngày">
                 </span>
             </div>
+            <div class="user-box">
+                <span class="user-email" id="userEmail"></span>
+                <a class="logout-btn" href="/api/auth/logout" title="Đăng xuất">
+                    <svg width="1.05em" height="1.05em" viewBox="0 0 24 24" fill="none"><path d="M15 12H4m0 0l4-4m-4 4l4 4M17 4h2a2 2 0 012 2v12a2 2 0 01-2 2h-2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Đăng xuất
+                </a>
+            </div>
         </div>
     </header>
 
@@ -496,6 +509,10 @@
         let currentCurrency = 'VND';
         const expandedPartners = new Set();
         let appIcons = {};   // { "<tên app GA>": "<icon_url>" } — data/app_icons.json
+        // hiện email tài khoản đang đăng nhập (từ /api/auth/me)
+        fetch('/api/auth/me').then(r => r.ok ? r.json() : null).then(u => {
+            if (u && u.email) document.getElementById('userEmail').textContent = u.email;
+        }).catch(() => {});
 
         async function init() {
             let debugStep = 'start';
