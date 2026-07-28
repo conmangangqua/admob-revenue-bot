@@ -500,11 +500,11 @@
         async function init() {
             let debugStep = 'start';
             try {
-                debugStep = 'fetch API';
-                let resp = await fetch('/api/revenue').catch(() => null);
-                if (!resp || !resp.ok) {
-                    resp = await fetch('data/revenue_history.json');
-                }
+                debugStep = 'fetch data';
+                // Đọc THẲNG file static (đủ data, update daily) — /api/revenue serverless
+                // không đọc được file trong bundle nên chỉ dùng làm fallback.
+                let resp = await fetch('data/revenue_history.json?cb=' + Date.now()).catch(() => null);
+                if (!resp || !resp.ok) resp = await fetch('/api/revenue');
                 debugStep = 'parse JSON';
                 historyData = await resp.json();
                 // logo app (thay medal) — không chặn nếu thiếu file
