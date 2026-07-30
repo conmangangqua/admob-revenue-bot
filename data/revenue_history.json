@@ -15543,11 +15543,11 @@
     ]
   },
   "2026-07-30": {
-    "total": 0.0,
+    "total": 0.2,
     "apps": [
       {
         "name": "B117 - SonicBooster: Volume Booster",
-        "rev": 0.0,
+        "rev": 0.2,
         "imp": 0,
         "ecpm": 0,
         "google_spend": 0.0,
@@ -15555,10 +15555,10 @@
         "tiktok_spend": 0.0,
         "facebook_spend": 0.0,
         "sheet_data": {
-          "total_rev_vnd": "0.0",
+          "total_rev_vnd": "0.005",
           "cost_vnd": "0.0",
-          "marketing_profit_vnd": "0.0",
-          "profit_pct_sheet": "0%"
+          "marketing_profit_vnd": "0.005",
+          "profit_pct_sheet": "100%"
         }
       }
     ]
