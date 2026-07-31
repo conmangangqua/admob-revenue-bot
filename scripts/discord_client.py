@@ -253,10 +253,10 @@ def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
                    key=lambda kv: -sum(a["revenue"] for a in kv[1]))
     for p, apps in order:
         p_total = sum(a["revenue"] for a in apps)
-        if p_total < 1:
+        if p_total < 0.01:   # khớp ngưỡng web → hiện ĐỦ mọi đối tác (kể cả One Tabb nhỏ)
             continue
         p_prev = sum(a.get("prev_revenue", 0) for a in apps)
-        meta = PARTNER_DISPLAY[p]
+        meta = PARTNER_DISPLAY.get(p, {"label": p.upper(), "emoji": "📦"})
         name = f"{meta['emoji']}  {meta['label']}"
 
         # v6.5: TOÀN BỘ khối (kể cả dòng tổng partner) trong ```ansi``` —
