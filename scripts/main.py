@@ -9,7 +9,7 @@ import os
 import sys
 import traceback
 import json
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -103,9 +103,13 @@ def main():
 
     discord_webhook = os.environ.get("DISCORD_WEBHOOK_URL", "").strip()
 
-    # Hỗ trợ Backfill qua DATE_OFFSET (mặc định 1 = hôm qua)
+    # Hỗ trợ Backfill qua DATE_OFFSET (mặc định 1 = hôm qua).
+    # Tính "hôm nay" theo giờ VN (UTC+7) chứ không theo UTC của runner: cho phép
+    # cron chạy vào buổi TỐI UTC (= sáng VN) mà vẫn lấy đúng "hôm qua". Nhờ vậy
+    # đặt cron sớm để bù ~3h trễ của GitHub, report tới ~8h sáng VN.
     offset = int(os.environ.get("DATE_OFFSET", "1"))
-    target_date = date.today() - timedelta(days=offset)
+    vn_today = (datetime.utcnow() + timedelta(hours=7)).date()
+    target_date = vn_today - timedelta(days=offset)
     day_before  = target_date - timedelta(days=1)
 
     print(f"\n📅 Báo cáo ngày: {target_date.strftime('%d/%m/%Y')}")

@@ -1,9 +1,11 @@
 name: 📊 Daily AdMob Revenue Report
 
 on:
-  # Chạy lúc 7:45 AM giờ Việt Nam (UTC+7) = 00:45 UTC (Tránh kẹt hàng đợi)
+  # GitHub Actions free trễ lịch ~3h. Đặt cron 22:15 UTC (=05:15 VN) để cộng
+  # ~3h trễ → report tới ~08:15 VN (mục tiêu 8h–8h30). main.py tính ngày theo
+  # giờ VN nên cron chạy buổi tối UTC vẫn lấy đúng "hôm qua".
   schedule:
-    - cron: '45 0 * * *'
+    - cron: '15 22 * * *'
 
   # Cho phép trigger thủ công để test
   workflow_dispatch:
