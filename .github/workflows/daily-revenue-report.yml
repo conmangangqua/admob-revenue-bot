@@ -1,11 +1,15 @@
 name: 📊 Daily AdMob Revenue Report
 
 on:
-  # GitHub Actions free trễ lịch ~3h. Đặt cron 22:15 UTC (=05:15 VN) để cộng
-  # ~3h trễ → report tới ~08:15 VN (mục tiêu 8h–8h30). main.py tính ngày theo
-  # giờ VN nên cron chạy buổi tối UTC vẫn lấy đúng "hôm qua".
-  schedule:
-    - cron: '15 22 * * *'
+  # Sếp 2026-08-02: ĐÃ BỎ `schedule` — báo cáo hằng ngày chuyển sang chạy LOCAL
+  # (launchd `ai.tranquil.revenue-report-local`, 8:00 giờ VN, wrapper
+  # ~/.openclaw/bin/revenue-report-local.sh). Lý do: free-runner trễ lịch ~3h nên
+  # phải đặt cron lệch để bù, tin vẫn tới lúc ~06:1x thay vì 8h như mong muốn.
+  #
+  # LƯU Ý: disable workflow qua API là VÔ ÍCH ở repo này — `keep-alive.yml` chạy
+  # ngày 1 & 15 hằng tháng và TỰ ENABLE lại (đã cắn: tắt 01/08, tới 02/08 chạy tiếp).
+  # Muốn dừng hẳn thì phải bỏ `schedule` ở đây như hiện tại.
+  # Vẫn giữ workflow_dispatch để chạy tay khi cần backfill.
 
   # Cho phép trigger thủ công để test
   workflow_dispatch:

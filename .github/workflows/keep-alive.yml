@@ -2,8 +2,9 @@ name: 🔄 Keep Alive (Prevent Schedule Disable)
 
 on:
   # Chạy mỗi tháng 2 lần để GitHub không disable schedule
-  schedule:
-    - cron: '0 0 1,15 * *'
+  # Sếp 2026-08-02: tắt cron — workflow này sinh ra để giữ `daily-revenue-report`
+  # khỏi bị GitHub auto-disable, nhưng report đã chuyển chạy LOCAL nên không còn
+  # schedule nào cần giữ. Để cron ở đây sẽ TỰ BẬT LẠI report → gửi trùng.
 
   workflow_dispatch:
 
