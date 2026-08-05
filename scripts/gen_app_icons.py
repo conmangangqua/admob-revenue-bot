@@ -33,6 +33,14 @@ _PARTNER_PFX = ("herond", "bbl", "bll", "ntech", "affica", "adc media", "adc",
                 "azura", "one tabb", "one-tabb")
 
 
+# App mà GA gọi một tên, hub gọi tên khác — không suy ra được bằng prefix/fuzzy, và snapshot
+# cũng thiếu ga4.property_id để bắc cầu. Map tay: {canonical tên GA: canonical slug hub}.
+# Thêm dòng mới khi thấy app nào trên dashboard hiện trần không logo.
+_ALIAS = {
+    "wifipasswordmap": "wifikeymap",     # GA "BBL WiFi Password Map" ↔ hub "Wifi Key Map"
+}
+
+
 def _norm(s):
     return "".join(c for c in (s or "").lower() if c.isalnum())
 
@@ -86,7 +94,8 @@ def build():
         if not name:
             continue
         nn = _norm(_strip_prefix(name))
-        icon = pid_icon.get(str(pid)) or slug_icon.get(nn) or _fuzzy(nn)
+        icon = (pid_icon.get(str(pid)) or slug_icon.get(nn)
+                or slug_icon.get(_ALIAS.get(nn, "")) or _fuzzy(nn))
         if icon:
             result[name] = icon          # key tên hiển thị (khớp cũ)
             if nn:
@@ -108,7 +117,7 @@ def build():
                     continue
                 seen.add(nm)
                 nn = _norm(_strip_prefix(nm))
-                icon = slug_icon.get(nn) or _fuzzy(nn)
+                icon = slug_icon.get(nn) or slug_icon.get(_ALIAS.get(nn, "")) or _fuzzy(nn)
                 if icon:
                     result[nm] = icon
                     if nn:
