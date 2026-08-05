@@ -41,6 +41,11 @@ def _strip_prefix(name):
     low = (name or "").lower().strip()
     import re
     low = re.sub(r"^(apb|b|p)\d+\s*[-–]?\s*", "", low)   # bỏ mã B117/APB972/P01…
+    # Tên GA property hay ở dạng slug gạch nối ("adc-media-jade-browser"): đổi -/_ thành
+    # space thì mới cắt được prefix đối tác, nếu không sẽ giữ nguyên cả cụm rồi trượt khớp
+    # icon (Sếp 2026-08-05: jade-browser / snapsaver / reveriedrama mất logo trên web).
+    low = low.replace("-", " ").replace("_", " ")
+    low = re.sub(r"\s+", " ", low).strip()
     for pfx in _PARTNER_PFX:
         if low.startswith(pfx + " "):
             return low[len(pfx) + 1:].strip()
@@ -88,6 +93,30 @@ def build():
                 result[nn] = icon        # key CANONICAL (norm+strip prefix) → frontend tra theo canon,
                                           # miễn nhiễm khác case/space/prefix ('Herond SnapVid' vs 'Herond Snapvid')
             out += 1
+    # ── Bổ sung: app CÓ doanh thu nhưng KHÔNG nằm trong ga_names.json ────────────────
+    # build() chỉ duyệt `names` nên app mới (GA property chưa map tên) không bao giờ được
+    # gán icon — web hiện tên slug trần, không logo. Quét thẳng tên trong revenue_history
+    # rồi khớp bằng slug/fuzzy như trên.
+    try:
+        hist_path = os.path.join(REPO, "public", "data", "revenue_history.json")
+        hist = json.load(open(hist_path, encoding="utf-8"))
+        seen = set()
+        for day in sorted(hist)[-30:]:
+            for a in (hist[day].get("apps") or []):
+                nm = a.get("name")
+                if not nm or nm in result or nm in seen:
+                    continue
+                seen.add(nm)
+                nn = _norm(_strip_prefix(nm))
+                icon = slug_icon.get(nn) or _fuzzy(nn)
+                if icon:
+                    result[nm] = icon
+                    if nn:
+                        result.setdefault(nn, icon)
+                    out += 1
+    except Exception as e:
+        print(f"[gen_app_icons] bỏ qua bước quét history: {e}")
+
     json.dump(result, open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
     print(f"[gen_app_icons] {out}/{len(names)} app có icon → {OUT}")
     return result
