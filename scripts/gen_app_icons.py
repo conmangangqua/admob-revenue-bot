@@ -41,6 +41,26 @@ _ALIAS = {
 }
 
 
+HUB_BASE = "https://conmangangqua.github.io"   # GitHub Pages của các hub <partner>_app
+
+
+def _abs_icon(icon, partner_slug):
+    """Icon hub trong snapshot là ĐƯỜNG DẪN TƯƠNG ĐỐI ('icons/quicksave.webp') — dashboard
+    này ở domain khác nên nhận nguyên chuỗi đó là 404, app mất logo. Dựng URL tuyệt đối trỏ
+    GitHub Pages của hub đối tác (công khai, không đòi login như apps-status).
+
+    Sếp 2026-08-05: "Quick Save app này xóa khỏi store rồi nên mất logo, ko lấy fallback từ
+    app hub web ra à" — app rời store thì store_info.icon_url rỗng, chỉ còn icon hub, và
+    TẤT CẢ 91 app trong snapshot đều lưu icon kiểu tương đối nên ca này sẽ còn lặp lại.
+    """
+    if not icon or str(icon).startswith("http"):
+        return icon
+    repo = "".join(c if c.isalnum() else "_" for c in (partner_slug or "").lower().strip()).strip("_")
+    if not repo:
+        return None
+    return f"{HUB_BASE}/{repo}_app/{str(icon).lstrip('/')}"
+
+
 def _norm(s):
     return "".join(c for c in (s or "").lower() if c.isalnum())
 
@@ -66,8 +86,9 @@ def build():
     # render field này khi chưa có store icon; QuickSave/FluxVPN… nằm ở đây).
     pid_icon, slug_icon = {}, {}
     for p in snap.get("partners", []):
+        pslug = p.get("slug") or p.get("name") or ""
         for a in p.get("apps", []):
-            icon = (a.get("store_info") or {}).get("icon_url") or a.get("icon")
+            icon = (a.get("store_info") or {}).get("icon_url") or _abs_icon(a.get("icon"), pslug)
             if not icon:
                 continue
             pid = (((a.get("firebase") or {}).get("meta") or {}).get("ga4") or {}).get("property_id")
