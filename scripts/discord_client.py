@@ -84,9 +84,57 @@ def _is_azura_bcode(name: str) -> bool:
     return bool(name) and name.startswith("B") and len(name) > 1 and name[1].isdigit()
 
 
+# Sếp 2026-08-11 ("sao chapture lại là đối tác khác"): map partner CŨ đoán theo PREFIX tên
+# app (bbl-, adc-, affica-…). App nào tên không mang prefix — như `chapture-tmt` — rơi thẳng
+# vào nhóm "KHÁC" dù nó thuộc AFFICA. Đoán theo tên là sai gốc: nguồn chân lý về đối tác nằm
+# ở snapshot apps-status (mỗi app nằm trong đúng partner của nó). Tra snapshot trước, prefix
+# chỉ còn là lưới đỡ khi app chưa vào snapshot.
+_SNAP_PARTNER = None
+
+
+def _snapshot_partner_map():
+    """{tên chuẩn hoá: partner_key} lấy từ snapshot — khớp cả slug, name lẫn GA property."""
+    global _SNAP_PARTNER
+    if _SNAP_PARTNER is not None:
+        return _SNAP_PARTNER
+    _SNAP_PARTNER = {}
+    try:
+        import os, json as _json, urllib.request as _u
+        tok = os.environ.get("GITHUB_PAT_TOKEN") or os.environ.get("GITHUB_TOKEN") or ""
+        req = _u.Request(
+            "https://raw.githubusercontent.com/conmangangqua/apps-status/data/snapshot.json",
+            headers={"Authorization": f"token {tok}"} if tok else {})
+        snap = _json.loads(_u.urlopen(req, timeout=60).read())
+        for p in snap.get("partners", []):
+            key = (p.get("slug") or "").lower().replace(" ", "_").replace("-", "_")
+            if key in ("no_channel", ""):
+                continue
+            if key == "adc_media":
+                key = "adc"
+            for a in (p.get("apps") or []):
+                ga = ((a.get("firebase") or {}).get("meta") or {}).get("ga4") or {}
+                for nm in (a.get("slug"), a.get("name"), ga.get("property_name")):
+                    if nm:
+                        _SNAP_PARTNER[_norm_app(nm)] = key
+    except Exception:
+        pass
+    return _SNAP_PARTNER
+
+
+def _norm_app(s: str) -> str:
+    return "".join(c for c in (s or "").lower() if c.isalnum())
+
+
 def _get_partner(app_name: str) -> str:
     if app_name in PARTNER_MAP:
         return PARTNER_MAP[app_name]
+    # Nguồn chân lý: snapshot apps-status. Thử cả tên gốc và tên bỏ hậu tố "-tmt"/"-prod"
+    # (GA property hay gắn thêm) trước khi rơi xuống đoán prefix.
+    smap = _snapshot_partner_map()
+    n = _norm_app(app_name)
+    for cand in (n, n.removesuffix("tmt"), n.removesuffix("prod")):
+        if cand and cand in smap:
+            return smap[cand]
     if _is_azura_bcode(app_name):
         return "azura"
     # v6.0: tên từ GA (ga_names.json) mang prefix partner — suy trực tiếp
