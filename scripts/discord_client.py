@@ -101,6 +101,23 @@ def _snapshot_partner_map():
     try:
         import os, json as _json, urllib.request as _u
         tok = os.environ.get("GITHUB_PAT_TOKEN") or os.environ.get("GITHUB_TOKEN") or ""
+        if not tok:
+            # Sếp 2026-08-12 ("vẫn đối tác khác ???"): bản vá hôm qua KHÔNG ăn vì hàm này
+            # chỉ đọc token từ ENV, mà job revenue-report-local chạy dưới launchd chỉ có
+            # ANTIGRAVITY_ROOT/HOME/PATH ⇒ token rỗng ⇒ snapshot 401 ⇒ map RỖNG ⇒ mọi app
+            # rơi về 'unknown'. Đúng cái bẫy đã cắn ở notify_router 05/08. Đọc thẳng
+            # secrets.env, dò ngược lên như các script khác.
+            for base in (os.environ.get("ANTIGRAVITY_ROOT", ""),
+                         os.path.expanduser("~/SourceCode/antigravity"),
+                         "/Volumes/ThanhSSD/SourceCode/antigravity"):
+                f = os.path.join(base, "secrets.env") if base else ""
+                if f and os.path.isfile(f):
+                    for line in open(f, encoding="utf-8"):
+                        if line.startswith("GITHUB_PAT_TOKEN="):
+                            tok = line.split("=", 1)[1].strip().strip('"').strip("'")
+                            break
+                if tok:
+                    break
         req = _u.Request(
             "https://raw.githubusercontent.com/conmangangqua/apps-status/data/snapshot.json",
             headers={"Authorization": f"token {tok}"} if tok else {})
