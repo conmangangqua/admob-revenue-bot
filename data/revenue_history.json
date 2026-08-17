@@ -16106,5 +16106,47 @@
         }
       }
     ]
+  },
+  "2026-08-16": {
+    "total": 0.0,
+    "apps": [
+      {
+        "name": "B081 - Video downloader 3",
+        "rev": 0.0,
+        "imp": 0,
+        "ecpm": 0,
+        "google_spend": 0.0,
+        "mintegral_spend": 0.0,
+        "tiktok_spend": 0.0,
+        "facebook_spend": 0.0,
+        "sheet_data": {
+          "total_rev_vnd": "0.0",
+          "cost_vnd": "0.0",
+          "marketing_profit_vnd": "0.0",
+          "profit_pct_sheet": "0%"
+        }
+      }
+    ]
+  },
+  "2026-08-17": {
+    "total": 0.0,
+    "apps": [
+      {
+        "name": "B081 - Video downloader 3",
+        "rev": 0.0,
+        "imp": 0,
+        "ecpm": 0,
+        "google_spend": 0.0,
+        "mintegral_spend": 0.0,
+        "tiktok_spend": 0.0,
+        "facebook_spend": 0.0,
+        "sheet_data": {
+          "total_rev_vnd": "0.0",
+          "cost_vnd": "0.0",
+          "marketing_profit_vnd": "0.0",
+          "profit_pct_sheet": "0%"
+        }
+      }
+    ]
   }
 }
