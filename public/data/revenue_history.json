@@ -1,4 +1,393 @@
 {
+  "2026-08-25": {
+    "total": 8618.3,
+    "apps": [
+      {
+        "name": "snapisode-tmt",
+        "rev": 2256.19,
+        "imp": 383239,
+        "ecpm": 5.89
+      },
+      {
+        "name": "BBL Velvet Drama",
+        "rev": 1181.68,
+        "imp": 223822,
+        "ecpm": 5.28
+      },
+      {
+        "name": "affica-plotwist",
+        "rev": 957.42,
+        "imp": 189701,
+        "ecpm": 5.05
+      },
+      {
+        "name": "chapture-tmt",
+        "rev": 899.34,
+        "imp": 129127,
+        "ecpm": 6.96
+      },
+      {
+        "name": "BBL Quartz Browser",
+        "rev": 669.44,
+        "imp": 85685,
+        "ecpm": 7.81
+      },
+      {
+        "name": "BLL Whispr",
+        "rev": 472.14,
+        "imp": 44044,
+        "ecpm": 10.72
+      },
+      {
+        "name": "Affica Yuki Chat",
+        "rev": 410.37,
+        "imp": 46209,
+        "ecpm": 8.88
+      },
+      {
+        "name": "BBL Obsidian Browser",
+        "rev": 229.14,
+        "imp": 13202,
+        "ecpm": 17.36
+      },
+      {
+        "name": "BBL Mochi Chat",
+        "rev": 196.4,
+        "imp": 63280,
+        "ecpm": 3.1
+      },
+      {
+        "name": "affica-slatora",
+        "rev": 153.21,
+        "imp": 36610,
+        "ecpm": 4.18
+      },
+      {
+        "name": "ember-drama-tmt",
+        "rev": 151.82,
+        "imp": 62813,
+        "ecpm": 2.42
+      },
+      {
+        "name": "cliffy-tmt",
+        "rev": 134.65,
+        "imp": 36828,
+        "ecpm": 3.66
+      },
+      {
+        "name": "adc-media-reveriedrama",
+        "rev": 114.99,
+        "imp": 44908,
+        "ecpm": 2.56
+      },
+      {
+        "name": "Affica Dramio",
+        "rev": 104.54,
+        "imp": 29828,
+        "ecpm": 3.5
+      },
+      {
+        "name": "BBL Fast Fetch",
+        "rev": 91.21,
+        "imp": 15231,
+        "ecpm": 5.99
+      },
+      {
+        "name": "BBL Fetchly",
+        "rev": 78.76,
+        "imp": 11502,
+        "ecpm": 6.85
+      },
+      {
+        "name": "BBL Pebble Browser",
+        "rev": 58.81,
+        "imp": 6038,
+        "ecpm": 9.74
+      },
+      {
+        "name": "bloom-drama-tmt",
+        "rev": 52.72,
+        "imp": 29346,
+        "ecpm": 1.8
+      },
+      {
+        "name": "BBL Kestrel Browser",
+        "rev": 44.07,
+        "imp": 5365,
+        "ecpm": 8.21
+      },
+      {
+        "name": "affica-reelure",
+        "rev": 40.9,
+        "imp": 8891,
+        "ecpm": 4.6
+      },
+      {
+        "name": "adc-media-streamlyplay-tmt",
+        "rev": 40.82,
+        "imp": 11040,
+        "ecpm": 3.7
+      },
+      {
+        "name": "pullwave-tmt",
+        "rev": 31.15,
+        "imp": 4195,
+        "ecpm": 7.43
+      },
+      {
+        "name": "BBL DreamRing",
+        "rev": 28.47,
+        "imp": 4276,
+        "ecpm": 6.66
+      },
+      {
+        "name": "NTech StickerLab",
+        "rev": 27.89,
+        "imp": 5356,
+        "ecpm": 5.21
+      },
+      {
+        "name": "NTech Kairo Chat",
+        "rev": 27.24,
+        "imp": 5076,
+        "ecpm": 5.37
+      },
+      {
+        "name": "tranquil-ringlo",
+        "rev": 27.13,
+        "imp": 2961,
+        "ecpm": 9.16
+      },
+      {
+        "name": "BBL VidNovaAI",
+        "rev": 17.08,
+        "imp": 3604,
+        "ecpm": 4.74
+      },
+      {
+        "name": "BBL Calliq-caller",
+        "rev": 15.74,
+        "imp": 2105,
+        "ecpm": 7.48
+      },
+      {
+        "name": "Affica WaveCleaner",
+        "rev": 12.72,
+        "imp": 1272,
+        "ecpm": 10.0
+      },
+      {
+        "name": "BBL Lumio AI",
+        "rev": 12.51,
+        "imp": 4242,
+        "ecpm": 2.95
+      },
+      {
+        "name": "ADC-MEDIA Call Vibe",
+        "rev": 9.39,
+        "imp": 704,
+        "ecpm": 13.35
+      },
+      {
+        "name": "Affica Stikopop",
+        "rev": 9.38,
+        "imp": 2411,
+        "ecpm": 3.89
+      },
+      {
+        "name": "BBL Voxlock",
+        "rev": 8.58,
+        "imp": 5351,
+        "ecpm": 1.6
+      },
+      {
+        "name": "BBL Bloomi",
+        "rev": 8.44,
+        "imp": 3655,
+        "ecpm": 2.31
+      },
+      {
+        "name": "BBL PDF Platinum",
+        "rev": 7.74,
+        "imp": 206,
+        "ecpm": 37.57
+      },
+      {
+        "name": "cutout-ai-tmt",
+        "rev": 6.62,
+        "imp": 1969,
+        "ecpm": 3.36
+      },
+      {
+        "name": "bbl-voltplay",
+        "rev": 5.83,
+        "imp": 4628,
+        "ecpm": 1.26
+      },
+      {
+        "name": "NTech Sonic - Speaker cleaner",
+        "rev": 5.63,
+        "imp": 595,
+        "ecpm": 9.47
+      },
+      {
+        "name": "BBL NitroBoost",
+        "rev": 5.53,
+        "imp": 3681,
+        "ecpm": 1.5
+      },
+      {
+        "name": "Affica FanCall",
+        "rev": 2.87,
+        "imp": 435,
+        "ecpm": 6.6
+      },
+      {
+        "name": "BBL Genify AI Genarator",
+        "rev": 2.33,
+        "imp": 632,
+        "ecpm": 3.68
+      },
+      {
+        "name": "BBL Lingowl",
+        "rev": 1.43,
+        "imp": 288,
+        "ecpm": 4.96
+      },
+      {
+        "name": "adc-media-skylarktv",
+        "rev": 1.42,
+        "imp": 858,
+        "ecpm": 1.65
+      },
+      {
+        "name": "BBL Decora",
+        "rev": 0.72,
+        "imp": 593,
+        "ecpm": 1.22
+      },
+      {
+        "name": "NTech Idol Mirage",
+        "rev": 0.7,
+        "imp": 118,
+        "ecpm": 5.91
+      },
+      {
+        "name": "BBL GlucoMate",
+        "rev": 0.64,
+        "imp": 153,
+        "ecpm": 4.15
+      },
+      {
+        "name": "ADC Media TurboVid",
+        "rev": 0.56,
+        "imp": 162,
+        "ecpm": 3.47
+      },
+      {
+        "name": "Affica LunaAI Chat",
+        "rev": 0.53,
+        "imp": 162,
+        "ecpm": 3.27
+      },
+      {
+        "name": "BBL WiFi Password Map",
+        "rev": 0.4,
+        "imp": 172,
+        "ecpm": 2.31
+      },
+      {
+        "name": "Affica Locato",
+        "rev": 0.22,
+        "imp": 126,
+        "ecpm": 1.75
+      },
+      {
+        "name": "ADC Media Kairo Browser",
+        "rev": 0.15,
+        "imp": 34,
+        "ecpm": 4.55
+      },
+      {
+        "name": "adc-media-snapsaver",
+        "rev": 0.11,
+        "imp": 82,
+        "ecpm": 1.35
+      },
+      {
+        "name": "Affica Artova AI",
+        "rev": 0.1,
+        "imp": 77,
+        "ecpm": 1.33
+      },
+      {
+        "name": "Herond NIX Browser VPN",
+        "rev": 0.09,
+        "imp": 26,
+        "ecpm": 3.58
+      },
+      {
+        "name": "BBL GoalArena",
+        "rev": 0.09,
+        "imp": 47,
+        "ecpm": 1.95
+      },
+      {
+        "name": "NTech Rollicon3D",
+        "rev": 0.07,
+        "imp": 116,
+        "ecpm": 0.62
+      },
+      {
+        "name": "Affica CelebRing",
+        "rev": 0.06,
+        "imp": 15,
+        "ecpm": 4.14
+      },
+      {
+        "name": "adc-media-jade-browser",
+        "rev": 0.03,
+        "imp": 32,
+        "ecpm": 0.85
+      },
+      {
+        "name": "Affica GoalPulse",
+        "rev": 0.02,
+        "imp": 24,
+        "ecpm": 0.97
+      },
+      {
+        "name": "Affica Clean Space",
+        "rev": 0.02,
+        "imp": 2,
+        "ecpm": 10.68
+      },
+      {
+        "name": "pdfeather-tmt",
+        "rev": 0.02,
+        "imp": 21,
+        "ecpm": 0.79
+      },
+      {
+        "name": "BBL Quick Save",
+        "rev": 0.02,
+        "imp": 11,
+        "ecpm": 1.44
+      },
+      {
+        "name": "Affica Swift Secure VPN",
+        "rev": 0.01,
+        "imp": 3,
+        "ecpm": 1.93
+      },
+      {
+        "name": "P01 - One Tabb Dreamatic",
+        "rev": 0.0,
+        "imp": 3,
+        "ecpm": 0.68
+      }
+    ]
+  },
   "2026-08-24": {
     "total": 5764.49,
     "apps": [
