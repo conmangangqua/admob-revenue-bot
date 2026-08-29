@@ -303,6 +303,33 @@ def _short_name(name: str) -> str:
     return _PREFIX_RE.sub("", name).strip() or name
 
 
+def _app_emojis():
+    """Nạp module logo-app từ HUB (antigravity), nguồn dùng chung với revenue-notify.
+
+    Cố ý không giữ bản sao trong repo này: hai bản sao thì sớm muộn lệch nhau, sửa
+    một bên quên bên kia. Dò theo ANTIGRAVITY_ROOT rồi mới walk-up — cùng cách các
+    script khác trong fleet vẫn dò hub.
+    """
+    import importlib, sys, os
+    roots = []
+    env = os.environ.get("ANTIGRAVITY_ROOT", "").strip()
+    if env:
+        roots.append(env)
+    cur = os.path.abspath(__file__)
+    for _ in range(8):
+        cur = os.path.dirname(cur)
+        if cur in ("/", ""):
+            break
+        roots += [cur, os.path.join(cur, "antigravity")]
+    for r in roots:
+        d = os.path.join(r, ".agents", "bot-scripts")
+        if os.path.isfile(os.path.join(d, "app_emojis.py")):
+            if d not in sys.path:
+                sys.path.insert(0, d)
+            return importlib.import_module("app_emojis")
+    raise ImportError("không dò được hub antigravity để nạp app_emojis")
+
+
 def _build_revenue_fields(apps_data: list, prev_total: Optional[float],
                           mtd_by_pid: Optional[dict] = None) -> list:
     """v7 (Sếp 2026-08-29: "Hiện đúng tên và cả logo app ra"): mỗi partner 1 khối,
@@ -336,8 +363,7 @@ def _build_revenue_fields(apps_data: list, prev_total: Optional[float],
                              "property_id": a.get("property_id")})
     emo = {}
     try:
-        import app_emojis
-        emo = app_emojis.ensure_emojis(show)
+        emo = _app_emojis().ensure_emojis(show)
     except Exception as e:                    # logo hỏng KHÔNG được giết báo cáo
         print(f"   ⚠️  bỏ qua logo app: {str(e)[:70]}")
 
@@ -359,10 +385,10 @@ def _build_revenue_fields(apps_data: list, prev_total: Optional[float],
             p_mtd = sum(float(mtd_by_pid.get(str(a.get("property_id")), 0) or 0)
                         for a in apps)
             if p_mtd > 0:
-                rows.append(f"**Tháng này** `{_money(p_mtd)}`")
-        rows.append(f"**Hôm nay** `{_vnd(p_total)}` {p_ico} {p_pct}")
+                rows.append(f"📅 **Tháng này** `{_money(p_mtd)}`")
+        rows.append(f"☀️ **Hôm nay** `{_vnd(p_total)}` {p_ico} {p_pct}")
         if p_prev > 0:
-            rows.append(f"**Hôm qua** `{_vnd(p_prev)}`")
+            rows.append(f"🌙 **Hôm qua** `{_vnd(p_prev)}`")
         # _share_bar() đã kèm sẵn '%', đừng cộng thêm lần nữa
         if total > 0:
             rows.append(f"`{_share_bar(p_total, total)}` tổng fleet")
@@ -400,16 +426,16 @@ def _build_header_block(target_date: date, apps_data: list,
     d_prev = (target_date - timedelta(days=1)).strftime("%d/%m")
     lines = []
     if mtd_total:
-        lines.append(f"**Tháng này** (01→{d_str})  `{_money(mtd_total)}`")
-    lines.append(f"**Hôm nay** ({d_str})  `{_money(total)}`")
+        lines.append(f"📅 **Tháng này** (01→{d_str})  `{_money(mtd_total)}`")
+    lines.append(f"☀️ **Hôm nay** ({d_str})  `{_money(total)}`")
     if prev_total and prev_total > 0:
-        lines.append(f"**Hôm trước** ({d_prev})  `{_money(prev_total)}`")
+        lines.append(f"🌙 **Hôm trước** ({d_prev})  `{_money(prev_total)}`")
         diff = total - prev_total
         ico = "🟢" if diff >= 0 else "🔴"
         sign = "+" if diff >= 0 else "-"
-        lines.append(f"**Tăng/giảm**  `{sign}{_vnd(abs(diff))}` {ico} "
+        lines.append(f"📊 **Tăng/giảm**  `{sign}{_vnd(abs(diff))}` {ico} "
                      f"{diff / prev_total * 100:+.1f}%")
-    lines.append(f"**App có doanh thu**  `{n_apps}`")
+    lines.append(f"📱 **App có doanh thu**  `{n_apps}`")
     return "\n".join(lines)
 
 
