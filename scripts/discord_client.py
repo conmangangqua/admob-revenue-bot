@@ -367,59 +367,82 @@ def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
         if rest:
             rows.append(f"… +{len(rest)} app khác `{_vnd(sum(a['revenue'] for a in rest))}`")
         value = "\n".join(r for r in rows if r)
-        fields.append({"name": name[:256], "value": value[:1024] or "—",
-                       "inline": False})
+        fields.append({"name": name[:256], "value": value[:4096] or "—",
+                       "inline": False, "_up": p_total >= p_prev})
     return fields
 
 
 def _build_header_block(target_date: date, apps_data: list,
                         prev_total: Optional[float], mtd_total: Optional[float]) -> str:
-    """Sếp chốt 2026-07-27: MTD lên đầu, rồi app count / hôm trước / hôm nay /
-    tăng giảm — tất cả trong ```ansi``` để có màu."""
-    G, R, Y, X, B = "\u001b[2;32m", "\u001b[2;31m", "\u001b[1;33m", "\u001b[0m", "\u001b[1;37m"
+    """Sếp 2026-08-29: "Cái header trên cùng cũng đang lệch style".
+
+    Bản cũ là khối ```ansi``` monospace, trong khi phần partner bên dưới đã đổi
+    sang text thường + inline code (bắt buộc, vì emoji-logo không render trong
+    code block). Hai nửa một tin mà hai kiểu chữ ⇒ đọc như hai bot khác nhau
+    dán vào. Nay dùng chung một quy ước: nhãn text thường, số bọc inline code.
+    """
     total = sum(a["revenue"] for a in apps_data)
     n_apps = len([a for a in apps_data if a["revenue"] > 0])
     d_str = target_date.strftime("%d/%m")
     d_prev = (target_date - timedelta(days=1)).strftime("%d/%m")
     lines = []
     if mtd_total:
-        lines.append(f"{B}{'THÁNG NÀY (01→' + d_str + ')':<20}{X}{Y}{_money(mtd_total):>22}{X}")
-    lines.append(f"{'App có doanh thu':<20}{B}{n_apps:>22}{X}")
+        lines.append(f"**Tháng này** (01→{d_str})  `{_money(mtd_total)}`")
+    lines.append(f"**Hôm nay** ({d_str})  `{_money(total)}`")
     if prev_total and prev_total > 0:
-        lines.append(f"{'Hôm trước (' + d_prev + ')':<20}{Y}{_money(prev_total):>22}{X}")
-    lines.append(f"{'Hôm nay   (' + d_str + ')':<20}{Y}{_money(total):>22}{X}")
-    if prev_total and prev_total > 0:
+        lines.append(f"**Hôm trước** ({d_prev})  `{_money(prev_total)}`")
         diff = total - prev_total
-        c = G if diff >= 0 else R
-        pct = diff / prev_total * 100
+        ico = "🟢" if diff >= 0 else "🔴"
         sign = "+" if diff >= 0 else "-"
-        lines.append(f"{'Tăng/giảm':<20}{c}{sign + _vnd(abs(diff)) + f' ({pct:+.1f}%)':>22}{X}")
-    return "```ansi\n" + "\n".join(lines) + "\n```"
+        lines.append(f"**Tăng/giảm**  `{sign}{_vnd(abs(diff))}` {ico} "
+                     f"{diff / prev_total * 100:+.1f}%")
+    lines.append(f"**App có doanh thu**  `{n_apps}`")
+    return "\n".join(lines)
 
 
-def _build_embed(target_date: date, apps_data: list,
-                 prev_total: Optional[float] = None,
-                 mtd_total: Optional[float] = None) -> dict:
-    """v6.1: embed thuần doanh thu ads từ apps_data (GA4) — Sếp chốt 2026-07-27
-    bỏ khối Lãi/Lỗ sheet, tách partner NTech/ADC, ẩn partner < $1."""
-    fields = _build_revenue_fields(apps_data, prev_total)
-    fields.append({
-        "name": "\u200b",
-        "value": "🔗 [Chi tiết từng app trên Web App](https://admob-revenue-bot.vercel.app/)",
-        "inline": False,
-    })
+def _build_embeds(target_date: date, apps_data: list,
+                  prev_total: Optional[float] = None,
+                  mtd_total: Optional[float] = None) -> list:
+    """v7.1 — Sếp 2026-08-29: "Khó nhìn vl ko chia section ra".
+
+    Bản v6 nhét mọi partner vào FIELD của cùng một embed. Hồi đó đọc được là nhờ
+    mỗi field là một khối ```ansi``` — chính cái khung xám đó tách section, chứ
+    không phải bố cục. Bỏ code block đi (để emoji-logo hiện được) là các partner
+    dính liền thành một dải chữ.
+
+    Nay tách MỖI PARTNER MỘT EMBED: Discord tự vẽ vạch màu dọc bên trái từng
+    embed ⇒ ranh giới rõ mà không tốn dòng kẻ tự chế. Màu vạch theo tăng/giảm
+    của chính partner đó, nên lướt mắt là thấy ai tụt.
+
+    Trần của Discord là 10 embed/tin: 1 header + tối đa 9 partner. Hiện có 8
+    partner nên vừa; nếu vượt thì phần dư gộp vào embed cuối, KHÔNG âm thầm mất.
+    """
     total = sum(a["revenue"] for a in apps_data)
     up = prev_total is None or total >= prev_total
-    desc = _build_header_block(target_date, apps_data, prev_total, mtd_total)
-    return {
+    head = {
         "title": f"💹 Tranquil Revenue — {_day_name_vn(target_date)}, {target_date.strftime('%d/%m/%Y')}",
         "url": "https://admob-revenue-bot.vercel.app/",
-        "description": desc,
+        "description": _build_header_block(target_date, apps_data, prev_total, mtd_total),
         "color": 0x10B981 if up else 0xEF4444,
-        "fields": fields,
-        "footer": {"text": "🤖 v6.2 · GA4 Data API (service account)"},
-        "timestamp": f"{target_date.isoformat()}T01:00:00Z",
     }
+    embeds = [head]
+    parts = _build_revenue_fields(apps_data, prev_total)   # [{name, value, _up}]
+    MAX_EXTRA = 9
+    for f in parts[:MAX_EXTRA]:
+        embeds.append({
+            "title": f["name"],
+            "description": f["value"],
+            "color": 0x10B981 if f.get("_up", True) else 0xEF4444,
+        })
+    if len(parts) > MAX_EXTRA:
+        # Thà dồn vào embed cuối còn hơn nuốt mất partner (trần 10 embed của Discord)
+        extra = "\n\n".join(f"**{f['name']}**\n{f['value']}" for f in parts[MAX_EXTRA:])
+        embeds[-1]["description"] += "\n\n" + extra
+    embeds[-1]["footer"] = {"text": "🤖 v7.1 · GA4 Data API (service account)"}
+    embeds[-1]["timestamp"] = f"{target_date.isoformat()}T01:00:00Z"
+    embeds[-1]["description"] += (
+        "\n\n🔗 [Chi tiết từng app trên Web App](https://admob-revenue-bot.vercel.app/)")
+    return embeds
 
 
 # ---------- Public API (compat with main.py) ----------
@@ -438,8 +461,8 @@ def send_revenue_report(
         print("   ❌ Không có apps_data — bỏ qua gửi Discord.")
         return False
 
-    embed = _build_embed(report_date, apps_data, prev_total=prev_total, mtd_total=mtd_total)
-    payload = {"username": "Tranquil Revenue Bot", "embeds": [embed]}
+    embeds = _build_embeds(report_date, apps_data, prev_total=prev_total, mtd_total=mtd_total)
+    payload = {"username": "Tranquil Revenue Bot", "embeds": embeds}
 
     req = urllib.request.Request(
         webhook_url,
