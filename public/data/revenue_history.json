@@ -1,11 +1,11 @@
 {
   "2026-08-28": {
-    "total": 7810.13,
+    "total": 7810.62,
     "apps": [
       {
         "name": "Plotwist",
-        "rev": 2498.18,
-        "imp": 441511,
+        "rev": 2498.22,
+        "imp": 441518,
         "ecpm": 5.66
       },
       {
@@ -16,20 +16,20 @@
       },
       {
         "name": "BBL Velvet Drama",
-        "rev": 1009.31,
-        "imp": 280160,
+        "rev": 1009.46,
+        "imp": 280223,
         "ecpm": 3.6
       },
       {
         "name": "Dramelo",
-        "rev": 472.52,
-        "imp": 121272,
+        "rev": 472.61,
+        "imp": 121291,
         "ecpm": 3.9
       },
       {
         "name": "BLL Whispr",
         "rev": 371.1,
-        "imp": 33867,
+        "imp": 33868,
         "ecpm": 10.96
       },
       {
@@ -46,14 +46,14 @@
       },
       {
         "name": "Slatora",
-        "rev": 237.19,
-        "imp": 45315,
+        "rev": 237.21,
+        "imp": 45322,
         "ecpm": 5.23
       },
       {
         "name": "BBL Quartz Browser",
-        "rev": 233.15,
-        "imp": 42734,
+        "rev": 233.16,
+        "imp": 42735,
         "ecpm": 5.46
       },
       {
@@ -76,14 +76,14 @@
       },
       {
         "name": "BBL Fast Fetch",
-        "rev": 132.62,
-        "imp": 28767,
+        "rev": 132.65,
+        "imp": 28772,
         "ecpm": 4.61
       },
       {
         "name": "BBL Fetchly",
         "rev": 103.26,
-        "imp": 19648,
+        "imp": 19649,
         "ecpm": 5.26
       },
       {
@@ -101,7 +101,7 @@
       {
         "name": "Ringlo",
         "rev": 79.13,
-        "imp": 11277,
+        "imp": 11278,
         "ecpm": 7.02
       },
       {
@@ -161,13 +161,13 @@
       {
         "name": "BBL NitroBoost",
         "rev": 10.94,
-        "imp": 4513,
+        "imp": 4517,
         "ecpm": 2.42
       },
       {
         "name": "BBL Lumio AI",
         "rev": 10.06,
-        "imp": 5461,
+        "imp": 5465,
         "ecpm": 1.84
       },
       {
@@ -232,9 +232,9 @@
       },
       {
         "name": "Affica FanCall",
-        "rev": 3.37,
-        "imp": 421,
-        "ecpm": 8.02
+        "rev": 3.51,
+        "imp": 450,
+        "ecpm": 7.81
       },
       {
         "name": "BBL Genify AI Genarator",
@@ -262,9 +262,9 @@
       },
       {
         "name": "NTech Sonic - Speaker cleaner",
-        "rev": 1.36,
-        "imp": 270,
-        "ecpm": 5.05
+        "rev": 1.37,
+        "imp": 272,
+        "ecpm": 5.02
       },
       {
         "name": "Pdfeather",
