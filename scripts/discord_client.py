@@ -303,7 +303,8 @@ def _short_name(name: str) -> str:
     return _PREFIX_RE.sub("", name).strip() or name
 
 
-def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
+def _build_revenue_fields(apps_data: list, prev_total: Optional[float],
+                          mtd_by_pid: Optional[dict] = None) -> list:
     """v7 (Sếp 2026-08-29: "Hiện đúng tên và cả logo app ra"): mỗi partner 1 khối,
     mỗi app 1 dòng có LOGO + tên thật + tiền + %Δ.
 
@@ -350,9 +351,21 @@ def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
 
         p_pct = "new" if p_prev <= 0 else f"{(p_total - p_prev) / p_prev * 100:+.1f}%"
         p_ico = "🟢" if p_total >= p_prev else "🔴"
-        rows = [f"**TỔNG** `{_vnd(p_total)}` {p_ico} {p_pct}",
-                # _share_bar() đã kèm sẵn '%', đừng cộng thêm lần nữa
-                f"`{_share_bar(p_total, total)}` tổng fleet" if total > 0 else ""]
+        # Sếp 2026-08-29: "Các đối tác cũng hiện tháng này, hôm nay, hôm qua"
+        # — cùng bộ chỉ số với header tổng, để so partner với toàn fleet không
+        # phải nhẩm. MTD cộng từ mtd_by_pid (doanh thu MTD của TỪNG property).
+        rows = []
+        if mtd_by_pid:
+            p_mtd = sum(float(mtd_by_pid.get(str(a.get("property_id")), 0) or 0)
+                        for a in apps)
+            if p_mtd > 0:
+                rows.append(f"**Tháng này** `{_money(p_mtd)}`")
+        rows.append(f"**Hôm nay** `{_vnd(p_total)}` {p_ico} {p_pct}")
+        if p_prev > 0:
+            rows.append(f"**Hôm qua** `{_vnd(p_prev)}`")
+        # _share_bar() đã kèm sẵn '%', đừng cộng thêm lần nữa
+        if total > 0:
+            rows.append(f"`{_share_bar(p_total, total)}` tổng fleet")
         apps = sorted(apps, key=lambda a: -a["revenue"])
         for i, a in enumerate(apps[:TOP_PER_PARTNER]):
             if a["revenue"] < 0.01:
@@ -402,7 +415,8 @@ def _build_header_block(target_date: date, apps_data: list,
 
 def _build_embeds(target_date: date, apps_data: list,
                   prev_total: Optional[float] = None,
-                  mtd_total: Optional[float] = None) -> list:
+                  mtd_total: Optional[float] = None,
+                  mtd_by_pid: Optional[dict] = None) -> list:
     """v7.1 — Sếp 2026-08-29: "Khó nhìn vl ko chia section ra".
 
     Bản v6 nhét mọi partner vào FIELD của cùng một embed. Hồi đó đọc được là nhờ
@@ -426,7 +440,7 @@ def _build_embeds(target_date: date, apps_data: list,
         "color": 0x10B981 if up else 0xEF4444,
     }
     embeds = [head]
-    parts = _build_revenue_fields(apps_data, prev_total)   # [{name, value, _up}]
+    parts = _build_revenue_fields(apps_data, prev_total, mtd_by_pid)
     MAX_EXTRA = 9
     for f in parts[:MAX_EXTRA]:
         embeds.append({
@@ -452,6 +466,7 @@ def send_revenue_report(
     report_date: Optional[date] = None,
     prev_total: Optional[float] = None,
     mtd_total: Optional[float] = None,
+    mtd_by_pid: Optional[dict] = None,
     api_url: str = API_URL,   # giữ tham số cho tương thích — không dùng nữa
 ) -> bool:
     """Gửi report doanh thu build 100% từ apps_data (GA4 bot vừa quét)."""
@@ -461,7 +476,8 @@ def send_revenue_report(
         print("   ❌ Không có apps_data — bỏ qua gửi Discord.")
         return False
 
-    embeds = _build_embeds(report_date, apps_data, prev_total=prev_total, mtd_total=mtd_total)
+    embeds = _build_embeds(report_date, apps_data, prev_total=prev_total,
+                           mtd_total=mtd_total, mtd_by_pid=mtd_by_pid)
     payload = {"username": "Tranquil Revenue Bot", "embeds": embeds}
 
     req = urllib.request.Request(

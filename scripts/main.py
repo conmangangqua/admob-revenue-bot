@@ -13,7 +13,8 @@ from datetime import date, datetime, timedelta
 
 sys.path.insert(0, os.path.dirname(__file__))
 
-from ga_client import get_ga_token, get_all_revenue, get_total_revenue
+from ga_client import (get_ga_token, get_all_revenue,
+                       get_revenue_by_property)
 from discord_client import send_revenue_report, send_error_notification, refresh_vnd_rate
 
 
@@ -134,8 +135,11 @@ def main():
     print("\n📊 Đang lấy revenue hôm kia (để so sánh)...")
     apps_prev  = get_all_revenue(access_token, day_before)
     print("\n📆 Đang lấy tổng THÁNG NÀY (MTD, từ GA — history thời bot cũ thiếu số)...")
-    mtd_total = get_total_revenue(access_token, target_date.replace(day=1), target_date)
-    print(f"   ✅ MTD ${mtd_total:,.2f}")
+    # Giữ CHI TIẾT theo property (không chỉ tổng): khối từng partner cũng cần
+    # MTD riêng — Sếp 2026-08-29 "Các đối tác cũng hiện tháng này, hôm nay, hôm qua".
+    mtd_by_pid = get_revenue_by_property(access_token, target_date.replace(day=1), target_date)
+    mtd_total = sum(mtd_by_pid.values())
+    print(f"   ✅ MTD ${mtd_total:,.2f} ({len(mtd_by_pid)} property)")
     
     prev_total = sum(a["revenue"] for a in apps_prev)
     apps_prev_dict = {a["app_name"]: a["revenue"] for a in apps_prev}
@@ -179,6 +183,7 @@ def main():
         report_date=target_date,
         prev_total=prev_total if prev_total > 0 else None,
         mtd_total=mtd_total,
+        mtd_by_pid=mtd_by_pid,
     )
 
     if success:

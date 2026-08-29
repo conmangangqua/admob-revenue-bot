@@ -217,21 +217,33 @@ def _run_report(token: str, property_id: str, date_str: str, end_str: str = None
     return revenue, ecpm, impressions
 
 
-def get_total_revenue(token: str, start_date: date, end_date: date) -> float:
-    """Tổng doanh thu ads MỌI property trong khoảng ngày (1 runReport range/property).
-    Dùng cho MTD — không lấy từ history vì các ngày thời bot cũ bị thiếu số."""
+def get_revenue_by_property(token: str, start_date: date, end_date: date) -> dict:
+    """{property_id: doanh thu} trong khoảng ngày — 1 runReport range/property.
+
+    Tách ra từ `get_total_revenue` (Sếp 2026-08-29: "Các đối tác cũng hiện tháng
+    này, hôm nay, hôm qua"): muốn có MTD theo TỪNG PARTNER thì phải giữ lại chi
+    tiết từng property rồi mới gộp. Hàm cũ quét đúng ngần ấy property rồi cộng
+    dồn và VỨT chi tiết đi — nên đây không phải thêm lượt quét mới, chỉ là thôi
+    ném đi thứ mình vừa lấy về.
+    """
     props = list_properties(token)
     s, e = start_date.strftime("%Y-%m-%d"), end_date.strftime("%Y-%m-%d")
 
     def fetch(p):
         try:
             rev, _, _ = _run_report(token, p["property_id"], s, e)
-            return rev
+            return p["property_id"], rev
         except Exception:
-            return 0.0
+            return p["property_id"], 0.0
 
     with ThreadPoolExecutor(max_workers=10) as ex:
-        return sum(ex.map(fetch, props))
+        return dict(ex.map(fetch, props))
+
+
+def get_total_revenue(token: str, start_date: date, end_date: date) -> float:
+    """Tổng doanh thu ads MỌI property trong khoảng ngày.
+    Dùng cho MTD — không lấy từ history vì các ngày thời bot cũ bị thiếu số."""
+    return sum(get_revenue_by_property(token, start_date, end_date).values())
 
 
 def get_all_revenue(token: str, report_date: date) -> List[dict]:
