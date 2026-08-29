@@ -304,8 +304,14 @@ def _short_name(name: str) -> str:
 
 
 def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
-    """v6.2 (Sếp chốt 2026-07-27): chia theo ĐỐI TÁC — mỗi partner 1 khối:
-    header = tổng partner + %Δ, bên dưới top app của partner đó."""
+    """v7 (Sếp 2026-08-29: "Hiện đúng tên và cả logo app ra"): mỗi partner 1 khối,
+    mỗi app 1 dòng có LOGO + tên thật + tiền + %Δ.
+
+    Vì sao bỏ khối ```ansi``` dùng từ v6.5: emoji KHÔNG render bên trong code
+    block, mà logo app chính là emoji server (Discord không cho gắn ảnh vào từng
+    dòng của embed field — xem app_emojis.py). Đổi lại: mất căn cột monospace và
+    màu ANSI, được logo + tên. Số tiền bọc `inline code` để vẫn nổi thành cột.
+    """
     fields = []
     total = sum(a["revenue"] for a in apps_data)
 
@@ -316,6 +322,24 @@ def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
 
     order = sorted(groups.items(),
                    key=lambda kv: -sum(a["revenue"] for a in kv[1]))
+
+    # Gom TRƯỚC danh sách app sắp hiện rồi xin logo một lượt — tránh gọi
+    # Discord API rải rác trong vòng lặp dựng text.
+    show = []
+    for p, apps in order:
+        if sum(a["revenue"] for a in apps) < 0.01:
+            continue
+        for a in sorted(apps, key=lambda x: -x["revenue"])[:TOP_PER_PARTNER]:
+            if a["revenue"] >= 0.01:
+                show.append({"app_name": a["app_name"],
+                             "property_id": a.get("property_id")})
+    emo = {}
+    try:
+        import app_emojis
+        emo = app_emojis.ensure_emojis(show)
+    except Exception as e:                    # logo hỏng KHÔNG được giết báo cáo
+        print(f"   ⚠️  bỏ qua logo app: {str(e)[:70]}")
+
     for p, apps in order:
         p_total = sum(a["revenue"] for a in apps)
         if p_total < 0.01:   # khớp ngưỡng web → hiện ĐỦ mọi đối tác (kể cả One Tabb nhỏ)
@@ -324,29 +348,25 @@ def _build_revenue_fields(apps_data: list, prev_total: Optional[float]) -> list:
         meta = PARTNER_DISPLAY.get(p, {"label": p.upper(), "emoji": "📦"})
         name = f"{meta['emoji']}  {meta['label']}"
 
-        # v6.5: TOÀN BỘ khối (kể cả dòng tổng partner) trong ```ansi``` —
-        # tiền VÀNG đậm, %Δ xanh/đỏ, share-bar xám mờ
-        G, R, Y, X = "\u001b[2;32m", "\u001b[2;31m", "\u001b[1;33m", "\u001b[0m"
-        B, D = "\u001b[1;37m", "\u001b[1;36m"   # bold trắng / cyan sáng (nền tối text phải sáng — Sếp 2026-07-27)
-        cp = G if p_total >= p_prev else R
-        p_pct = "  new" if p_prev <= 0 else f"{(p_total - p_prev) / p_prev * 100:+.1f}%"
-        rows = [
-            f"{B}{'TỔNG':<15}{X} {Y}{_vnd(p_total):>13}{X} {cp}{p_pct:>8}{X}",
-            f"{D}{_share_bar(p_total, total)} tổng fleet{X}",
-        ]
+        p_pct = "new" if p_prev <= 0 else f"{(p_total - p_prev) / p_prev * 100:+.1f}%"
+        p_ico = "🟢" if p_total >= p_prev else "🔴"
+        rows = [f"**TỔNG** `{_vnd(p_total)}` {p_ico} {p_pct}",
+                # _share_bar() đã kèm sẵn '%', đừng cộng thêm lần nữa
+                f"`{_share_bar(p_total, total)}` tổng fleet" if total > 0 else ""]
         apps = sorted(apps, key=lambda a: -a["revenue"])
         for i, a in enumerate(apps[:TOP_PER_PARTNER]):
             if a["revenue"] < 0.01:
                 break
             prev = a.get("prev_revenue", 0)
-            c = G if a["revenue"] >= prev else R
-            pct = "   new" if prev <= 0 else f"{(a['revenue'] - prev) / prev * 100:+.1f}%"
-            nm = _short_name(a["app_name"])[:15]
-            rows.append(f"{i + 1}. {c}{nm:<15}{X} {Y}{_vnd(a['revenue']):>13}{X} {c}{pct:>8}{X}")
+            ico = "🟢" if a["revenue"] >= prev else "🔴"
+            pct = "new" if prev <= 0 else f"{(a['revenue'] - prev) / prev * 100:+.1f}%"
+            nm = _short_name(a["app_name"])
+            logo = emo.get(a["app_name"], "")
+            rows.append(f"{logo} **{nm}** `{_vnd(a['revenue'])}` {ico} {pct}".strip())
         rest = [a for a in apps[TOP_PER_PARTNER:] if a["revenue"] >= 0.01]
         if rest:
-            rows.append(f"{D}   … +{len(rest)} app khác{X} {Y}{_vnd(sum(a['revenue'] for a in rest)):>13}{X}")
-        value = "```ansi\n" + "\n".join(rows) + "\n```"
+            rows.append(f"… +{len(rest)} app khác `{_vnd(sum(a['revenue'] for a in rest))}`")
+        value = "\n".join(r for r in rows if r)
         fields.append({"name": name[:256], "value": value[:1024] or "—",
                        "inline": False})
     return fields

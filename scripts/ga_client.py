@@ -136,12 +136,64 @@ def list_properties(token: str, include_dev: bool = False) -> List[dict]:
     return props
 
 
+SNAPSHOT_URL = ("https://raw.githubusercontent.com/conmangangqua/"
+                "apps-status/data/snapshot.json")
+
+
+def _names_from_snapshot() -> dict:
+    """{property_id: tên app THẬT} lấy từ snapshot apps-status.
+
+    🔴 Sếp bắt 2026-08-29: báo cáo doanh thu hiện `chapture-tmt`, `cliffy-tmt`,
+    `affica-plotwist` — tức tên PROJECT FIREBASE, không phải tên app. Nguyên nhân:
+    `ga_names.json` là file tĩnh phải bổ sung TAY, mà fleet thì cứ đẻ thêm app;
+    property nào chưa kịp thêm thì rơi về `displayName` của GA property, và người
+    ta đặt tên property theo project.
+
+    Tệ hơn tên xấu: có cái SAI HẲN. `cliffy-tmt` thật ra là app **Dramelo** — app
+    đã đổi tên nhưng project giữ tên cũ, nên báo cáo gọi tên một app không còn tồn
+    tại. Kiểu lỗi này không bao giờ tự hết nếu vẫn trông vào việc nhớ sửa tay.
+
+    Nên bù tự động từ snapshot (nguồn đang dùng cho icon dashboard, cùng khoá
+    `firebase.meta.ga4.property_id`). Lỗi mạng thì trả {} — mất tên đẹp, KHÔNG
+    làm chết báo cáo.
+    """
+    tok = os.environ.get("GITHUB_PAT_TOKEN") or os.environ.get("GITHUB_TOKEN") or ""
+    req = urllib.request.Request(SNAPSHOT_URL)
+    if tok:
+        req.add_header("Authorization", f"token {tok}")
+    try:
+        with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as r:
+            snap = json.load(r)
+    except Exception as e:
+        print(f"   ⚠️  không đọc được snapshot để lấy tên app ({e}) — dùng tên GA")
+        return {}
+    out = {}
+    for part in snap.get("partners", []):
+        for a in part.get("apps", []):
+            ga = ((a.get("firebase") or {}).get("meta") or {}).get("ga4") or {}
+            pid = str(ga.get("property_id") or "")
+            nm = (a.get("name") or "").strip()
+            if pid and nm:
+                out[pid] = nm
+    return out
+
+
 def _load_name_overrides() -> dict:
+    """File tĩnh THẮNG, snapshot chỉ BÙ cho property chưa có tên.
+
+    Cố ý không để snapshot ghi đè: `app_name` là KHOÁ của lịch sử doanh thu và
+    của phép so hôm-trước. Đổi tên hàng loạt 59 app đang chạy đúng sẽ làm mọi %Δ
+    thành "new" và cắt đứt biểu đồ lịch sử — sửa cái đang đẹp thành cái đang hỏng.
+    """
+    file_names = {}
     try:
         with open(NAMES_FILE, encoding="utf-8") as f:
-            return json.load(f)
+            file_names = json.load(f)
     except Exception:
-        return {}
+        pass
+    merged = dict(_names_from_snapshot())
+    merged.update(file_names)        # file đè snapshot
+    return merged
 
 
 # ─────────────────────── revenue query ──────────────────────
@@ -200,6 +252,10 @@ def get_all_revenue(token: str, report_date: date) -> List[dict]:
             rev, ecpm, imp = _run_report(token, p["property_id"], date_str)
             return {
                 "app_name": names.get(p["property_id"]) or p["display"] or p["property_id"],
+                # Khoá ỔN ĐỊNH để tra logo/icon. Tên app thì đổi (app rebrand,
+                # property đặt theo project cũ) nên tra icon theo tên là trượt —
+                # đúng lý do logo không hiện được trước đây.
+                "property_id": p["property_id"],
                 "revenue": rev,
                 "impressions": imp,
                 "ecpm": ecpm,
