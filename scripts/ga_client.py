@@ -21,6 +21,7 @@ Auth (thứ tự ưu tiên):
 import json
 import os
 import subprocess
+import time
 import urllib.error
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -86,15 +87,40 @@ def _get(url: str, token: str) -> dict:
         return json.loads(r.read())
 
 
-def _post(url: str, token: str, payload: dict) -> dict:
-    req = urllib.request.Request(
-        url, data=json.dumps(payload).encode(),
-        headers={"Authorization": f"Bearer {token}",
-                 "Content-Type": "application/json"},
-        method="POST",
-    )
-    with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as r:
-        return json.loads(r.read())
+def _post(url: str, token: str, payload: dict, retries: int = 4) -> dict:
+    """POST kèm backoff cho 429/500/503 và lỗi mạng thoáng qua.
+
+    🔴 Sếp 2026-09-01 ("Trên 1,5 tỷ dưới 2,3 tỷ???"): cùng tháng 8, tin báo sáng ghi
+    BBL 1,5 Tỷ₫ còn tin tổng kết ghi 2,3 Tỷ₫. Nguyên nhân: báo sáng bắn hàng trăm
+    runReport liên tiếp (mỗi app 3 lượt × ~85 app, rồi lặp lại ở vòng partner), GA4 chặn
+    bớt bằng 429 — mà hàm này không thử lại, còn chỗ gọi thì `except: return 0.0`. App
+    nào dính là doanh thu của nó biến mất khỏi tổng, im lặng tuyệt đối: tin vẫn gửi,
+    trông vẫn hợp lý, chỉ thiếu 9 app và 800 triệu.
+
+    Thử lại là cách rẻ nhất; chỗ gọi vẫn phải tự đếm lỗi để không báo số thiếu.
+    """
+    data = json.dumps(payload).encode()
+    for attempt in range(retries):
+        req = urllib.request.Request(
+            url, data=data,
+            headers={"Authorization": f"Bearer {token}",
+                     "Content-Type": "application/json"},
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=HTTP_TIMEOUT) as r:
+                return json.loads(r.read())
+        except urllib.error.HTTPError as e:
+            if e.code in (429, 500, 502, 503) and attempt < retries - 1:
+                time.sleep(min(30, 2 * (2 ** attempt)))
+                continue
+            raise
+        except (urllib.error.URLError, TimeoutError, OSError):
+            if attempt < retries - 1:
+                time.sleep(min(30, 2 * (2 ** attempt)))
+                continue
+            raise
+    raise RuntimeError("GA4: hết lượt thử lại")
 
 
 # ─────────────────── property discovery ─────────────────────
