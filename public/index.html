@@ -552,6 +552,12 @@
                 historyData = await resp.json();
                 // logo app (thay medal) — không chặn nếu thiếu file
                 try { appIcons = await (await fetch('data/app_icons.json?cb=' + Date.now())).json(); } catch (e) { appIcons = {}; }
+                // Map đối tác từ snapshot apps-status (server-side) — mirror đúng bot Discord.
+                // Không chặn render nếu lỗi: getPartner() fallback về prefix cũ.
+                try {
+                    const pm = await (await fetch('/api/partners?cb=' + Date.now())).json();
+                    if (pm && !pm.error) { _snapPartner = pm; _canonIdx = null; }
+                } catch (e) { _snapPartner = {}; }
                 sortedDates = Object.keys(historyData).sort().reverse();
 
                 if (sortedDates.length > 0) {
@@ -627,14 +633,28 @@
             adc:    { label: 'ADC',    emoji: '🎬', color: '#EA580C' },
             herond: { label: 'Herond', emoji: '🐝', color: '#CA8A04' },
             one_tabb:{ label: 'One Tabb', emoji: '📑', color: '#4F46E5' },
+            tranquil:{ label: 'Tranquil', emoji: '💸', color: '#059669' },
+            meta:   { label: 'Meta',   emoji: '🦚', color: '#2563EB' },
+            gpt:    { label: 'GPT',    emoji: '🎏', color: '#16A34A' },
+            panacea:{ label: 'Panacea', emoji: '🐲', color: '#9333EA' },
             unknown:{ label: 'Khác',   emoji: '📦', color: '#78716C' },
         };
+
+        // Nguồn CHÂN LÝ đối tác: snapshot apps-status (server-side qua /api/partners vì
+        // snapshot là repo cần token, JS client không đọc trực tiếp được). Map {normKey:
+        // partner_key}. Prefix bên dưới chỉ còn là lưới đỡ khi app chưa vào snapshot.
+        let _snapPartner = {};
 
         // GA4-only: app Azura mã B… lấy số từ Looker (không phải GA4) → loại khỏi dashboard
         function isGAApp(name) { return !/^B\d+/.test(name || ''); }
 
         function getPartner(name) {
             if (PARTNER_MAP[name]) return PARTNER_MAP[name];
+            // Tra snapshot trước (khớp cả tên gốc, bỏ hậu tố -tmt/-prod GA hay gắn thêm)
+            const n = _normKey(name);
+            for (const cand of [n, n.replace(/tmt$/, ''), n.replace(/prod$/, '')]) {
+                if (cand && _snapPartner[cand]) return _snapPartner[cand];
+            }
             if (/^B\d+/.test(name)) return 'azura';
             const low = (name || '').toLowerCase();
             if (low.startsWith('bbl') || low.startsWith('bll')) return 'bbl';   // bll-whispr = typo bbl
@@ -740,7 +760,7 @@
         }
 
         // ── Filter dropdown custom (icon đối tác + logo app, lưới + search) ──
-        const _P_ORDER = ['affica', 'bbl', 'ntech', 'adc', 'herond', 'azura', 'one_tabb'];
+        const _P_ORDER = ['affica', 'bbl', 'ntech', 'adc', 'herond', 'azura', 'one_tabb', 'tranquil', 'meta', 'gpt', 'panacea'];
         let _filterApps = [];
         function _escHtml(s) { return (s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
         function _iconFor(n) { return appIcons[n] || appIcons[_normKey(shortName(n))] || appIcons[_normKey(n)] || ''; }

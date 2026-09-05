@@ -3,6 +3,9 @@
     "api/revenue.py": {
       "maxDuration": 30,
       "includeFiles": "public/data/**"
+    },
+    "api/partners.py": {
+      "maxDuration": 30
     }
   }
 }
