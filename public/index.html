@@ -697,7 +697,11 @@
 
         /* ───────── Filter engine ───────── */
         function pickDates(timeFilter) {
-            const todayStr = new Date().toISOString().split('T')[0];
+            // "Hôm nay" phải theo giờ VN (GMT+7), KHÔNG theo UTC. Bug cũ dùng
+            // toISOString() (=UTC): mở dashboard lúc 0–7h sáng VN thì UTC còn là
+            // hôm qua → lọc Hôm nay/Hôm qua lệch 1 ngày, app hiện sai mốc ngày.
+            const todayStr = new Date(Date.now() + 7 * 3600 * 1000)
+                .toISOString().split('T')[0];
             let cur = [], prev = [], lbl = "Tổng doanh thu";
 
             if (timeFilter === 'today') {
